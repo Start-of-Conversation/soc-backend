@@ -4,7 +4,9 @@
   "port": 5432,
   "username": "postgres",
   "password": "postgres",
-  "database": "nest_blog",
-  "entities": ["dist/**/**.entity{.ts,.js}"],
+  "database": "start_of_conversation",
+  "entities": [
+    "dist/**/**.entity{.ts,.js}"
+  ],
   "synchronize": true
 }
