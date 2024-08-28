@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, Repository, DataSource } from 'typeorm';
-import { Users } from "../domain/users.entity"
+import { Users } from "../entities/users.entity"
 
 export class UsersRepository {
     private usersRepository: Repository<Users>;
