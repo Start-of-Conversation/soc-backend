@@ -2,7 +2,7 @@ import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from 'src/modules/users/user.service';
 
 @Controller()
-export class AppController {
+export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Post()
