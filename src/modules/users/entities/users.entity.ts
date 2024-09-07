@@ -1,35 +1,38 @@
 import * as argon2 from "argon2";
 import { BeforeInsert, Column, Entity } from "typeorm";
-import { Roles, roles } from "./value/roles";
+import { RoleName, roles } from "./value/roles";
 import { BaseEntity } from "src/modules/common/base.entity";
 import { Domain } from "src/modules/common/value/domain";
-import { LoginChannel, loginChannel } from "./value/loginChannel";
-
+import { ChannelName, loginChannel } from "./value/loginChannel";
+import { UserSaveDto } from "../dto/users.register.request";
+import { IsEmail } from "class-validator";
+import { UsersBuilder } from "./users.builder";
 
 @Entity("users")
 export class Users extends BaseEntity {
 
+    @IsEmail()
     @Column({ unique: true })
-    email: string;
+    private _email: string;
 
     @Column('varchar')
-    password: string;
+    private _password: string;
 
     @Column('varchar')
-    nickname: string;
+    private _nickname: string;
 
     @Column({ default: "" })
-    profileImage: string;
+    private _profileImage: string;
 
     @Column({ default: roles.USER })
-    role: Roles;
+    private _role: RoleName;
 
     @Column({ default: loginChannel.LOCAL })
-    loginChannel: LoginChannel;
+    private _loginChannel: ChannelName;
 
     @BeforeInsert()
     async hashPassword() {
-        this.password = await argon2.hash(this.password);
+        this._password = await argon2.hash(this._password);
     }
 
     constructor(
@@ -37,14 +40,29 @@ export class Users extends BaseEntity {
         password: string,
         nickname: string,
         profileImage: string,
-        role: Roles,
-        loginChannel: LoginChannel) {
+        role: RoleName,
+        loginChannel: ChannelName) {
         super(Domain.USER);
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.profileImage = profileImage;
-        this.role = role;
-        this.loginChannel = loginChannel;
+        this._email = email;
+        this._password = password;
+        this._nickname = nickname;
+        this._profileImage = profileImage;
+        this._role = role;
+        this._loginChannel = loginChannel;
+    }
+
+    public static builder(): UsersBuilder {
+        return new UsersBuilder();
+    }
+
+    public static of(request: UserSaveDto): Users {
+        return Users.builder()
+            .email(request.email)
+            .password(request.password)
+            .nickname(request.nickname)
+            .profileImage(request.profileImage)
+            .role(request.role)
+            .loginChannel(request.loginChannel)
+            .build();
     }
 }

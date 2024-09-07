@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core'
 import { ConfigService } from '@nestjs/config'
 import { AppConfigType } from './configs/config.type'
 import { AppModule } from './app.module'
-import process from 'process'
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, { cors: true })
@@ -21,6 +21,7 @@ async function bootstrap() {
 	)
 	// TODO: 환경변수 포트 설정
 	const port = configService.getOrThrow('app.port', { infer: true })
+	app.useGlobalPipes(new ValidationPipe());
 	await app.listen(port)
 	console.log(`listening on port ${port}`)
 

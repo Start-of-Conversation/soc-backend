@@ -17,4 +17,12 @@ export class AppService {
 			dbPort,
 		};
 	}
+
+	getSomeConfig() {
+		const someConfig = this.configService.get<string>('SOME_CONFIG_KEY');
+		if (!someConfig) {
+			throw new Error('SOME_CONFIG_KEY is not defined in the environment variables');
+		}
+		return someConfig;
+	}
 }

@@ -11,7 +11,7 @@ export class TypeormConfig implements TypeOrmOptionsFactory {
             port: 5432, // TODO: 데이터베이스 포트
             username: 'postgres',
             password: 'postgres',
-            database: 'board-app', // TODO: 연결할 데이터베이스 이름
+            database: 'start_of_conversation', // TODO: 연결할 데이터베이스 이름
             synchronize: true,  // TODO: 스키마 자동 동기화 (production에서는 false)
             dropSchema: false, // TODO: 애플리케이션 실행시 기존 스키마 삭제 여부
             keepConnectionAlive: true, // TODO: 애플리케이션 재시작 시 연결 유지
