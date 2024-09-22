@@ -1,10 +1,10 @@
-package toyproject.web.startofconversation
+package toyproject.startofconversation.api
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class StartOfConversationApplicationTests {
+class ApiApplicationTests {
 
     @Test
     fun contextLoads() {

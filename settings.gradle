@@ -1,1 +1,3 @@
 rootProject.name = 'startOfConversation'
+include 'common'
+include 'api'

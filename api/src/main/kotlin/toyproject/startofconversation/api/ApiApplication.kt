@@ -1,11 +1,11 @@
-package toyproject.web.startofconversation
+package toyproject.startofconversation.api
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class StartOfConversationApplication
+class ApiApplication
 
 fun main(args: Array<String>) {
-    runApplication<StartOfConversationApplication>(*args)
+    runApplication<ApiApplication>(*args)
 }
