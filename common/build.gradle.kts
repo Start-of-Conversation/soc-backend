@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 val bootJar: BootJar by tasks
@@ -9,8 +8,8 @@ tasks.named<Jar>("jar") {
 }
 
 dependencies {
-    implementation ("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation ("org.springframework.boot:spring-boot-starter-security")
-    runtimeOnly ("org.postgresql:postgresql")
-    testImplementation ("org.springframework.security:spring-security-test")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation("org.springframework.security:spring-security-test")
 }
