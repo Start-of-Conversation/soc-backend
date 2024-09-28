@@ -1,9 +1,9 @@
-package toyproject.startofconversation.common.domain.common
+package toyproject.startofconversation.common.base
 
 import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
-import toyproject.startofconversation.common.domain.common.value.Domain
+import toyproject.startofconversation.common.domain.value.Domain
 import java.time.LocalDateTime
 
 @MappedSuperclass

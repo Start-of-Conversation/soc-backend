@@ -1,4 +1,4 @@
-package toyproject.startofconversation.common.domain.common.value
+package toyproject.startofconversation.common.domain.value
 
 import java.util.*
 
