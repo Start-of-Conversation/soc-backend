@@ -13,6 +13,8 @@ open class BaseEntity(
     @Column(name = "id", updatable = false, unique = true, nullable = false, length = 50)
     private val id: String = createId();
 
+    fun getId(): String = id
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
