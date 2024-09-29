@@ -10,6 +10,8 @@ class UsersService(
 ) {
 
     fun saveUserLocal(request: RegisterUserRequest) {
+        val user = request.toUser()
+        usersRepository.save(user)
 
     }
 
