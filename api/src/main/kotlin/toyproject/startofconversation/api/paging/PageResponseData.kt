@@ -1,6 +1,6 @@
 package toyproject.startofconversation.api.paging
 
-import toyproject.startofconversation.common.base.ResponseData
+import toyproject.startofconversation.common.base.dto.ResponseData
 
 class PageResponseData<T> : ResponseData<T> {
 

@@ -1,7 +1,7 @@
 package toyproject.startofconversation.common.base
 
 import jakarta.persistence.*
-import toyproject.startofconversation.common.domain.value.Domain
+import toyproject.startofconversation.common.base.value.Domain
 import java.util.*
 
 @MappedSuperclass

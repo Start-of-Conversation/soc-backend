@@ -1,6 +1,5 @@
-package toyproject.startofconversation.common.base
+package toyproject.startofconversation.common.base.dto
 
-import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
 
 open class ResponseData<T> : ResponseInfo {
