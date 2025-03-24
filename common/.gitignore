@@ -38,4 +38,4 @@ out/
 
 ### Kotlin ###
 .kotlin
-/common/src/main/resources/db/
+/src/main/resources/application-dev.yml
