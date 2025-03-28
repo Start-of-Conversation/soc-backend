@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: auth
+  config:
+    import: classpath:/key.yml
+
