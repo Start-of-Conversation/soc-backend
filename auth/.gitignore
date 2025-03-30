@@ -39,3 +39,4 @@ out/
 ### Kotlin ###
 .kotlin
 /src/main/resources/key.yml
+/src/main/resources/application-dev.yml
