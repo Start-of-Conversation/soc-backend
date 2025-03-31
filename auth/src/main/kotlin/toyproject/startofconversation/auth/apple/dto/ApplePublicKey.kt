@@ -1,6 +1,6 @@
 package toyproject.startofconversation.auth.apple.dto
 
-open class ApplePublicKey(
+data class ApplePublicKey(
     val kty: String,
     val kid: String,
     val alg: String,

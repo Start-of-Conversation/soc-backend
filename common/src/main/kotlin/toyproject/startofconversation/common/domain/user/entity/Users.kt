@@ -6,7 +6,6 @@ import lombok.Builder
 import lombok.Getter
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.auth.entity.Auth
 import toyproject.startofconversation.common.domain.device.entity.Device
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import java.time.LocalDateTime
@@ -34,12 +33,17 @@ class Users(
     var deletedAt: LocalDateTime?,
 
     @OneToMany
-    val auths: MutableList<Auth> = mutableListOf(),
-
-    @OneToMany
     val devices: MutableSet<Device> = mutableSetOf(),
 
     @OneToMany
     val likes: MutableList<Likes> = mutableListOf()
 
-) : BaseDateEntity(Domain.USER)
+) : BaseDateEntity(Domain.USER) {
+    companion object {
+        fun to(email: String, nickname: String): Users = Users(
+            email = email,
+            nickname = nickname,
+            deletedAt = null
+        )
+    }
+}
