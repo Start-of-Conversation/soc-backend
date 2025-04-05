@@ -27,7 +27,7 @@ class AuthController(
         @RequestBody request: AppleAuthRequest
     ): ResponseEntity<ResponseData<Auth>> {
         val auth = appleAuthService.loadUser(request)
-        val token = jwtProvider.generateToken(auth)
+        val token = jwtProvider.generateToken(auth.user)
 
         val responseHeaders = HttpHeaders().apply {
             set("Authorization", "Bearer $token") // 헤더에 토큰을 추가
