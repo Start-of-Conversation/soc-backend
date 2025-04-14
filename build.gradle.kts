@@ -61,20 +61,27 @@ subprojects{
     apply(plugin = "kotlin-kapt")
 
     dependencies {
-        //Spring Web 의존성
-        implementation("org.springframework.boot:spring-boot-starter-web")
-
-        //공통사용
+        //kotlin
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        developmentOnly("org.springframework.boot:spring-boot-devtools")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
+        //spring
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+        developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+        //redis
+        implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
         //lombok
         compileOnly("org.projectlombok:lombok")
         kapt("org.projectlombok:lombok")
+
+        //database
+        runtimeOnly("org.postgresql:postgresql")
 
         //kotest
         testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
