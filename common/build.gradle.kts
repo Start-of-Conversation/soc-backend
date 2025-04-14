@@ -8,7 +8,4 @@ tasks.named<Jar>("jar") {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    testImplementation("org.springframework.security:spring-security-test")
 }

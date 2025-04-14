@@ -64,17 +64,24 @@ subprojects{
         //kotlin
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+        //junit
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
         //spring
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+        implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation("org.springframework.boot:spring-boot-starter-security")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.springframework.security:spring-security-test")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         developmentOnly("org.springframework.boot:spring-boot-devtools")
 
         //redis
         implementation("org.springframework.boot:spring-boot-starter-data-redis")
+        implementation("io.lettuce:lettuce-core")
 
         //lombok
         compileOnly("org.projectlombok:lombok")
