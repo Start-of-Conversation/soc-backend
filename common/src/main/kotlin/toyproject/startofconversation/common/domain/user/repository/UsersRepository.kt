@@ -12,4 +12,6 @@ interface UsersRepository : JpaRepository<Users, String> {
 
     fun findByEmail(email: String): Users?
 
+    fun findUsersById(id: String): Users?
+
 }
