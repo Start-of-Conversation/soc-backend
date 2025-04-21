@@ -4,7 +4,7 @@ import toyproject.startofconversation.common.base.value.Code
 
 open class ResponseData<T> : ResponseInfo {
 
-    private val wrapper: T
+    private val wrapper: T?
 
     constructor(wrapper: T) : super(Code.OK.toString(), Code.OK.message) {
         this.wrapper = wrapper

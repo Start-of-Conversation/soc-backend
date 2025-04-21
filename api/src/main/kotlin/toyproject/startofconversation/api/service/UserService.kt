@@ -1,12 +1,16 @@
 package toyproject.startofconversation.api.service
 
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
+import toyproject.startofconversation.api.dto.UserDataResponse
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCException
+import toyproject.startofconversation.common.exception.SOCNotFoundException
 import java.time.LocalDateTime
 
+@Service
 class UserService(
     private val usersRepository: UsersRepository
 ) {
@@ -25,5 +29,12 @@ class UserService(
     }
 
     fun findUserByEmail(email: String): Users? = usersRepository.findByEmail(email)
+
+    fun findUserById(id: String): ResponseData<UserDataResponse> {
+        val user = usersRepository.findByIdOrNull(id)
+            ?: throw SOCNotFoundException("$id is not found")
+
+        return ResponseData(UserDataResponse.to(user))
+    }
 
 }
