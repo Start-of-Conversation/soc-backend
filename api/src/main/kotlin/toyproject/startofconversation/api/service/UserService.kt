@@ -34,7 +34,7 @@ class UserService(
         val user = usersRepository.findByIdOrNull(id)
             ?: throw SOCNotFoundException("$id is not found")
 
-        return ResponseData(UserDataResponse.to(user))
+        return ResponseData.to(UserDataResponse.to(user))
     }
 
 }

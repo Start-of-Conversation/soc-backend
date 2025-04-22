@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.auth.apple.dto.AppleAuthRequest
 import toyproject.startofconversation.auth.apple.service.AppleAuthService
@@ -15,7 +16,8 @@ import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
 
-@RestController("/auth")
+@RestController
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 class AuthController(
     private val appleAuthService: AppleAuthService,
