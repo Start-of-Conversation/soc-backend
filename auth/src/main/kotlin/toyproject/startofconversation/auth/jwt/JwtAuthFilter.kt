@@ -23,6 +23,14 @@ class JwtAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        val path = request.requestURI
+
+        //whiteList에 있는 경로의 경우 인증 없이 패스
+        if (path.startsWith("/auth") || path.matches(Regex("/api/.*/public/.*"))) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val accessToken = resolveAccessToken(request)
         val refreshToken = resolveRefreshToken(request)
 
@@ -51,7 +59,7 @@ class JwtAuthFilter(
                     response.setHeader("Authorization", "Bearer $newAccessToken")
 
                     // SecurityContext 설정 후 통과
-                    setAuthentication(user.getId())
+                    setAuthentication(userId)
                     filterChain.doFilter(request, response)
                     return
                 }
