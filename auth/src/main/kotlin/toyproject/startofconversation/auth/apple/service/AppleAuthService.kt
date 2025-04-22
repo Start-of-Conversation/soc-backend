@@ -28,15 +28,19 @@ class AppleAuthService(
     @Transactional
     @Throws(AuthenticationException::class)
     fun loadUser(appleAuthRequest: AppleAuthRequest): Auth {
+        //accountId 가져오기
         val accountID: String = getAppleAccountId(appleAuthRequest.identityToken)
         authRepository.findByAuthId(accountID)?.let { return it }
 
+        //이름 생성
         var name = (appleAuthRequest.user.name.lastName ?: "") + " " + (appleAuthRequest.user.name.firstName ?: "")
         if (name.isBlank()) {
             name = RandomNameMaker.generate()
         }
+        //이메일 처리
         val email = appleAuthRequest.user.email ?: throw AuthenticationException("Email is required")
 
+        //user 저장
         val user = usersRepository.findByEmail(email) ?: usersRepository.save(
             Users.to(email = email, nickname = name)
         )
@@ -52,6 +56,7 @@ class AppleAuthService(
 
     private fun getAppleAccountId(identityToken: String): String {
         val headers: Map<String, String> = appleJwtProvider.parseHeaders(identityToken)
+        //Feign Client를 사용하여 공개키 요청
         val publicKey: PublicKey =
             applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey())
         return appleJwtProvider.getTokenClaims(identityToken, publicKey).subject

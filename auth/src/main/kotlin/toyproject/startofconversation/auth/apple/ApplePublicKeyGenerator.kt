@@ -1,6 +1,5 @@
 package toyproject.startofconversation.auth.apple
 
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Component
 import toyproject.startofconversation.auth.apple.dto.ApplePublicKey
 import toyproject.startofconversation.auth.apple.dto.ApplePublicKeyResponse
@@ -12,7 +11,6 @@ import java.util.*
 import javax.naming.AuthenticationException
 
 @Component
-@RequiredArgsConstructor
 class ApplePublicKeyGenerator {
 
     @Throws(AuthenticationException::class, NoSuchAlgorithmException::class, InvalidKeyException::class)
@@ -35,6 +33,5 @@ class ApplePublicKeyGenerator {
 
         return KeyFactory.getInstance("RSA").generatePublic(publicKeySpec)
     }
-
 
 }
