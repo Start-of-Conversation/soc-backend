@@ -10,7 +10,7 @@ class SOCExceptionHandler {
 
     @ExceptionHandler(SOCAuthException::class)
     fun handleSOCAuthException(ex: SOCAuthException): ResponseEntity<String> =
-        ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.message)
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.message)
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<String> =
