@@ -12,14 +12,17 @@ enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) 
 
     OK(200, HttpStatus.OK, "Ok"),
 
+    //client
     BAD_REQUEST(400, HttpStatus.BAD_REQUEST, "Bad request"),
     VALIDATION_ERROR(400, HttpStatus.BAD_REQUEST, "Validation error"),
-    NOT_FOUND(404, HttpStatus.NOT_FOUND, "Requested resource is not found"),
 
-    INTERNAL_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal error"),
-    DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Data access error"),
+    UNAUTHORIZED(401, HttpStatus.UNAUTHORIZED, "Authentication required"),
+    FORBIDDEN(403, HttpStatus.FORBIDDEN, "Access denied"),
+    NOT_FOUND(404, HttpStatus.NOT_FOUND, "Resource not found"),
 
-    UNAUTHORIZED(401, HttpStatus.UNAUTHORIZED, "User unauthorized");
+    //server
+    INTERNAL_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
+    DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Database access error");
 
     fun getMessage(e: Throwable): String = getMessage("$message - ${e.message}")
 

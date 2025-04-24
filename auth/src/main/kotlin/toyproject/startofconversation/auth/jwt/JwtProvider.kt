@@ -9,7 +9,7 @@ import io.jsonwebtoken.security.SignatureException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import toyproject.startofconversation.common.domain.user.entity.Users
-import toyproject.startofconversation.common.exception.SOCAuthException
+import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import java.util.*
 import javax.crypto.SecretKey
 
@@ -51,11 +51,11 @@ class JwtProvider(
                 .parseSignedClaims(token)
                 .payload
         } catch (e: SignatureException) {
-            throw SOCAuthException("Invalid JWT signature", e)
+            throw SOCUnauthorizedException("Invalid JWT signature", e)
         } catch (e: ExpiredJwtException) {
             null
         } catch (e: Exception) {
-            throw SOCAuthException("Invalid JWT token", e)
+            throw SOCUnauthorizedException("Invalid JWT token", e)
         }
     }
 

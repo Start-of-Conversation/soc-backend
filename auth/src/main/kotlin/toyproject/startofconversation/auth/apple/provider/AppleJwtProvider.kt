@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Component
-import toyproject.startofconversation.common.exception.SOCAuthException
+import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import java.nio.charset.StandardCharsets
 import java.security.PublicKey
 import java.util.*
@@ -23,7 +23,7 @@ class AppleJwtProvider {
             return OBJECT_MAPPER.readValue(
                 decodeHeader(header), Map::class.java
             ) as Map<String, String>
-        }.getOrNull() ?: throw SOCAuthException("Apple OAuth Identity Token 형식이 올바르지 않습니다.")
+        }.getOrNull() ?: throw SOCUnauthorizedException("Apple OAuth Identity Token 형식이 올바르지 않습니다.")
 
     fun decodeHeader(token: String?): String =
         String(Base64.getDecoder().decode(token), StandardCharsets.UTF_8)

@@ -1,6 +1,8 @@
 package toyproject.startofconversation.auth.controller
 
-import jakarta.servlet.http.Cookie
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import lombok.RequiredArgsConstructor
@@ -20,8 +22,7 @@ import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
-import toyproject.startofconversation.common.exception.SOCAuthException
-import toyproject.startofconversation.common.exception.SOCServerException
+import toyproject.startofconversation.common.exception.SOCForbiddenException
 
 @RestController
 @RequestMapping("/auth")
@@ -31,65 +32,67 @@ class AuthController(
     private val authService: AuthService
 ) {
 
-    @Comment("로그아웃 구현")
+    @Operation(
+        summary = "로그아웃",
+        responses = [
+            ApiResponse(responseCode = "200", description = "조회 성공"),
+            ApiResponse(responseCode = "401", description = "인증 실패"),
+            ApiResponse(responseCode = "403", description = "정지/탈퇴 유저"),
+            ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")
+        ],
+        security = [SecurityRequirement(name = "bearerAuth")]
+    )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
     fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> {
-        try {
-            // 쿠키에서 refreshToken을 삭제
-            val refreshTokenCookie = Cookie("refreshToken", null)
-            refreshTokenCookie.maxAge = 0
-            refreshTokenCookie.path = "/"
-            response.addCookie(refreshTokenCookie)
+        val refreshToken = authService.deleteRefreshToken(request)
+        response.addCookie(refreshToken)
 
-            SecurityContextHolder.clearContext()
+        SecurityContextHolder.clearContext()
 
-            val userId = SecurityUtil.getCurrentUserId()
-            val headers = authService.generateExpiredAccessToken(userId)
-            authService.deleteRefreshToken(request)
+        val userId = SecurityUtil.getCurrentUserId()
+        val headers = authService.generateExpiredAccessToken(userId)
 
-            return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
-        } catch (e: Exception) {
-            throw SOCServerException("Error during logout")
-        }
+        return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
     }
 
-    @Comment("apple 소셜 로그인 구현")
+    @Comment("apple 소셜 로그인")
     @PostMapping("/apple")
     fun loginAppleUser(
         @RequestParam("code") authorizationCode: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<Auth>> = loginUser(authorizationCode, response, AuthProvider.APPLE)
 
-    @Comment("kakao 소셜 로그인 구현")
+    @Comment("kakao 소셜 로그인")
     @PostMapping("/kakao")
     fun loginKakaoUser(
         @RequestParam("code") accessCode: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<Auth>> = loginUser(accessCode, response, AuthProvider.KAKAO)
 
+    @Comment("소셜 로그인 공통 로직")
     private fun loginUser(
         authorizationCode: String,
         response: HttpServletResponse,
         authProvider: AuthProvider
     ): ResponseEntity<ResponseData<Auth>> {
-        try {
-            // 소셜 로그인 처리
-            val auth = socialLoginService.handleSocialLogin(authorizationCode, authProvider)
+        // 소셜 로그인 처리
+        val auth = socialLoginService.handleSocialLogin(authorizationCode, authProvider)
 
-            // 토큰 생성
-            val headers = authService.generateToken(auth.user)
-
-            // refreshToken 쿠키 생성
-            val refreshTokenCookie = authService.generateRefreshToken(auth.user)
-
-            // 쿠키 추가
-            response.addCookie(refreshTokenCookie)
-
-            // 성공 응답 반환
-            return ResponseEntity(ResponseData.to(auth), headers, HttpStatus.OK)
-        } catch (e: Exception) {
-            // 예외 처리
-            throw SOCAuthException("Authentication failed")
+        if (auth.user.isDeleted) {
+            throw SOCForbiddenException("User already deleted")
         }
+
+        // 토큰 생성
+        val headers = authService.generateToken(auth.user)
+
+        // refreshToken 쿠키 생성
+        val refreshTokenCookie = authService.generateRefreshToken(auth.user)
+
+        // 쿠키 추가
+        response.addCookie(refreshTokenCookie)
+
+        // 성공 응답 반환
+        return ResponseEntity(ResponseData.to(auth), headers, HttpStatus.OK)
     }
 }
