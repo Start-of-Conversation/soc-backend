@@ -10,7 +10,7 @@ interface AppleAuthTokenClient {
 
     @PostMapping
     fun getAccessToken(
-        @RequestParam("grant_type") grantType: String,
+        @RequestParam("grant_type") grantType: String = "authorization_code",
         @RequestParam("code") code: String,
         @RequestParam("client_id") clientId: String,
         @RequestParam("client_secret") clientSecret: String,

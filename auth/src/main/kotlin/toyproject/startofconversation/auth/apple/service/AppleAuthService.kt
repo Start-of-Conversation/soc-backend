@@ -32,23 +32,23 @@ class AppleAuthService(
 ) {
 
     @Value("\${social.apple.client-id}")
-    lateinit var clientId: String // 애플에서 발급받은 Client ID
+    private lateinit var clientId: String // 애플에서 발급받은 Client ID
 
     @Value("\${social.apple.client-secret}")
-    lateinit var clientSecret: String // 애플에서 발급받은 Client Secret
+    private lateinit var clientSecret: String // 애플에서 발급받은 Client Secret
 
     @Value("\${social.apple.redirect-uri}")
-    lateinit var redirectUri: String // 애플 개발자 콘솔에 설정된 Redirect URI
+    private lateinit var redirectUri: String // 애플 개발자 콘솔에 설정된 Redirect URI
 
     @Transactional
     @Throws(AuthenticationException::class)
     fun loadUser(authorizationCode: String): Auth {
         val tokenResponse = requestAccessToken(authorizationCode)
 
-        val appleUserInfo = appleUserClient.getAppleUserInfo("Bearer $tokenResponse.accessToken")
+        val appleUserInfo = appleUserClient.getAppleUserInfo("Bearer ${tokenResponse.access_token}")
 
         //accountId 가져오기
-        val accountID: String = getAppleAccountId(tokenResponse.idToken)
+        val accountID: String = getAppleAccountId(tokenResponse.id_token)
         authRepository.findByAuthId(accountID)?.let { return it }
 
         //이름 생성
@@ -75,7 +75,6 @@ class AppleAuthService(
 
     @Throws(AuthenticationException::class)
     private fun requestAccessToken(authorizationCode: String): AppleTokenResponse = appleAuthTokenClient.getAccessToken(
-        grantType = "authorization_code",
         code = authorizationCode,
         clientId = clientId,
         clientSecret = clientSecret,

@@ -21,23 +21,27 @@ class JwtProvider(
 ) {
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
 
-    fun generateToken(user: Users): String {
+    fun generateToken(user: Users, expirationTime: Int = accessTokenExpireTime): String {
         val claims = mutableMapOf<String, String>()
-        claims["userId"] = user.getId()
+
+        val userId = user.getId()
+        claims["userId"] = userId
         claims["email"] = user.email
 
         val now = Date()
-        val expiration = Date(now.time + accessTokenExpireTime)
+        val expiration = Date(now.time + expirationTime)
         val key = Keys.hmacShaKeyFor(secret.toByteArray())
 
         return Jwts.builder()
             .claims(claims)
-            .subject(user.getId())
+            .subject(userId)
             .issuedAt(now)
             .expiration(expiration)
             .signWith(key, Jwts.SIG.HS512)
             .compact()
     }
+
+    fun generateExpiredToken(user: Users): String = generateToken(user, -1000)
 
     fun validateToken(token: String): Claims? {
         return try {
