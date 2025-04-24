@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import toyproject.startofconversation.auth.redis.RedisRefreshTokenRepository
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
+import toyproject.startofconversation.common.exception.SOCAuthException
 import toyproject.startofconversation.common.exception.SOCNotFoundException
 
 @Component
@@ -51,7 +52,7 @@ class JwtAuthFilter(
 
                 if (refreshClaims != null) {
                     val userId = refreshTokenRepository.findUserIdByToken(refreshToken)
-                        ?: throw RuntimeException("Invalid refresh token")
+                        ?: throw SOCAuthException("Invalid refresh token")
 
                     val user = usersRepository.findUsersById(userId) ?: throw SOCNotFoundException("User not found")
                     val newAccessToken = jwtProvider.generateToken(user)
@@ -65,7 +66,7 @@ class JwtAuthFilter(
                 }
             }
 
-            throw RuntimeException("Unauthorized")
+            throw SOCAuthException("Unauthorized")
 
         } catch (e: Exception) {
             response.status = HttpServletResponse.SC_UNAUTHORIZED

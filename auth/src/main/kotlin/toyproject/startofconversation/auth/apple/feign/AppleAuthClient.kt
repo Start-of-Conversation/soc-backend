@@ -1,4 +1,4 @@
-package toyproject.startofconversation.auth.apple
+package toyproject.startofconversation.auth.apple.feign
 
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
