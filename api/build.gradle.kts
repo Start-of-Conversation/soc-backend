@@ -1,6 +1,8 @@
 dependencies {
     implementation(project(":common"))
     implementation(project(":auth"))
+
+    //security
     implementation("org.springframework.security:spring-security-crypto")
 
     //swagger

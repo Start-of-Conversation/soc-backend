@@ -3,7 +3,6 @@ package toyproject.startofconversation.auth.service
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.transaction.Transactional
-import lombok.RequiredArgsConstructor
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
@@ -17,7 +16,6 @@ import toyproject.startofconversation.common.exception.SOCNotFoundException
 import toyproject.startofconversation.common.logger.logger
 
 @Service
-@RequiredArgsConstructor
 class AuthService(
     private val jwtProvider: JwtProvider,
     private val usersRepository: UsersRepository,

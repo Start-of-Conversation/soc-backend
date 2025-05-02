@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: api
+  profiles:
+    default: dev
+    include:
+      - common
+      - auth
+#logging:
+#  config: classpath:log4j2-dev.xml

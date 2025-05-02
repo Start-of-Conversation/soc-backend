@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import toyproject.startofconversation.auth.kakao.dto.KakaoProfile
 import toyproject.startofconversation.auth.kakao.dto.OAuthToken
 
-@FeignClient(name = "appleAuthTokenClient", url = "https://kauth.kakao.com")
+@FeignClient(name = "kakaoAuthTokenClient", url = "https://kauth.kakao.com")
 interface KakaoAuthTokenClient {
 
     @PostMapping("/oauth/token")

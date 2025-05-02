@@ -1,13 +1,9 @@
 package toyproject.startofconversation.common.base.value
 
-import lombok.Getter
-import lombok.RequiredArgsConstructor
 import org.springframework.http.HttpStatus
 import toyproject.startofconversation.common.exception.SOCException
 import java.util.*
 
-@Getter
-@RequiredArgsConstructor
 enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) {
 
     OK(200, HttpStatus.OK, "Ok"),
@@ -45,19 +41,14 @@ enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) 
                 .orElseGet { getCodeByHttpStatus(httpStatus) }
         }
 
-        private fun getCodeByHttpStatus(httpStatus: HttpStatus): Code {
-            var code: Code? = null
-
-            code = if (httpStatus.is4xxClientError) {
+        private fun getCodeByHttpStatus(httpStatus: HttpStatus): Code =
+            if (httpStatus.is4xxClientError) {
                 BAD_REQUEST
             } else if (httpStatus.is5xxServerError) {
                 INTERNAL_ERROR
             } else {
                 OK
             }
-
-            return code
-        }
     }
 
 

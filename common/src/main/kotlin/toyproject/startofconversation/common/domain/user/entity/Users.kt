@@ -2,8 +2,6 @@ package toyproject.startofconversation.common.domain.user.entity
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.Email
-import lombok.Builder
-import lombok.Getter
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.device.entity.Device
@@ -12,8 +10,6 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
-@Getter
-@Builder
 class Users(
 
     @Email
@@ -32,10 +28,10 @@ class Users(
 
     var deletedAt: LocalDateTime?,
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     val devices: MutableSet<Device> = mutableSetOf(),
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     val likes: MutableList<Likes> = mutableListOf()
 
 ) : BaseDateEntity(Domain.USER) {

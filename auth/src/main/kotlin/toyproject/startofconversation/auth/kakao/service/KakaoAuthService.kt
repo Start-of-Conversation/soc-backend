@@ -19,10 +19,10 @@ class KakaoAuthService(
     private val usersRepository: UsersRepository,
     private val authRepository: AuthRepository,
 ) {
-    @Value("\${social.kakao.client_id}")
+    @Value("\${social.kakao.client-id}")
     private lateinit var clientId: String
 
-    @Value("\${social.kakao.redirect_uri}")
+    @Value("\${social.kakao.redirect-uri}")
     private lateinit var redirect: String
 
     @Throws(AuthenticationException::class)

@@ -1,9 +1,10 @@
 package toyproject.startofconversation.auth.redis
 
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.stereotype.Repository
 import java.time.Duration
 
-
+@Repository
 class RedisRefreshTokenRepository(
     private val redisTemplate: RedisTemplate<String, String>
 ) {

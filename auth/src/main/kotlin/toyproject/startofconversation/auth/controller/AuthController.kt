@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import lombok.RequiredArgsConstructor
 import org.hibernate.annotations.Comment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,7 +25,6 @@ import toyproject.startofconversation.common.exception.SOCForbiddenException
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 class AuthController(
     private val socialLoginService: SocialLoginService,
     private val authService: AuthService

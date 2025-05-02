@@ -10,4 +10,10 @@ class AuthApplicationTests {
     fun contextLoads() {
     }
 
+    @Test
+    fun checkProperty() {
+        println(">> " + System.getProperty("social.apple.auth.public-key-url"))
+        println(">> " + System.getenv("SOCIAL_APPLE_AUTH_PUBLIC_KEY_URL"))
+    }
+
 }

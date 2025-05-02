@@ -1,8 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-
-    id("org.springframework.boot") version "3.3.3"
+    id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.6"
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
@@ -27,28 +26,26 @@ java {
     sourceCompatibility = JavaVersion.VERSION_21
 }
 
-allprojects {
+repositories {
+    mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+    maven { url = uri("https://repo.spring.io/release") }
+}
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.1")
+    }
+}
+
+allprojects {
     group = "toyproject.startofconversation"
     version = "0.0.1-SNAPSHOT"
 
     repositories {
         mavenCentral()
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
-            jvmTarget = "21"
-        }
-    }
-
-    tasks.withType<Test> {
-        useJUnitPlatform()
-    }
-
-    tasks.withType<Test>().configureEach {
-        useJUnitPlatform()
+        maven { url = uri("https://repo.spring.io/milestone") }
+        maven { url = uri("https://repo.spring.io/release") }
     }
 }
 
@@ -83,10 +80,6 @@ subprojects{
         implementation("org.springframework.boot:spring-boot-starter-data-redis")
         implementation("io.lettuce:lettuce-core")
 
-        //lombok
-        compileOnly("org.projectlombok:lombok")
-        kapt("org.projectlombok:lombok")
-
         //database
         runtimeOnly("org.postgresql:postgresql")
 
@@ -94,5 +87,16 @@ subprojects{
         testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
         testImplementation("io.kotest:kotest-assertions-core:5.9.1")
         testImplementation("io.kotest:kotest-property:5.9.1")
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "21"
+        }
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 }

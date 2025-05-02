@@ -1,16 +1,12 @@
 package toyproject.startofconversation.auth.domain.entity
 
 import jakarta.persistence.*
-import lombok.Builder
-import lombok.Getter
 import org.hibernate.annotations.Comment
 import toyproject.startofconversation.common.base.BaseCreatedEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.common.domain.user.entity.Users
 
-@Getter
-@Builder
 @Table(name = "user_auth")
 @Entity
 class Auth(
