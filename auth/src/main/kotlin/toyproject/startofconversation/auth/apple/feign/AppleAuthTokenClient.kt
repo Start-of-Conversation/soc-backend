@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import toyproject.startofconversation.auth.apple.dto.AppleTokenResponse
 
-@FeignClient(name = "appleAuthTokenClient", url = "\${social.apple.auth.token-url}")
+@FeignClient(name = "appleAuthTokenClient", url = "\${social.apple.auth.token-url:http://localhost:8080/fake-apple}")
 interface AppleAuthTokenClient {
 
     @PostMapping

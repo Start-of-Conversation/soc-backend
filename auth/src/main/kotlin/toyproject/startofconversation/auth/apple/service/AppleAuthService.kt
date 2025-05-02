@@ -1,7 +1,7 @@
 package toyproject.startofconversation.auth.apple.service
 
+import io.jsonwebtoken.Jwts
 import jakarta.transaction.Transactional
-import lombok.RequiredArgsConstructor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.apple.feign.AppleUserClient
@@ -16,11 +16,15 @@ import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.util.RandomNameMaker
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.security.PublicKey
+import java.security.KeyFactory
+import java.security.interfaces.RSAPrivateKey
+import java.util.*
 import javax.security.sasl.AuthenticationException
 
 @Service
-@RequiredArgsConstructor
 class AppleAuthService(
     private val appleUserClient: AppleUserClient,
     private val appleAuthClient: AppleAuthClient,
@@ -31,11 +35,14 @@ class AppleAuthService(
     private val usersRepository: UsersRepository
 ) {
 
-    @Value("\${social.apple.client-id}")
+    @Value("\${social.apple.aud}")
     private lateinit var clientId: String // 애플에서 발급받은 Client ID
 
-    @Value("\${social.apple.client-secret}")
-    private lateinit var clientSecret: String // 애플에서 발급받은 Client Secret
+    @Value("\${social.apple.team-id}")
+    private lateinit var teamId: String
+
+    @Value("\${social.apple.key.path}")
+    private lateinit var keyPath: String
 
     @Value("\${social.apple.redirect-uri}")
     private lateinit var redirectUri: String // 애플 개발자 콘솔에 설정된 Redirect URI
@@ -77,16 +84,31 @@ class AppleAuthService(
     private fun requestAccessToken(authorizationCode: String): AppleTokenResponse = appleAuthTokenClient.getAccessToken(
         code = authorizationCode,
         clientId = clientId,
-        clientSecret = clientSecret,
+        clientSecret = generateClientSecret(),
         redirectUri = redirectUri
     )
 
     private fun getAppleAccountId(identityToken: String): String {
         val headers: Map<String, String> = appleJwtProvider.parseHeaders(identityToken)
-        //Feign Client를 사용하여 공개키 요청
         val publicKey: PublicKey =
             applePublicKeyGenerator.generatePublicKey(headers, appleAuthClient.getAppleAuthPublicKey())
         return appleJwtProvider.getTokenClaims(identityToken, publicKey).subject
+    }
+
+    private fun generateClientSecret(): String = Jwts.builder()
+        .issuer(teamId)  // 팀 ID
+        .setAudience(clientId)  // 클라이언트 ID
+        .issuedAt(Date())  // 발급일
+        .expiration(Date(System.currentTimeMillis() + 6 * 30L * 24 * 60 * 60 * 1000))  // 만료일 (6개월)
+        .subject("appleAuth")  // 주체
+        .signWith(loadPrivateKey(), Jwts.SIG.RS256)  // 서명
+        .compact()
+
+    private fun loadPrivateKey(): RSAPrivateKey {
+        val keyBytes = Files.readAllBytes(Paths.get(keyPath))
+        val keySpec = java.security.spec.PKCS8EncodedKeySpec(keyBytes)
+        val keyFactory = KeyFactory.getInstance("RSA")
+        return keyFactory.generatePrivate(keySpec) as RSAPrivateKey
     }
 
 }

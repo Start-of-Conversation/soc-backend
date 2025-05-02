@@ -1,7 +1,9 @@
 package toyproject.startofconversation.auth.redis
 
+import org.springframework.stereotype.Service
 import java.time.Duration
 
+@Service
 class RedisRefreshTokenService(
     private val repository: RedisRefreshTokenRepository
 ) {

@@ -1,19 +1,17 @@
 package toyproject.startofconversation.auth.kakao.service
 
-import ch.qos.logback.core.status.ErrorStatus
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.AuthenticationException
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
-import toyproject.startofconversation.auth.kakao.dto.KakaoProfile
 import toyproject.startofconversation.auth.kakao.dto.OAuthToken
 import toyproject.startofconversation.auth.kakao.feign.KakaoAuthTokenClient
 import toyproject.startofconversation.auth.util.RandomNameMaker
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
-import toyproject.startofconversation.common.exception.SOCAuthException
+import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 
 @Service
 class KakaoAuthService(
@@ -21,10 +19,10 @@ class KakaoAuthService(
     private val usersRepository: UsersRepository,
     private val authRepository: AuthRepository,
 ) {
-    @Value("\${social.kakao.client_id}")
+    @Value("\${social.kakao.client-id}")
     private lateinit var clientId: String
 
-    @Value("\${social.kakao.redirect_uri}")
+    @Value("\${social.kakao.redirect-uri}")
     private lateinit var redirect: String
 
     @Throws(AuthenticationException::class)
@@ -46,8 +44,8 @@ class KakaoAuthService(
             if (kakaoProfile.kakao_account.has_email && kakaoProfile.kakao_account.is_email_verified) {
                 kakaoProfile.kakao_account.email  // 이메일이 존재하고, 검증된 경우 이메일 사용
             } else {
-                throw SOCAuthException("Email is required or not verified")  // 이메일이 없거나 검증되지 않은 경우 예외 처리
-            } ?: throw SOCAuthException("Email is null")
+                throw SOCUnauthorizedException("Email is required or not verified")  // 이메일이 없거나 검증되지 않은 경우 예외 처리
+            } ?: throw SOCUnauthorizedException("Email is null")
 
         //user 저장
         val user = usersRepository.findByEmail(email) ?: usersRepository.save(
