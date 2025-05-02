@@ -1,5 +1,6 @@
 package toyproject.startofconversation.api.controller
 
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -8,6 +9,7 @@ import toyproject.startofconversation.api.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.service.CardGroupService
 import toyproject.startofconversation.common.base.dto.ResponseData
 
+@Tag(name = "CardGroup")
 @RestController
 @RequestMapping("/api/cardgroup")
 class CardGroupController(

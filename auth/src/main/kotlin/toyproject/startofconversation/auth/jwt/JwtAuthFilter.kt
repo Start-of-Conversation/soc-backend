@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import toyproject.startofconversation.auth.redis.RedisRefreshTokenRepository
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
-import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.exception.SOCNotFoundException
+import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 
 @Component
 class JwtAuthFilter(
@@ -24,10 +24,10 @@ class JwtAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val path = request.requestURI
+        val requestURI = request.requestURI
 
         //whiteList에 있는 경로의 경우 인증 없이 패스
-        if (path.startsWith("/auth") || path.matches(Regex("/api/.*/public/.*"))) {
+        if (isPublicApi(requestURI) || isSwagger(requestURI)) {
             filterChain.doFilter(request, response)
             return
         }
@@ -73,6 +73,17 @@ class JwtAuthFilter(
             response.writer.write("Authentication failed: ${e.message}")
         }
     }
+
+    private fun isPublicApi(requestURI: String): Boolean =
+        requestURI.startsWith("/auth")
+            || requestURI.matches(Regex("/api/.*/public/.*"))
+            || requestURI.startsWith("/favicon.ico")
+
+    private fun isSwagger(requestURI: String): Boolean =
+        requestURI.startsWith("/swagger-ui")
+            || requestURI.startsWith("/v3/api-docs")
+            || requestURI.startsWith("/swagger-resources")
+            || requestURI.startsWith("/favicon.ico")
 
     private fun resolveAccessToken(request: HttpServletRequest): String? {
         val header = request.getHeader("Authorization")

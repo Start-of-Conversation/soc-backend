@@ -1,8 +1,10 @@
 package toyproject.startofconversation.auth.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.hibernate.annotations.Comment
@@ -23,6 +25,7 @@ import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
 import toyproject.startofconversation.common.exception.SOCForbiddenException
 
+@Tag(name = "Auth")
 @RestController
 @RequestMapping("/auth")
 class AuthController(
@@ -57,6 +60,7 @@ class AuthController(
     @Comment("apple 소셜 로그인")
     @PostMapping("/apple")
     fun loginAppleUser(
+        @Parameter(description = "Apple 로그인 후 받은 인가 코드 (authorizationCode)", required = true)
         @RequestParam("code") authorizationCode: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<Auth>> = loginUser(authorizationCode, response, AuthProvider.APPLE)
@@ -64,6 +68,7 @@ class AuthController(
     @Comment("kakao 소셜 로그인")
     @PostMapping("/kakao")
     fun loginKakaoUser(
+        @Parameter(description = "Kakao 로그인 후 받은 인가 코드 (accessCode)", required = true)
         @RequestParam("code") accessCode: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<Auth>> = loginUser(accessCode, response, AuthProvider.KAKAO)
