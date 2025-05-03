@@ -1,15 +1,20 @@
 package toyproject.startofconversation.auth.domain.entity
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.Email
 import org.hibernate.annotations.Comment
+import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.common.base.BaseCreatedEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.common.domain.user.entity.Users
 
 @Table(name = "user_auth")
 @Entity
 class Auth(
+
+    @Email
+    @Column(length = 30, nullable = false, unique = true)
+    val email: String,
 
     @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "user_id")

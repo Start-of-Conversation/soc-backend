@@ -4,11 +4,11 @@ import io.jsonwebtoken.Jwts
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import toyproject.startofconversation.auth.apple.feign.AppleUserClient
 import toyproject.startofconversation.auth.apple.ApplePublicKeyGenerator
 import toyproject.startofconversation.auth.apple.dto.AppleTokenResponse
 import toyproject.startofconversation.auth.apple.feign.AppleAuthClient
 import toyproject.startofconversation.auth.apple.feign.AppleAuthTokenClient
+import toyproject.startofconversation.auth.apple.feign.AppleUserClient
 import toyproject.startofconversation.auth.apple.provider.AppleJwtProvider
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
@@ -18,8 +18,8 @@ import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.security.PublicKey
 import java.security.KeyFactory
+import java.security.PublicKey
 import java.security.interfaces.RSAPrivateKey
 import java.util.*
 import javax.security.sasl.AuthenticationException
@@ -56,26 +56,27 @@ class AppleAuthService(
 
         //accountId 가져오기
         val accountID: String = getAppleAccountId(tokenResponse.id_token)
-        authRepository.findByAuthId(accountID)?.let { return it }
+        authRepository.findByAuthProviderAndAuthId(AuthProvider.APPLE, accountID)?.let { return it }
 
         //이름 생성
         var name = (appleUserInfo.name.lastName ?: "") + " " + (appleUserInfo.name.firstName ?: "")
         if (name.isBlank()) {
             name = RandomNameMaker.generate()
         }
+
+        // 아래는 최초 로그인일 때만 실행됨
+
         //이메일 처리
         val email = appleUserInfo.email ?: throw AuthenticationException("Email is required")
-
-        //user 저장
-        val user = usersRepository.findByEmail(email) ?: usersRepository.save(
-            Users.to(email = email, nickname = name)
-        )
+        val authByEmail = email.let { authRepository.findByEmail(it) }
+        val newUser = authByEmail?.user ?: usersRepository.save(Users(nickname = name))
 
         return authRepository.save(
             Auth(
-                user = user,
+                user = newUser,
+                email = email,
                 authProvider = AuthProvider.APPLE,
-                authId = appleUserInfo.sub
+                authId = accountID
             )
         )
     }

@@ -26,7 +26,6 @@ class JwtProvider(
 
         val userId = user.getId()
         claims["userId"] = userId
-        claims["email"] = user.email
 
         val now = Date()
         val expiration = Date(now.time + expirationTime)
