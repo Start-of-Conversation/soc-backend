@@ -1,12 +1,14 @@
 package toyproject.startofconversation.auth.apple.service
 
 import io.jsonwebtoken.Jwts
+import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.apple.dto.AppleOAuthProperties
 import toyproject.startofconversation.auth.apple.dto.AppleTokenResponse
 import toyproject.startofconversation.auth.apple.feign.AppleAuthTokenClient
 import toyproject.startofconversation.auth.apple.security.AppleKeyLoader
 import java.util.*
 
+@Service
 class AppleOAuthClientService(
     private val appleAuthTokenClient: AppleAuthTokenClient,
     private val appleOAuthProperties: AppleOAuthProperties,

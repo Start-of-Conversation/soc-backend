@@ -1,10 +1,12 @@
 package toyproject.startofconversation.auth.naver.service
 
+import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.naver.dto.NaverOAuthProperties
 import toyproject.startofconversation.auth.service.OAuthService
 import java.util.UUID
 
+@Service
 class NaverAuthService(
     private val naverOAuthProperties: NaverOAuthProperties
 ) : OAuthService {
