@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.context.annotation.Configuration
 
+// http://localhost:8080/swagger-ui/index.html
 @Configuration
 @SecurityScheme(
     name = "bearerAuth",

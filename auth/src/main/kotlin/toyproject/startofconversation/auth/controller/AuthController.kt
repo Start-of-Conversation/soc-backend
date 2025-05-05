@@ -2,6 +2,7 @@ package toyproject.startofconversation.auth.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -11,10 +12,13 @@ import org.hibernate.annotations.Comment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
@@ -29,18 +33,18 @@ import toyproject.startofconversation.common.exception.SOCForbiddenException
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    private val socialLoginService: SocialLoginService,
-    private val authService: AuthService
+    private val socialLoginService: SocialLoginService, private val authService: AuthService
 ) {
 
     @Operation(
         summary = "로그아웃",
-        responses = [
-            ApiResponse(responseCode = "200", description = "조회 성공"),
-            ApiResponse(responseCode = "401", description = "인증 실패"),
-            ApiResponse(responseCode = "403", description = "정지/탈퇴 유저"),
-            ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")
-        ],
+        responses = [ApiResponse(responseCode = "200", description = "조회 성공"), ApiResponse(
+            responseCode = "401",
+            description = "인증 실패"
+        ), ApiResponse(responseCode = "403", description = "정지/탈퇴 유저"), ApiResponse(
+            responseCode = "404",
+            description = "유저를 찾을 수 없음"
+        )],
         security = [SecurityRequirement(name = "bearerAuth")]
     )
     @SecurityRequirement(name = "bearerAuth")
@@ -57,27 +61,34 @@ class AuthController(
         return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
     }
 
-    @Comment("apple 소셜 로그인")
-    @PostMapping("/apple")
-    fun loginAppleUser(
-        @Parameter(description = "Apple 로그인 후 받은 인가 코드 (authorizationCode)", required = true)
-        @RequestParam("code") authorizationCode: String,
-        response: HttpServletResponse
-    ): ResponseEntity<ResponseData<Auth>> = loginUser(authorizationCode, response, AuthProvider.APPLE)
+    @Comment("소셜 로그인 요청하기 위한 파라미터")
+    @GetMapping("/params/{social}")
+    fun getOauthParams(
+        @Parameter(
+            description = "소셜 로그인 제공자 (가능한 값: kakao, apple, naver)",
+            example = "kakao",
+            schema = Schema(implementation = AuthProvider::class)
+        ) @PathVariable(required = true, name = "social") social: String
+    ): OAuthParameter = socialLoginService.getOauthParams(AuthProvider.from(social))
 
-    @Comment("kakao 소셜 로그인")
-    @PostMapping("/kakao")
-    fun loginKakaoUser(
-        @Parameter(description = "Kakao 로그인 후 받은 인가 코드 (accessCode)", required = true)
-        @RequestParam("code") accessCode: String,
-        response: HttpServletResponse
-    ): ResponseEntity<ResponseData<Auth>> = loginUser(accessCode, response, AuthProvider.KAKAO)
+    @Comment("소셜 로그인")
+    @PostMapping("/{social}")
+    fun loginUser(
+        @Parameter(
+            description = "소셜 로그인 제공자 (가능한 값: kakao, apple, naver)",
+            example = "kakao",
+            schema = Schema(implementation = AuthProvider::class)
+        ) @PathVariable("social") social: String,
+        @Parameter(
+            description = "로그인 후 받은 인가 코드 (authorizationCode and accessCode)",
+            required = true
+        ) @RequestParam("code") authorizationCode: String, response: HttpServletResponse
+    ): ResponseEntity<ResponseData<Auth>> = loginUser(authorizationCode, response, AuthProvider.from(social))
+
 
     @Comment("소셜 로그인 공통 로직")
     private fun loginUser(
-        authorizationCode: String,
-        response: HttpServletResponse,
-        authProvider: AuthProvider
+        authorizationCode: String, response: HttpServletResponse, authProvider: AuthProvider
     ): ResponseEntity<ResponseData<Auth>> {
         // 소셜 로그인 처리
         val auth = socialLoginService.handleSocialLogin(authorizationCode, authProvider)

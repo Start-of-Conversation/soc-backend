@@ -4,27 +4,39 @@ import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.AuthenticationException
 import org.springframework.stereotype.Service
+import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.kakao.dto.OAuthToken
 import toyproject.startofconversation.auth.kakao.feign.KakaoAuthTokenClient
+import toyproject.startofconversation.auth.service.OAuthService
 import toyproject.startofconversation.auth.util.RandomNameMaker
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
+import java.util.*
 
 @Service
 class KakaoAuthService(
     private val kakaoAuthTokenClient: KakaoAuthTokenClient,
     private val usersRepository: UsersRepository,
     private val authRepository: AuthRepository,
-) {
+) : OAuthService {
+
     @Value("\${social.kakao.client-id}")
     private lateinit var clientId: String
 
     @Value("\${social.kakao.redirect-uri}")
-    private lateinit var redirect: String
+    private lateinit var redirectUri: String
+
+    override fun getParameters(): OAuthParameter = OAuthParameter(
+        clientId = clientId,
+        redirectUri = redirectUri,
+        responseType = "code",
+        scope = "profile_nickname profile_image account_email",
+        state = UUID.randomUUID().toString() // 필요에 따라 사용
+    )
 
     @Transactional
     @Throws(AuthenticationException::class)
@@ -69,9 +81,9 @@ class KakaoAuthService(
     }
 
     @Throws(AuthenticationException::class)
-    fun requestToken(accessCode: String): OAuthToken = kakaoAuthTokenClient.getAccessToken(
+    private fun requestToken(accessCode: String): OAuthToken = kakaoAuthTokenClient.getAccessToken(
         clientId = clientId,
-        redirectUri = redirect,
+        redirectUri = redirectUri,
         code = accessCode
     )
 

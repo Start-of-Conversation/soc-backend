@@ -12,7 +12,6 @@ import toyproject.startofconversation.auth.redis.RedisRefreshTokenService
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
-import toyproject.startofconversation.common.exception.SOCNotFoundException
 import toyproject.startofconversation.common.logger.logger
 
 @Service
@@ -61,7 +60,7 @@ class AuthService(
 
     @Transactional
     fun deleteRefreshToken(request: HttpServletRequest): Cookie {
-        val refreshToken = getCookieValue(request, KEY)
+        val refreshToken = getCookieValue(request)
 
         if (refreshToken.isNullOrBlank()) {
             log.warn("Refresh token not found in request cookies.")
@@ -77,34 +76,7 @@ class AuthService(
         return refreshTokenCookie
     }
 
-    fun validateUserIdInToken(accessToken: String, userId: String): Boolean =
-        jwtProvider.validateToken(accessToken)
-            .takeIf { it != null }
-            ?.let {
-                if (it["userId"] == userId) return true
-                else throw SOCUnauthorizedException("User ID mismatch: Token does not match provided userId")
-            }
-            ?: false
-
-    fun validateRefreshTokenAndCreateAccessToken(refreshToken: String, userId: String): HttpHeaders {
-        val user = usersRepository.findByIdOrNull(userId)
-            ?: throw SOCNotFoundException("User ID mismatch: Token does not match provided userId")
-
-        val userId = redisService.validateToken(refreshToken) ?: throw SOCUnauthorizedException("No cookie found")
-
-        if (user.getId() != userId) throw SOCUnauthorizedException("User ID does not match provided userId")
-
-        return generateToken(user)
-    }
-
-    fun getCookieValue(request: HttpServletRequest, cookieName: String): String? {
-        val cookies = request.cookies
-        cookies?.forEach {
-            if (it.name == cookieName) {
-                return it.value
-            }
-        }
-        return null
-    }
+    private fun getCookieValue(request: HttpServletRequest): String? =
+        request.cookies?.firstOrNull { it.name == KEY }?.value
 
 }

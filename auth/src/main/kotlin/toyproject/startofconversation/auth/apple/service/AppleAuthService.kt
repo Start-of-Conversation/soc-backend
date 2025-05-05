@@ -10,9 +10,11 @@ import toyproject.startofconversation.auth.apple.feign.AppleAuthClient
 import toyproject.startofconversation.auth.apple.feign.AppleAuthTokenClient
 import toyproject.startofconversation.auth.apple.feign.AppleUserClient
 import toyproject.startofconversation.auth.apple.provider.AppleJwtProvider
+import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
+import toyproject.startofconversation.auth.service.OAuthService
 import toyproject.startofconversation.auth.util.RandomNameMaker
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
@@ -25,7 +27,7 @@ import java.util.*
 import javax.security.sasl.AuthenticationException
 
 @Service
-class AppleAuthService(
+class AppleAuthService (
     private val appleUserClient: AppleUserClient,
     private val appleAuthClient: AppleAuthClient,
     private val appleAuthTokenClient: AppleAuthTokenClient,
@@ -33,7 +35,7 @@ class AppleAuthService(
     private val appleJwtProvider: AppleJwtProvider,
     private val authRepository: AuthRepository,
     private val usersRepository: UsersRepository
-) {
+) : OAuthService {
 
     @Value("\${social.apple.aud}")
     private lateinit var clientId: String // 애플에서 발급받은 Client ID
@@ -46,6 +48,14 @@ class AppleAuthService(
 
     @Value("\${social.apple.redirect-uri}")
     private lateinit var redirectUri: String // 애플 개발자 콘솔에 설정된 Redirect URI
+
+    override fun getParameters() : OAuthParameter = OAuthParameter(
+            clientId = clientId,
+            redirectUri = redirectUri,
+            responseType = "code",
+            scope = "name email",
+            responseMode = "form_post"
+        )
 
     @Transactional
     @Throws(AuthenticationException::class)
