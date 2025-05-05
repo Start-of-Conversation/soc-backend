@@ -1,13 +1,17 @@
-package toyproject.startofconversation.auth.apple
+package toyproject.startofconversation.auth.apple.security
 
 import org.springframework.stereotype.Component
 import toyproject.startofconversation.auth.apple.dto.ApplePublicKey
 import toyproject.startofconversation.auth.apple.dto.ApplePublicKeyResponse
 import java.io.IOException
 import java.math.BigInteger
-import java.security.*
+import java.security.InvalidKeyException
+import java.security.KeyFactory
+import java.security.KeyStoreException
+import java.security.NoSuchAlgorithmException
+import java.security.PublicKey
 import java.security.spec.RSAPublicKeySpec
-import java.util.*
+import java.util.Base64
 import javax.naming.AuthenticationException
 
 @Component
