@@ -1,82 +1,70 @@
 package toyproject.startofconversation.auth.service
 
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.transaction.Transactional
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpHeaders
+import org.hibernate.annotations.Comment
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import toyproject.startofconversation.auth.domain.entity.Auth
+import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
-import toyproject.startofconversation.auth.jwt.JwtProvider
-import toyproject.startofconversation.auth.redis.RedisRefreshTokenService
-import toyproject.startofconversation.common.domain.user.entity.Users
-import toyproject.startofconversation.common.domain.user.repository.UsersRepository
-import toyproject.startofconversation.common.exception.SOCUnauthorizedException
+import toyproject.startofconversation.auth.jwt.service.JwtService
+import toyproject.startofconversation.auth.util.SecurityUtil
+import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.ResponseInfo
+import toyproject.startofconversation.common.base.value.Code
+import toyproject.startofconversation.common.exception.SOCForbiddenException
 import toyproject.startofconversation.common.logger.logger
 
 @Service
 class AuthService(
-    private val jwtProvider: JwtProvider,
-    private val usersRepository: UsersRepository,
-    private val redisService: RedisRefreshTokenService,
     private val authRepository: AuthRepository,
+    private val socialLoginService: SocialLoginService,
+    private val jwtService: JwtService
 ) {
-    private val KEY = "refreshToken"
     private val log = logger<AuthService>()
-
-    fun generateToken(user: Users): HttpHeaders {
-        val accessToken = jwtProvider.generateToken(user)
-        val responseHeaders = HttpHeaders().apply {
-            set("Authorization", "Bearer $accessToken") // 헤더에 토큰을 추가
-        }
-
-        return responseHeaders
-    }
-
-    fun generateRefreshToken(user: Users): Cookie {
-        val refreshToken = jwtProvider.generateRefreshToken(user)
-        redisService.issueRefreshToken(refreshToken, user.getId())
-
-        val cookie = Cookie(KEY, refreshToken)
-        cookie.isHttpOnly = true
-        cookie.secure = true
-        cookie.path = "/"
-        cookie.maxAge = 60 * 60 * 24 * 14 // 14일
-
-        return cookie
-    }
-
-    fun generateExpiredAccessToken(userId: String): HttpHeaders {
-        val user = usersRepository.findByIdOrNull(userId) ?: throw SOCUnauthorizedException("No user found")
-        val expiredToken = jwtProvider.generateExpiredToken(user)
-        val responseHeaders = HttpHeaders().apply {
-            set("Authorization", "Bearer $expiredToken") // 헤더에 토큰을 추가
-        }
-
-        return responseHeaders
-    }
 
     fun deleteAuth(userId: String) = authRepository.deleteById(userId)
 
-    @Transactional
-    fun deleteRefreshToken(request: HttpServletRequest): Cookie {
-        val refreshToken = getCookieValue(request)
+    @Comment("소셜 로그인 공통 로직")
+    fun loginUser(
+        authorizationCode: String,
+        response: HttpServletResponse,
+        authProvider: AuthProvider
+    ): ResponseEntity<ResponseData<Auth>> {
+        // 소셜 로그인 처리
+        val auth = socialLoginService.handleSocialLogin(authorizationCode, authProvider)
 
-        if (refreshToken.isNullOrBlank()) {
-            log.warn("Refresh token not found in request cookies.")
-        } else {
-            redisService.revokeToken(refreshToken)
-            log.info("Refresh token successfully revoked.")
+        if (auth.user.isDeleted) {
+            throw SOCForbiddenException("User already deleted")
         }
 
-        val refreshTokenCookie = Cookie("refreshToken", null)
-        refreshTokenCookie.maxAge = 0
-        refreshTokenCookie.path = "/"
+        // 토큰 생성
+        val headers = jwtService.generateToken(auth.user)
 
-        return refreshTokenCookie
+        // refreshToken 쿠키 생성
+        val refreshTokenCookie = jwtService.generateRefreshToken(auth.user)
+
+        // 쿠키 추가
+        response.addCookie(refreshTokenCookie)
+
+        // 성공 응답 반환
+        return ResponseEntity(ResponseData.to(auth), headers, HttpStatus.OK)
     }
 
-    private fun getCookieValue(request: HttpServletRequest): String? =
-        request.cookies?.firstOrNull { it.name == KEY }?.value
+    @Transactional
+    fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> {
+        val refreshToken = jwtService.deleteRefreshToken(request)
+        response.addCookie(refreshToken)
 
+        SecurityContextHolder.clearContext()
+
+        val userId = SecurityUtil.getCurrentUserId()
+        val headers = jwtService.generateExpiredAccessToken(userId)
+
+        return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
+    }
 }
