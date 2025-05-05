@@ -1,13 +1,13 @@
 package toyproject.startofconversation.auth.kakao.service
 
 import jakarta.transaction.Transactional
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.AuthenticationException
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
+import toyproject.startofconversation.auth.kakao.dto.KakaoOAuthProperties
 import toyproject.startofconversation.auth.kakao.dto.OAuthToken
 import toyproject.startofconversation.auth.kakao.feign.KakaoAuthTokenClient
 import toyproject.startofconversation.auth.service.OAuthService
@@ -22,17 +22,12 @@ class KakaoAuthService(
     private val kakaoAuthTokenClient: KakaoAuthTokenClient,
     private val usersRepository: UsersRepository,
     private val authRepository: AuthRepository,
+    private val kakaoOAuthProperties: KakaoOAuthProperties
 ) : OAuthService {
 
-    @Value("\${social.kakao.client-id}")
-    private lateinit var clientId: String
-
-    @Value("\${social.kakao.redirect-uri}")
-    private lateinit var redirectUri: String
-
     override fun getParameters(): OAuthParameter = OAuthParameter(
-        clientId = clientId,
-        redirectUri = redirectUri,
+        clientId = kakaoOAuthProperties.clientId,
+        redirectUri = kakaoOAuthProperties.redirectUri,
         responseType = "code",
         scope = "profile_nickname profile_image account_email",
         state = UUID.randomUUID().toString() // 필요에 따라 사용
@@ -82,8 +77,8 @@ class KakaoAuthService(
 
     @Throws(AuthenticationException::class)
     private fun requestToken(accessCode: String): OAuthToken = kakaoAuthTokenClient.getAccessToken(
-        clientId = clientId,
-        redirectUri = redirectUri,
+        clientId = kakaoOAuthProperties.clientId,
+        redirectUri = kakaoOAuthProperties.redirectUri,
         code = accessCode
     )
 
