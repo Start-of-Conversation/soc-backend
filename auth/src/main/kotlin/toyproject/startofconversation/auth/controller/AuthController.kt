@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.hibernate.annotations.Comment
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
@@ -65,6 +66,6 @@ class AuthController(
         ) @RequestParam("code") authorizationCode: String,
         @RequestParam(required = false, defaultValue = "state") state: String,
         response: HttpServletResponse
-    ): ResponseEntity<ResponseData<Auth>> =
+    ): ResponseEntity<ResponseData<AuthResponse>> =
         authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
 }

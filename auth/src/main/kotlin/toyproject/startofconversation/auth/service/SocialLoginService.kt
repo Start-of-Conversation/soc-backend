@@ -8,7 +8,6 @@ import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.*
 import toyproject.startofconversation.auth.kakao.service.KakaoAuthService
 import toyproject.startofconversation.auth.naver.service.NaverAuthService
-import toyproject.startofconversation.common.exception.SOCNotFoundException
 
 @Service
 class SocialLoginService(
@@ -21,7 +20,6 @@ class SocialLoginService(
         APPLE -> appleAuthService.getParameters()
         KAKAO -> kakaoAuthService.getParameters()
         NAVER -> naverAuthService.getParameters()
-        else -> throw SOCNotFoundException("Unsupported auth provider: $provider")
     }
 
     // 공통된 소셜 로그인 처리 로직
@@ -34,7 +32,6 @@ class SocialLoginService(
             APPLE -> appleAuthService.loadUser(code)
             KAKAO -> kakaoAuthService.loadUser(code)
             NAVER -> naverAuthService.loadUser(code, state)
-            else -> throw SOCNotFoundException("Unsupported auth provider: $authProvider")
         }
         return auth
     }

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
-import toyproject.startofconversation.auth.domain.entity.Auth
+import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.jwt.service.JwtService
@@ -35,7 +35,7 @@ class AuthService(
         state: String,
         response: HttpServletResponse,
         authProvider: AuthProvider
-    ): ResponseEntity<ResponseData<Auth>> {
+    ): ResponseEntity<ResponseData<AuthResponse>> {
         // 소셜 로그인 처리
         val auth = socialLoginService.handleSocialLogin(authorizationCode, state, authProvider)
 
@@ -53,7 +53,7 @@ class AuthService(
         response.addCookie(refreshTokenCookie)
 
         // 성공 응답 반환
-        return ResponseEntity(ResponseData.to(auth), headers, HttpStatus.OK)
+        return ResponseEntity(ResponseData.to(AuthResponse.from(auth)), headers, HttpStatus.OK)
     }
 
     @Transactional
