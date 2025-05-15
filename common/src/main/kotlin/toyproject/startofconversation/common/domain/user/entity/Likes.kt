@@ -20,4 +20,4 @@ class Likes(
     @JoinColumn(name = "cardgroup_id", referencedColumnName = "id")
     val cardGroup: CardGroup
 
-) : BaseCreatedEntity(Domain.Likes)
+) : BaseCreatedEntity(Domain.LIKES)

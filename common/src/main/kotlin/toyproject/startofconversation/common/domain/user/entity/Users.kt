@@ -1,7 +1,6 @@
 package toyproject.startofconversation.common.domain.user.entity
 
 import jakarta.persistence.*
-import jakarta.validation.constraints.Email
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.device.entity.Device
@@ -28,6 +27,10 @@ class Users(
     val devices: MutableSet<Device> = mutableSetOf(),
 
     @OneToMany(mappedBy = "user")
-    val likes: MutableList<Likes> = mutableListOf()
+    val likes: MutableList<Likes> = mutableListOf(),
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    var marketing: Marketing? = null
 
 ) : BaseDateEntity(Domain.USER)
