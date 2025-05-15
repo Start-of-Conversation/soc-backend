@@ -24,7 +24,7 @@ import toyproject.startofconversation.common.domain.user.entity.Users
 import kotlin.test.Test
 
 @ExtendWith(MockitoExtension::class)
-class KakaoSocialLoginTest {
+class AppleSocialLoginTest {
 
     @InjectMocks
     private lateinit var authController: AuthController
@@ -43,32 +43,23 @@ class KakaoSocialLoginTest {
     }
 
     @Test
-    fun `카카오 소셜 로그인 성공`() {
-        // given
-        val authorizationCode = "dummy-auth-code"
+    fun `애플 소셜 로그인 성공`() {
         val mockAuth = Auth(
-            user = Users(nickname = "테스트유저"),
-            email = "test@example.com",
-            authProvider = AuthProvider.KAKAO,
-            authId = "provider-id"
+            user = Users(nickname = "AppleUser"),
+            email = "apple@example.com",
+            authProvider = AuthProvider.APPLE,
+            authId = "appleId"
         )
 
-        whenever(authService.loginUser(any(), any(), any(), eq(AuthProvider.KAKAO)))
+        whenever(authService.loginUser(any(), any(), any(), eq(AuthProvider.APPLE)))
             .thenReturn(ResponseEntity.ok(ResponseData.to(AuthResponse.from(mockAuth))))
 
-        // when + then
         mockMvc.perform(
-            post("/auth/kakao")
-                .param("code", authorizationCode)
+            post("/auth/apple")
+                .param("code", "dummy_code")
         )
-//            .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.data.email").value("test@example.com"))
-    }
-
-    @Test
-    fun `카카오 소셜 로그인 실패 - code 없음`() {
-        mockMvc.perform(post("/auth/kakao"))
-            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.data.email").value("apple@example.com"))
+            .andExpect(jsonPath("$.data.nickname").value("AppleUser"))
     }
 }
