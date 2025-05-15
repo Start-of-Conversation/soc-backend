@@ -12,10 +12,6 @@ import java.time.LocalDateTime
 @Table(name = "users")
 class Users(
 
-    @Email
-    @Column(length = 30, nullable = false, unique = true)
-    val email: String,
-
     @Column(length = 20, nullable = false)
     var nickname: String,
 
@@ -26,7 +22,7 @@ class Users(
 
     var isDeleted: Boolean = false,
 
-    var deletedAt: LocalDateTime?,
+    var deletedAt: LocalDateTime? = null,
 
     @OneToMany(mappedBy = "user")
     val devices: MutableSet<Device> = mutableSetOf(),
@@ -34,12 +30,4 @@ class Users(
     @OneToMany(mappedBy = "user")
     val likes: MutableList<Likes> = mutableListOf()
 
-) : BaseDateEntity(Domain.USER) {
-    companion object {
-        fun to(email: String, nickname: String): Users = Users(
-            email = email,
-            nickname = nickname,
-            deletedAt = null
-        )
-    }
-}
+) : BaseDateEntity(Domain.USER)
