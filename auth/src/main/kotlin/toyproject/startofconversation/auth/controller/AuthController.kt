@@ -62,7 +62,9 @@ class AuthController(
         @Parameter(
             description = "로그인 후 받은 인가 코드 (authorizationCode and accessCode)",
             required = true
-        ) @RequestParam("code") authorizationCode: String, response: HttpServletResponse
+        ) @RequestParam("code") authorizationCode: String,
+        @RequestParam(required = false, defaultValue = "state") state: String,
+        response: HttpServletResponse
     ): ResponseEntity<ResponseData<Auth>> =
-        authService.loginUser(authorizationCode, response, AuthProvider.from(social))
+        authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
 }

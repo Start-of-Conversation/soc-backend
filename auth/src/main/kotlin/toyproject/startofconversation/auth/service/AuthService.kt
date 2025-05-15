@@ -32,11 +32,12 @@ class AuthService(
     @Comment("소셜 로그인 공통 로직")
     fun loginUser(
         authorizationCode: String,
+        state: String,
         response: HttpServletResponse,
         authProvider: AuthProvider
     ): ResponseEntity<ResponseData<Auth>> {
         // 소셜 로그인 처리
-        val auth = socialLoginService.handleSocialLogin(authorizationCode, authProvider)
+        val auth = socialLoginService.handleSocialLogin(authorizationCode, state, authProvider)
 
         if (auth.user.isDeleted) {
             throw SOCForbiddenException("User already deleted")

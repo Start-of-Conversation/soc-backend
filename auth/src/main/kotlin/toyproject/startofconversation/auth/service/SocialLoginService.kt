@@ -27,11 +27,13 @@ class SocialLoginService(
     // 공통된 소셜 로그인 처리 로직
     fun handleSocialLogin(
         code: String,
+        state: String,
         authProvider: AuthProvider
     ): Auth {
         val auth = when (authProvider) {
             APPLE -> appleAuthService.loadUser(code)
             KAKAO -> kakaoAuthService.loadUser(code)
+            NAVER -> naverAuthService.loadUser(code, state)
             else -> throw SOCNotFoundException("Unsupported auth provider: $authProvider")
         }
         return auth
