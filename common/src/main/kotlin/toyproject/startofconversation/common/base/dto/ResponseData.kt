@@ -4,14 +4,14 @@ import toyproject.startofconversation.common.base.value.Code
 
 open class ResponseData<T> : ResponseInfo {
 
-    private val wrapper: T?
+    val data: T?
 
-    constructor(wrapper: T) : super(Code.OK.toString(), Code.OK.message) {
-        this.wrapper = wrapper
+    constructor(data: T) : super(Code.OK.toString(), Code.OK.message) {
+        this.data = data
     }
 
-    constructor(message: String, wrapper: T) : super(Code.OK.toString(), message) {
-        this.wrapper = wrapper
+    constructor(message: String, data: T) : super(Code.OK.toString(), message) {
+        this.data = data
     }
 
     companion object {
@@ -24,8 +24,8 @@ open class ResponseData<T> : ResponseInfo {
             return ResponseData(message.orEmpty(), null)
         }
 
-        fun <T> to(wrapper: T): ResponseData<T> {
-            return ResponseData(wrapper)
+        fun <T> to(data: T): ResponseData<T> {
+            return ResponseData(data)
         }
     }
 

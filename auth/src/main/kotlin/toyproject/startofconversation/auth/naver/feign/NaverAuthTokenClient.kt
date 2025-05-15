@@ -10,7 +10,7 @@ import toyproject.startofconversation.auth.naver.dto.NaverTokenRequest
 
 @FeignClient(
     name = "naverAuthTokenClient",
-    url = "\${social.naver.path.tokenUrl}",
+    url = "\${social.naver.path.tokenUrl:http://localhost:8080/fake-naver-token}",
     configuration = [FeignFormSupportConfig::class]
 )
 interface NaverAuthTokenClient {

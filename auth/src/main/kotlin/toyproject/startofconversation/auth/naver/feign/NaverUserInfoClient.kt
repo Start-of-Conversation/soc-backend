@@ -8,7 +8,7 @@ import toyproject.startofconversation.auth.naver.dto.NaverUserInfoResponse
 
 @FeignClient(
     name = "naverUserInfoClient",
-    url = "\${social.naver.path.userInfoUrl}"
+    url = "\${social.naver.path.userInfoUrl:http://localhost:8080/fake-naver-token}"
 )
 interface NaverUserInfoClient {
     @PostMapping(
