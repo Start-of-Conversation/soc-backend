@@ -1,4 +1,4 @@
-package toyproject.startofconversation.api.dto
+package toyproject.startofconversation.api.cardGroup.dto
 
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 

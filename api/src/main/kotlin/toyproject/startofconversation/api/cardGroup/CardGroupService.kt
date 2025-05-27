@@ -1,8 +1,8 @@
-package toyproject.startofconversation.api.service
+package toyproject.startofconversation.api.cardGroup
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import toyproject.startofconversation.api.dto.CardGroupInfoResponse
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.exception.SOCNotFoundException
@@ -13,6 +13,6 @@ class CardGroupService(
 ) {
     fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> {
         val cardGroup = cardGroupRepository.findByIdOrNull(id) ?: throw SOCNotFoundException("$id is not found")
-        return ResponseData.to(CardGroupInfoResponse.from(cardGroup))
+        return ResponseData.Companion.to(CardGroupInfoResponse.Companion.from(cardGroup))
     }
 }

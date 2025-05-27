@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @EntityScan(basePackages = [
-    "toyproject.startofconversation.common",
+    "toyproject.startofconversation.common.domain",
     "toyproject.startofconversation.auth.domain"
 ])
 class ApiDBConfig

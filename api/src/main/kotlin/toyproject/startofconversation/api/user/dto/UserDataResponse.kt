@@ -1,7 +1,6 @@
-package toyproject.startofconversation.api.dto
+package toyproject.startofconversation.api.user.dto
 
 import toyproject.startofconversation.common.domain.user.entity.Users
-import java.time.LocalDateTime
 
 data class UserDataResponse(
     val id: String,

@@ -30,9 +30,9 @@ class CardGroup(
     val user: Users,
 
     @OneToMany(mappedBy = "cardGroup")
-    val cards: MutableSet<Card> = mutableSetOf(),
+    val cards: Set<Card> = emptySet(),
 
     @OneToMany(mappedBy = "cardGroup")
-    val likes: MutableSet<Likes> = mutableSetOf()
+    val likes: Set<Likes> = emptySet()
 
 ) : BaseDateEntity(Domain.CARD_GROUP)

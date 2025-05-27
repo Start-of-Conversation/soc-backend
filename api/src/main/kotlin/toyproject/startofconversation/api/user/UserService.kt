@@ -1,8 +1,8 @@
-package toyproject.startofconversation.api.service
+package toyproject.startofconversation.api.user
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import toyproject.startofconversation.api.dto.UserDataResponse
+import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
@@ -28,14 +28,14 @@ class UserService(
 
         authService.deleteAuth(id)
 
-        return ResponseData.to("success", true)
+        return ResponseData.Companion.to("success", true)
     }
 
     fun findUserById(id: String): ResponseData<UserDataResponse> {
         val user = usersRepository.findByIdOrNull(id)
             ?: throw SOCNotFoundException("$id is not found")
 
-        return ResponseData.to(UserDataResponse.to(user))
+        return ResponseData.Companion.to(UserDataResponse.Companion.to(user))
     }
 
 }
