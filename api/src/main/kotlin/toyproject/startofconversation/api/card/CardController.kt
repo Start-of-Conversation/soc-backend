@@ -3,12 +3,11 @@ package toyproject.startofconversation.api.card
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.web.PageableDefault
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.api.card.dto.CardResponse
+import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.common.base.dto.ResponseData
 
 @RestController
 @RequestMapping("/api/card")
@@ -26,11 +25,13 @@ class CardController(
      *      결정 필요
      *
      */
-    @GetMapping("/{id}")
+    @GetMapping("/public/{id}")
     fun getCards(
         @PathVariable("id") cardGroupId: String,
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
     ): PageResponseData<CardResponse> =
         cardService.getCards(cardGroupId, pageable)
 
+    @PostMapping("/public/add")
+    fun addCard(@RequestBody request: CardSaveRequest): ResponseData<Boolean> = cardService.addCard(request)
 }
