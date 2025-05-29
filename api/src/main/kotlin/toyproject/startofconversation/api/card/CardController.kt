@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.api.card.dto.CardListResponse
+import toyproject.startofconversation.api.card.dto.CardResponse
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -32,6 +33,6 @@ class CardController(
     ): PageResponseData<CardListResponse> =
         cardService.getCards(cardGroupId, pageable)
 
-    @PostMapping("/public/add")
-    fun addCard(@RequestBody request: CardSaveRequest): ResponseData<Boolean> = cardService.addCard(request)
+    @PostMapping("/add")
+    fun addCard(@RequestBody request: CardSaveRequest): ResponseData<CardResponse> = cardService.addCard(request)
 }
