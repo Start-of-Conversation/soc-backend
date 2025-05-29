@@ -14,4 +14,6 @@ interface CardRepository : JpaRepository<Card, String> {
 
     fun findAllByCardGroup(cardGroup: CardGroup): List<Card>
 
+    fun countByCardGroup(cardGroup: CardGroup): Long
+
 }

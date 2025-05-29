@@ -16,6 +16,8 @@ enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) 
     FORBIDDEN(403, HttpStatus.FORBIDDEN, "Access denied"),
     NOT_FOUND(404, HttpStatus.NOT_FOUND, "Resource not found"),
 
+    LOCK_CONFLICT(409, HttpStatus.CONFLICT, "Failed to acquire lock due to concurrent operation"),
+
     //server
     INTERNAL_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
     DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Database access error");
