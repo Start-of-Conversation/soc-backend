@@ -9,10 +9,10 @@ open class BaseEntity(
     private val domain: Domain
 ) {
 
-    @Id
     @Column(name = "id", updatable = false, unique = true, nullable = false, length = 50)
     private val id: String = createId();
 
+    @Id
     fun getId(): String = id
 
     override fun equals(other: Any?): Boolean {
