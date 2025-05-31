@@ -17,7 +17,7 @@ class LockConfig {
         lockProperties: LockProperties
     ): LockService {
         return if (lockProperties.enabled) {
-            LettuceLockService(redisTemplate)
+            LettuceLockService(redisTemplate, lockProperties)
         } else {
             NoOpLockService()
         }

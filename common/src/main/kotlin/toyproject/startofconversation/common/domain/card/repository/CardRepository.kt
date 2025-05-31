@@ -10,10 +10,8 @@ import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 @Repository
 interface CardRepository : JpaRepository<Card, String> {
 
-    fun findAllByCardGroupId(pageable: Pageable, id: String): Page<Card>
+    fun findAllByCardGroups(pageable: Pageable, cardGroup: CardGroup): Page<Card>
 
-    fun findAllByCardGroup(cardGroup: CardGroup): List<Card>
-
-    fun countByCardGroup(cardGroup: CardGroup): Long
+    fun countByCardGroupsContains(cardGroup: CardGroup): Long
 
 }

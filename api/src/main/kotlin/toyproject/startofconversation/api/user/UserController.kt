@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.user.dto.UserDataResponse
-import toyproject.startofconversation.api.user.UserService
 import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 
@@ -30,7 +29,7 @@ class UserController(
         ]
     )
     @GetMapping("/mypage")
-    fun getUserInfo(): ResponseData<UserDataResponse> = usersService.findUserById(SecurityUtil.getCurrentUserId())
+    fun getUserInfo(): ResponseData<UserDataResponse> = usersService.searchUserById(SecurityUtil.getCurrentUserId())
 
     @Operation(
         summary = "회원 탈퇴",

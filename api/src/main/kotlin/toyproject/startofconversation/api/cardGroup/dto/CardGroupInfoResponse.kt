@@ -12,7 +12,7 @@ data class CardGroupInfoResponse(
     companion object {
         fun from(cardGroup: CardGroup): CardGroupInfoResponse {
             return CardGroupInfoResponse(
-                id = cardGroup.getId().toString(),
+                id = cardGroup.getId(),
                 name = cardGroup.cardGroupName,
                 summary = cardGroup.cardGroupSummary,
                 description = cardGroup.cardGroupDescription,

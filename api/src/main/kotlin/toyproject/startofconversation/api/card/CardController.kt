@@ -4,10 +4,13 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.*
+import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.card.dto.CardListResponse
 import toyproject.startofconversation.api.card.dto.CardResponse
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
+import toyproject.startofconversation.api.card.dto.CardUpdateRequest
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @RestController
@@ -26,13 +29,24 @@ class CardController(
      *      결정 필요
      *
      */
-    @GetMapping("/public/{id}")
+    @GetMapping("/public")
     fun getCards(
-        @PathVariable("id") cardGroupId: String,
+        @RequestParam("id") cardGroupId: String,
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
-    ): PageResponseData<CardListResponse> =
-        cardService.getCards(cardGroupId, pageable)
+    ): PageResponseData<CardListResponse> = cardService.getCards(cardGroupId, pageable)
 
     @PostMapping("/add")
-    fun addCard(@RequestBody request: CardSaveRequest): ResponseData<CardResponse> = cardService.addCard(request)
+    fun addCard(@RequestBody request: CardSaveRequest): ResponseData<CardResponse> = cardService.addCard(
+        request = request,
+        userId = SecurityUtil.getCurrentUserId()
+    )
+
+    @PatchMapping("/{id}")
+    fun updateCard(
+        @PathVariable("id") cardId: String,
+        @RequestBody request: CardUpdateRequest
+    ): ResponseData<CardDto> = cardService.updateCard(
+        cardId = cardId,
+        cardUpdateRequest = request
+    )
 }

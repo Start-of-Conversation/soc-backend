@@ -1,3 +1,3 @@
 package toyproject.startofconversation.api.card.dto
 
-data class CardSaveRequest(val cardGroupID: String, val question: String)
+data class CardSaveRequest(val cardGroupId: String, val question: String)

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
-import toyproject.startofconversation.api.cardGroup.CardGroupService
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @Tag(name = "CardGroup")

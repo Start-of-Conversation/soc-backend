@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class NoOpLockService : LockService {
-    override fun <T> executeWithLock(lockKey: String, timeout: Long, block: () -> T): T {
+    override fun <T> executeWithLock(lockKey: String, block: () -> T): T {
         return block() // 그냥 락 없이 실행
     }
 }

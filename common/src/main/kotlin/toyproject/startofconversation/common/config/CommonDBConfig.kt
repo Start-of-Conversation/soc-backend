@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = ["toyproject.startofconversation.common"])
-@EntityScan(basePackages = ["toyproject.startofconversation.common"])
+@EnableJpaRepositories(basePackages = ["toyproject.startofconversation.common.domain"])
+@EntityScan(basePackages = ["toyproject.startofconversation.common.domain"])
 @EnableConfigurationProperties
 class CommonDBConfig

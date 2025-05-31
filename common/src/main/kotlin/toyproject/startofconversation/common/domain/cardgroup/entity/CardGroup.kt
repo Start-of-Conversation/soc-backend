@@ -20,19 +20,25 @@ class CardGroup(
     @Column(nullable = false)
     var cardGroupDescription: String,
 
+    @Column(nullable = false)
     var cardGroupThumbnail: String = "~/image/cardgroups/default_profile.png",
 
     @Column(nullable = false)
     var isCustomized: Boolean = false,
 
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    val user: Users,
+    var user: Users,
+
+    @ManyToMany
+    @JoinTable(
+        name = "cardgroup_cards",
+        joinColumns = [JoinColumn(name = "cardgroup_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "card_id", referencedColumnName = "id")]
+    )
+    val cards: MutableSet<Card> = mutableSetOf(),
 
     @OneToMany(mappedBy = "cardGroup")
-    val cards: Set<Card> = emptySet(),
-
-    @OneToMany(mappedBy = "cardGroup")
-    val likes: Set<Likes> = emptySet()
+    val likes: MutableSet<Likes> = mutableSetOf()
 
 ) : BaseDateEntity(Domain.CARD_GROUP)

@@ -17,17 +17,17 @@ class Users(
     var profile: String = "~/image/profiles/default_profile.png",
 
     @Enumerated(EnumType.STRING)
-    val role: Role = Role.USER,
+    var role: Role = Role.USER,
 
     var isDeleted: Boolean = false,
 
     var deletedAt: LocalDateTime? = null,
 
     @OneToMany(mappedBy = "user")
-    val devices: MutableSet<Device> = mutableSetOf(),
+    var devices: MutableSet<Device> = mutableSetOf(),
 
     @OneToMany(mappedBy = "user")
-    val likes: MutableList<Likes> = mutableListOf(),
+    var likes: MutableSet<Likes> = mutableSetOf(),
 
     @OneToOne
     @JoinColumn(name = "user_id")
