@@ -1,4 +1,4 @@
-package toyproject.startofconversation.api.cardGroup.exception
+package toyproject.startofconversation.common.domain.cardgroup.exception
 
 import toyproject.startofconversation.common.exception.SOCNotFoundException
 
