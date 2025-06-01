@@ -6,4 +6,4 @@ package toyproject.startofconversation.common.exception
 
 class SOCUnauthorizedException(message: String, cause: Throwable? = null) : SOCException(message, cause)
 
-class SOCForbiddenException(message: String, cause: Throwable? = null) : SOCException(message, cause)
+open class SOCForbiddenException(message: String, cause: Throwable? = null) : SOCException(message, cause)

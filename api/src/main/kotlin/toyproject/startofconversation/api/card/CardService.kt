@@ -14,6 +14,7 @@ import toyproject.startofconversation.common.domain.card.exception.CardNotFoundE
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
+import toyproject.startofconversation.common.domain.user.exception.UserMismatchException
 import toyproject.startofconversation.common.lock.strategy.LockService
 
 @Service
@@ -44,6 +45,19 @@ class CardService(
         }
         val cardDto = CardDto(card.getId(), card.question)
         return ResponseData.to(CardResponse(request.cardGroupId, cardDto))
+    }
+
+    fun deleteCard(cardId: String, userId: String): ResponseData<Boolean> {
+        val card = cardRepository.findByIdOrNull(cardId) ?: throw CardNotFoundException(cardId)
+        val user = userService.findUserById(userId)
+
+        if (card.user != user) {
+            throw UserMismatchException(userId);
+        }
+
+        cardRepository.deleteById(cardId)
+
+        return ResponseData.to(true)
     }
 
     private fun <T> withGroupCardLock(groupId: String, block: () -> T): T =

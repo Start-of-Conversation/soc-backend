@@ -45,8 +45,13 @@ class CardController(
     fun updateCard(
         @PathVariable("id") cardId: String,
         @RequestBody request: CardUpdateRequest
-    ): ResponseData<CardDto> = cardService.updateCard(
+    ): ResponseData<CardDto> = cardService.updateCard(cardId, request)
+
+    @DeleteMapping("/{id}")
+    fun deleteCard(
+        @PathVariable("id") cardId: String
+    ): ResponseData<Boolean> = cardService.deleteCard(
         cardId = cardId,
-        cardUpdateRequest = request
+        userId = SecurityUtil.getCurrentUserId()
     )
 }
