@@ -5,9 +5,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import toyproject.startofconversation.common.base.dto.ExceptionResponse
 import toyproject.startofconversation.common.base.value.Code
+import toyproject.startofconversation.common.lock.exception.LockAcquisitionException
 
 @RestControllerAdvice
 class SOCExceptionHandler {
+
+    @ExceptionHandler(LockAcquisitionException::class)
+    fun handleLockAcquisitionException(ex: LockAcquisitionException): ResponseEntity<ExceptionResponse> =
+        Code.LOCK_CONFLICT.toResponse(ex)
 
     @ExceptionHandler(SOCUnauthorizedException::class)
     fun handleSOCAuthException(ex: SOCUnauthorizedException): ResponseEntity<ExceptionResponse> =

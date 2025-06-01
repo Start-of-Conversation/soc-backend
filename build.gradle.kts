@@ -9,12 +9,6 @@ plugins {
     kotlin("kapt") version "1.9.23"
 }
 
-allOpen {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.MappedSuperclass")
-    annotation("jakarta.persistence.Embeddable")
-}
-
 tasks.bootJar {
     enabled = false
 }
@@ -54,8 +48,15 @@ subprojects{
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
+    apply(plugin = "org.jetbrains.kotlin.plugin.allopen")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-kapt")
+
+    allOpen {
+        annotation("jakarta.persistence.Entity")
+        annotation("jakarta.persistence.MappedSuperclass")
+        annotation("jakarta.persistence.Embeddable")
+    }
 
     dependencies {
         //kotlin

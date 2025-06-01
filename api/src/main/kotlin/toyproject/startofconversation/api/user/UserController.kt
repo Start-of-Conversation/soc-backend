@@ -1,4 +1,4 @@
-package toyproject.startofconversation.api.controller
+package toyproject.startofconversation.api.user
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import toyproject.startofconversation.api.dto.UserDataResponse
-import toyproject.startofconversation.api.service.UserService
+import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 
@@ -30,7 +29,7 @@ class UserController(
         ]
     )
     @GetMapping("/mypage")
-    fun getUserInfo(): ResponseData<UserDataResponse> = usersService.findUserById(SecurityUtil.getCurrentUserId())
+    fun getUserInfo(): ResponseData<UserDataResponse> = usersService.searchUserById(SecurityUtil.getCurrentUserId())
 
     @Operation(
         summary = "회원 탈퇴",
