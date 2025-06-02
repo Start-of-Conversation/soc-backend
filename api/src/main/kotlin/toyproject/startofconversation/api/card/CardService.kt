@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.card.dto.*
 import toyproject.startofconversation.api.card.validator.CardGroupCapacityValidator
 import toyproject.startofconversation.api.paging.PageResponseData
-import toyproject.startofconversation.api.user.UserService
+import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
