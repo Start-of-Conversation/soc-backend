@@ -21,12 +21,12 @@ class MarketingService(
         } ?: throw UserNotFoundException(userId)
 
     @Transactional
-    fun updateMarketing(userId: String, request: MarketingUpdateRequest): ResponseData<Boolean> {
-        getOrCreateMarketing(userId).updateConsent(
+    fun updateMarketing(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
+        val marketing = getOrCreateMarketing(userId).updateConsent(
             appPushYn = request.appPushConsentYn,
             marketingYn = request.marketingConsentYn
         )
-        return ResponseData(true)
+        return ResponseData(MarketingResponse.from(marketing))
     }
 
     private fun getOrCreateMarketing(userId: String): Marketing {

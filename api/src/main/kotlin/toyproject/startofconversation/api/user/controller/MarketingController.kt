@@ -18,7 +18,7 @@ class MarketingController(
         marketingService.getMarketingInfo(SecurityUtil.getCurrentUserId())
 
     @PatchMapping("/update")
-    fun updateMarketing(@RequestBody request: MarketingUpdateRequest): ResponseData<Boolean> =
+    fun updateMarketing(@RequestBody request: MarketingUpdateRequest): ResponseData<MarketingResponse> =
         marketingService.updateMarketing(SecurityUtil.getCurrentUserId(), request)
 
 }
