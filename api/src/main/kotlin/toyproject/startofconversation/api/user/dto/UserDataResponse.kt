@@ -8,10 +8,12 @@ data class UserDataResponse(
     val profileImageUrl: String,
 ) {
     companion object {
-        fun to(user: Users): UserDataResponse = UserDataResponse(
-            id = user.getId(),
-            nickname = user.nickname,
-            profileImageUrl = user.profile,
-        )
+        fun to(user: Users): UserDataResponse = with(user) {
+            UserDataResponse(
+                id = getId(),
+                nickname = nickname,
+                profileImageUrl = profile,
+            )
+        }
     }
 }

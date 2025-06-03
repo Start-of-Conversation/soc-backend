@@ -10,14 +10,15 @@ data class CardGroupInfoResponse(
     val total: Int
 ) {
     companion object {
-        fun from(cardGroup: CardGroup): CardGroupInfoResponse {
-            return CardGroupInfoResponse(
-                id = cardGroup.getId(),
-                name = cardGroup.cardGroupName,
-                summary = cardGroup.cardGroupSummary,
-                description = cardGroup.cardGroupDescription,
-                total = cardGroup.cards.size
+        fun from(cardGroup: CardGroup): CardGroupInfoResponse = with(cardGroup) {
+            CardGroupInfoResponse(
+                id = getId(),
+                name = cardGroupName,
+                summary = cardGroupSummary,
+                description = cardGroupDescription,
+                total = cards.size
             )
         }
+
     }
 }
