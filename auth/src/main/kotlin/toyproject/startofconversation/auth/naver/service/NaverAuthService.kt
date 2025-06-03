@@ -1,6 +1,7 @@
 package toyproject.startofconversation.auth.naver.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
@@ -32,6 +33,7 @@ class NaverAuthService(
         state = UUID.randomUUID().toString()
     )
 
+    @Transactional
     fun loadUser(token: String, state: String): Auth {
         val tokenResponse = naverAuthTokenClient.getAccessToken(
             NaverTokenRequest(
@@ -48,7 +50,7 @@ class NaverAuthService(
         val name = userInfo.response.name ?: RandomNameMaker.generate()
 
         val existingUser = authRepository.findByEmail(email)?.user
-            ?: usersRepository.save(Users(nickname = name))
+            ?: usersRepository.save(Users(nickname = name).createMarketing())
 
         return authRepository.save(
             Auth(

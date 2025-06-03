@@ -61,7 +61,7 @@ class KakaoAuthService(
 
         //user 저장
         val user = authRepository.findByEmail(email)?.user ?: usersRepository.save(
-            Users(nickname = name)
+            Users(nickname = name).createMarketing()
         )
 
         return authRepository.save(
