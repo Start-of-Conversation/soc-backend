@@ -46,7 +46,7 @@ class AppleAuthService(
         val email = appleUserInfo.email ?: throw AuthenticationException("Email is required")
 
         val existingUser = authRepository.findByEmail(email)?.user
-            ?: usersRepository.save(Users(nickname = name))
+            ?: usersRepository.save(Users(nickname = name).createMarketing())
 
         return authRepository.save(
             Auth(

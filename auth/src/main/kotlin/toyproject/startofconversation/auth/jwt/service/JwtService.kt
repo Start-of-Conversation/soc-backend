@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.jwt.JwtProvider
 import toyproject.startofconversation.auth.redis.RedisRefreshTokenService
 import toyproject.startofconversation.common.domain.user.entity.Users
+import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
-import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.logger.logger
 
 @Service
@@ -48,7 +48,7 @@ class JwtService(
     }
 
     fun generateExpiredAccessToken(userId: String): HttpHeaders {
-        val user = usersRepository.findByIdOrNull(userId) ?: throw SOCUnauthorizedException("No user found")
+        val user = usersRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
         val expiredToken = jwtProvider.generateExpiredToken(user)
         val responseHeaders = HttpHeaders().apply {
             set("Authorization", "Bearer $expiredToken") // 헤더에 토큰을 추가

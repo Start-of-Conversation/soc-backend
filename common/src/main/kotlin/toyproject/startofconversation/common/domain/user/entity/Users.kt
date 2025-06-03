@@ -29,8 +29,13 @@ class Users(
     @OneToMany(mappedBy = "user")
     var likes: MutableSet<Likes> = mutableSetOf(),
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var marketing: Marketing? = null
 
-) : BaseDateEntity(Domain.USER)
+) : BaseDateEntity(Domain.USER) {
+    fun createMarketing(): Users {
+        val marketing = Marketing(user = this)
+        this.marketing = marketing
+        return this
+    }
+}
