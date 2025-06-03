@@ -26,12 +26,13 @@ class CardService(
     private val validator: CardGroupCapacityValidator
 ) {
 
-    fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> {
-        val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId) ?: throw CardGroupNotFoundException(cardGroupId)
-        val cards = cardRepository.findAllByCardGroups(pageable, cardGroup)
-        return PageResponseData(CardListResponse.from(cardGroupId, cards), cards)
-    }
+    fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> =
+        cardGroupRepository.findByIdOrNull(cardGroupId)?.let {
+            val cards = cardRepository.findAllByCardGroups(pageable, it)
+            PageResponseData(CardListResponse.from(cardGroupId, cards), cards)
+        } ?: throw CardGroupNotFoundException(cardGroupId)
 
+    @Transactional
     fun updateCard(cardId: String, cardUpdateRequest: CardUpdateRequest): ResponseData<CardDto> {
         val card = cardRepository.findByIdOrNull(cardId) ?: throw CardNotFoundException(cardId)
         card.updateQuestion(cardUpdateRequest.newQuestion)
@@ -47,6 +48,7 @@ class CardService(
         return ResponseData.to(CardResponse(request.cardGroupId, cardDto))
     }
 
+    @Transactional
     fun deleteCard(cardId: String, userId: String): ResponseData<Boolean> {
         val card = cardRepository.findByIdOrNull(cardId) ?: throw CardNotFoundException(cardId)
         val user = userService.findUserById(userId)

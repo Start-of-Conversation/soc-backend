@@ -12,4 +12,6 @@ interface AuthRepository : JpaRepository<Auth, String> {
 
     fun findByAuthProviderAndAuthId(provider: AuthProvider, authId: String): Auth?
 
+    fun deleteAllByUserId(userId: String)
+
 }

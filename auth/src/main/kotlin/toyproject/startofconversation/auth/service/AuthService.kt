@@ -27,7 +27,12 @@ class AuthService(
 ) {
     private val log = logger<AuthService>()
 
-    fun deleteAuth(userId: String) = authRepository.deleteById(userId)
+    @Transactional
+    fun deleteAuth(userId: String) {
+        if (authRepository.existsById(userId)) {
+            authRepository.deleteAllByUserId(userId)
+        }
+    }
 
     @Comment("소셜 로그인 공통 로직")
     fun loginUser(
