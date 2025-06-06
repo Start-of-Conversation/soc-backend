@@ -2,7 +2,6 @@ package toyproject.startofconversation.auth.service
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import jakarta.transaction.Transactional
 import org.hibernate.annotations.Comment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,6 +17,7 @@ import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
 import toyproject.startofconversation.common.exception.SOCForbiddenException
 import toyproject.startofconversation.common.logger.logger
+import toyproject.startofconversation.common.transaction.helper.Tx
 
 @Service
 class AuthService(
@@ -27,8 +27,7 @@ class AuthService(
 ) {
     private val log = logger<AuthService>()
 
-    @Transactional
-    fun deleteAuth(userId: String) {
+    fun deleteAuth(userId: String) = Tx.writeTx {
         if (authRepository.existsById(userId)) {
             authRepository.deleteAllByUserId(userId)
         }
@@ -61,7 +60,6 @@ class AuthService(
         return ResponseEntity(ResponseData.to(AuthResponse.from(auth)), headers, HttpStatus.OK)
     }
 
-    @Transactional
     fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> {
         val refreshToken = jwtService.deleteRefreshToken(request)
         response.addCookie(refreshToken)

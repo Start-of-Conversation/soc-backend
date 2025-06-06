@@ -1,6 +1,8 @@
 package toyproject.startofconversation.common.base
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Id
+import jakarta.persistence.MappedSuperclass
 import toyproject.startofconversation.common.base.value.Domain
 import java.util.*
 
@@ -9,11 +11,9 @@ open class BaseEntity(
     private val domain: Domain
 ) {
 
-    @Column(name = "id", updatable = false, unique = true, nullable = false, length = 50)
-    private val id: String = createId();
-
     @Id
-    fun getId(): String = id
+    @Column(name = "id", updatable = false, unique = true, nullable = false, length = 50)
+    val id: String = createId();
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

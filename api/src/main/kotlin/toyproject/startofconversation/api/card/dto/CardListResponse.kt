@@ -7,8 +7,15 @@ data class CardListResponse(val cardGroupId: String, val cards: List<CardDto>) {
     companion object {
         fun from(cardGroupId: String, cards: Page<Card>): CardListResponse = CardListResponse(
             cardGroupId, cards.map { card ->
-                CardDto(card.getId(), card.question)
+                CardDto(card.id, card.question)
             }.toList()
+        )
+
+        fun from(cardGroupId: String, cards: List<Card>): CardListResponse = CardListResponse(
+            cardGroupId,
+            cards.map { card ->
+                CardDto(card.id, card.question)
+            }
         )
     }
 }

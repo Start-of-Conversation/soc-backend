@@ -15,7 +15,7 @@ data class AuthResponse(
                 email = auth.email,
                 nickname = auth.user.nickname,
                 authProvider = auth.authProvider,
-                authId = auth.getId()
+                authId = auth.id
             )
     }
 }

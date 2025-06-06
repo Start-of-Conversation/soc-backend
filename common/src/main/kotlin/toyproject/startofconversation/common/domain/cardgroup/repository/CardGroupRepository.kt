@@ -5,5 +5,7 @@ import org.springframework.stereotype.Repository
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 
 @Repository
-interface CardGroupRepository : JpaRepository<CardGroup, String>{
+interface CardGroupRepository : JpaRepository<CardGroup, String> {
+
+    fun countByCardGroupCardsContains(cardGroup: CardGroup): Long
 }

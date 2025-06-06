@@ -36,7 +36,7 @@ class JwtService(
 
     fun generateRefreshToken(user: Users): Cookie {
         val refreshToken = jwtProvider.generateRefreshToken(user)
-        redisService.issueRefreshToken(refreshToken, user.getId())
+        redisService.issueRefreshToken(refreshToken, user.id)
 
         val cookie = Cookie(REFRESH_TOKEN, refreshToken)
         cookie.isHttpOnly = true
