@@ -1,28 +1,26 @@
 package toyproject.startofconversation.auth.kakao.service
 
-import jakarta.transaction.Transactional
-import org.springframework.security.core.AuthenticationException
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
-import toyproject.startofconversation.auth.domain.repository.AuthRepository
+import toyproject.startofconversation.auth.kakao.dto.KakaoAccount
 import toyproject.startofconversation.auth.kakao.dto.KakaoOAuthProperties
+import toyproject.startofconversation.auth.kakao.dto.KakaoProfile
 import toyproject.startofconversation.auth.kakao.dto.OAuthToken
 import toyproject.startofconversation.auth.kakao.feign.KakaoAuthTokenClient
 import toyproject.startofconversation.auth.service.OAuthService
+import toyproject.startofconversation.auth.service.UserAuthStore
 import toyproject.startofconversation.auth.util.RandomNameMaker
-import toyproject.startofconversation.common.domain.user.entity.Users
-import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
+import toyproject.startofconversation.common.transaction.helper.Tx
 import java.util.*
 
 @Service
 class KakaoAuthService(
     private val kakaoAuthTokenClient: KakaoAuthTokenClient,
-    private val usersRepository: UsersRepository,
-    private val authRepository: AuthRepository,
-    private val kakaoOAuthProperties: KakaoOAuthProperties
+    private val kakaoOAuthProperties: KakaoOAuthProperties,
+    private val store: UserAuthStore
 ) : OAuthService {
 
     override fun getParameters(): OAuthParameter = OAuthParameter(
@@ -33,53 +31,55 @@ class KakaoAuthService(
         state = UUID.randomUUID().toString() // 필요에 따라 사용
     )
 
-    @Transactional
-    @Throws(AuthenticationException::class)
-    fun loadUser(accessCode: String): Auth {
+    fun loadUser(accessCode: String): Auth = Tx.writeTx {
         val oAuthToken = requestToken(accessCode)
 
         val authorization = "Bearer ${oAuthToken.access_token}"
         val kakaoProfile = kakaoAuthTokenClient.requestProfile(authorization)
 
-        val profile = kakaoProfile.kakao_account.profile
-
-        authRepository.findByAuthProviderAndAuthId(AuthProvider.KAKAO, kakaoProfile.id.toString())?.let { return it }
-
-        //이름 생성
-        val name = if (profile.nickname.isNullOrBlank()) RandomNameMaker.generate() else profile.nickname
-
-        //이메일 처리
-        val email = if (
-            kakaoProfile.kakao_account.has_email &&
-            kakaoProfile.kakao_account.is_email_verified &&
-            !kakaoProfile.kakao_account.email.isNullOrBlank()
-        ) {
-            kakaoProfile.kakao_account.email
-        } else {
-            throw SOCUnauthorizedException("Verified email is required")
-        }
-
-        //user 저장
-        val user = authRepository.findByEmail(email)?.user ?: usersRepository.save(
-            Users(nickname = name).createMarketing()
-        )
-
-        return authRepository.save(
-            Auth(
-                user = user,
-                email = email,
-                authProvider = AuthProvider.KAKAO,
-                authId = kakaoProfile.id.toString()
-            )
-        )
-
+        store.findOrCreateAuth(
+            provider = AuthProvider.KAKAO,
+            authId = kakaoProfile.id.toString()
+        ) { createAndSaveAuth(kakaoProfile) }
     }
 
-    @Throws(AuthenticationException::class)
     private fun requestToken(accessCode: String): OAuthToken = kakaoAuthTokenClient.getAccessToken(
         clientId = kakaoOAuthProperties.clientId,
         redirectUri = kakaoOAuthProperties.redirectUri,
         code = accessCode
     )
+
+    private fun createAndSaveAuth(kakaoProfile: KakaoProfile): Auth {
+        val profile = kakaoProfile.kakao_account.profile
+
+        //이름 생성
+        val name = if (profile.nickname.isNullOrBlank()) RandomNameMaker.generate() else profile.nickname
+
+        //이메일 처리
+        val email = extractVerifiedEmail(kakaoProfile.kakao_account)
+
+        //user 저장
+        val user = store.getOrCreateUser(email = email, name = name)
+        val kakaoId = kakaoProfile.id.toString()
+
+        return store.saveAuth(
+            user = user,
+            email = email,
+            authProvider = AuthProvider.KAKAO,
+            authId = kakaoId
+        )
+    }
+
+    private fun extractVerifiedEmail(account: KakaoAccount): String = with(account) {
+        return if (
+            has_email &&
+            is_email_verified &&
+            !email.isNullOrBlank()
+        ) {
+            email
+        } else {
+            throw SOCUnauthorizedException("Verified email is required")
+        }
+    }
 
 }

@@ -24,7 +24,7 @@ class JwtProvider(
     fun generateToken(user: Users, expirationTime: Int = accessTokenExpireTime): String {
         val claims = mutableMapOf<String, String>()
 
-        val userId = user.getId()
+        val userId = user.id
         claims["userId"] = userId
 
         val now = Date()
@@ -65,7 +65,7 @@ class JwtProvider(
         val key = Keys.hmacShaKeyFor(secret.toByteArray())
 
         return Jwts.builder()
-            .subject(user.getId())
+            .subject(user.id)
             .issuedAt(now)
             .expiration(expiration)
             .signWith(key, Jwts.SIG.HS512)

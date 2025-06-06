@@ -1,19 +1,18 @@
 package toyproject.startofconversation.auth.apple.service
 
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.apple.dto.AppleOAuthProperties
+import toyproject.startofconversation.auth.apple.dto.AppleTokenResponse
 import toyproject.startofconversation.auth.apple.dto.AppleUser
 import toyproject.startofconversation.auth.apple.feign.AppleUserClient
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
-import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.service.OAuthService
+import toyproject.startofconversation.auth.service.UserAuthStore
 import toyproject.startofconversation.auth.util.RandomNameMaker
-import toyproject.startofconversation.common.domain.user.entity.Users
-import toyproject.startofconversation.common.domain.user.repository.UsersRepository
-import javax.security.sasl.AuthenticationException
+import toyproject.startofconversation.common.exception.SOCUnauthorizedException
+import toyproject.startofconversation.common.transaction.helper.Tx
 
 @Service
 class AppleAuthService(
@@ -21,8 +20,7 @@ class AppleAuthService(
     private val oAuthClientService: AppleOAuthClientService,
     private val appleOAuthProperties: AppleOAuthProperties,
     private val identityParser: AppleIdentityParser,
-    private val authRepository: AuthRepository,
-    private val usersRepository: UsersRepository
+    private val store: UserAuthStore
 ) : OAuthService {
 
     override fun getParameters(): OAuthParameter = OAuthParameter(
@@ -33,28 +31,28 @@ class AppleAuthService(
         responseMode = "form_post"
     )
 
-    @Transactional
-    @Throws(AuthenticationException::class)
-    fun loadUser(authorizationCode: String): Auth {
+    @Throws(SOCUnauthorizedException::class)
+    fun loadUser(authorizationCode: String): Auth = Tx.writeTx {
         val tokenResponse = oAuthClientService.requestToken(authorizationCode)
-        val accountID: String = identityParser.getAppleAccountId(tokenResponse.id_token)
+        val accountId: String = identityParser.getAppleAccountId(tokenResponse.id_token)
 
-        authRepository.findByAuthProviderAndAuthId(AuthProvider.APPLE, accountID)?.let { return it }
+        store.findOrCreateAuth(provider = AuthProvider.APPLE, authId = accountId) {
+            createAndSaveAuth(tokenResponse, accountId)
+        }
+    }
 
-        val appleUserInfo = appleUserClient.getAppleUserInfo("Bearer ${tokenResponse.access_token}")
-        var name = buildName(appleUserInfo)
-        val email = appleUserInfo.email ?: throw AuthenticationException("Email is required")
+    private fun createAndSaveAuth(tokenResponse: AppleTokenResponse, accountId: String): Auth {
+        val response = appleUserClient.getAppleUserInfo("Bearer ${tokenResponse.access_token}")
+        val email = response.email ?: throw SOCUnauthorizedException("Email is required")
+        val name = buildName(response)
 
-        val existingUser = authRepository.findByEmail(email)?.user
-            ?: usersRepository.save(Users(nickname = name).createMarketing())
+        val existingUser = store.getOrCreateUser(email = email, name = name)
 
-        return authRepository.save(
-            Auth(
-                user = existingUser,
-                email = email,
-                authProvider = AuthProvider.APPLE,
-                authId = accountID
-            )
+        return store.saveAuth(
+            user = existingUser,
+            email = email,
+            authProvider = AuthProvider.APPLE,
+            authId = accountId
         )
     }
 

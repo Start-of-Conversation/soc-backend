@@ -6,18 +6,13 @@ plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
     kotlin("plugin.jpa") version "1.9.25"
-    kotlin("kapt") version "1.9.23"
-}
-
-tasks.bootJar {
-    enabled = false
+    kotlin("kapt") version "1.9.25"
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion.set(JavaLanguageVersion.of(21)) // 통일
     }
-    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -30,6 +25,10 @@ dependencyManagement {
     imports {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.1")
     }
+}
+
+tasks.bootJar {
+    enabled = false
 }
 
 allprojects {
@@ -63,7 +62,7 @@ subprojects{
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-        //mockito-kotilin
+        //mockito-kotlin
         testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 
         //junit
@@ -77,7 +76,6 @@ subprojects{
         implementation("org.springframework.boot:spring-boot-starter-security")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.security:spring-security-test")
-        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         developmentOnly("org.springframework.boot:spring-boot-devtools")
 
         //redis
@@ -98,6 +96,10 @@ subprojects{
             freeCompilerArgs = listOf("-Xjsr305=strict")
             jvmTarget = "21"
         }
+    }
+
+    tasks.withType<Jar> {
+        enabled = true
     }
 
     tasks.withType<Test> {

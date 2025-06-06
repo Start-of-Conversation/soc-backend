@@ -7,7 +7,7 @@ data class MarketingResponse(val userId: String, val marketingConsent: Marketing
     companion object {
         fun from(marketing: Marketing): MarketingResponse = with(marketing) {
             MarketingResponse(
-                userId = user.getId(),
+                userId = user.id,
                 marketingConsent = MarketingDto(
                     appPushYn = appPushConsentYn,
                     appPushDate = appPushConsentDate,

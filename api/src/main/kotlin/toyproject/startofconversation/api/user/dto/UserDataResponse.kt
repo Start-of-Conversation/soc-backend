@@ -10,7 +10,7 @@ data class UserDataResponse(
     companion object {
         fun to(user: Users): UserDataResponse = with(user) {
             UserDataResponse(
-                id = getId(),
+                id = id,
                 nickname = nickname,
                 profileImageUrl = profile,
             )

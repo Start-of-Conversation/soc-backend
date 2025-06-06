@@ -18,6 +18,14 @@ class SOCExceptionHandler {
     fun handleSOCAuthException(ex: SOCUnauthorizedException): ResponseEntity<ExceptionResponse> =
         Code.UNAUTHORIZED.toResponse(ex)
 
+    @ExceptionHandler(SOCDuplicateResourceException::class)
+    fun handleDuplicateResourceException(ex: SOCDuplicateResourceException): ResponseEntity<ExceptionResponse> =
+        Code.DUPLICATE_RESOURCE.toResponse(ex)
+
+    @ExceptionHandler(SOCDomainViolationException::class)
+    fun handleDomainViolationException(ex: SOCDomainViolationException): ResponseEntity<ExceptionResponse> =
+        Code.DOMAIN_CONSTRAINT_VIOLATION.toResponse(ex)
+
     @ExceptionHandler(SOCServerException::class)
     fun handleSOCServerException(ex: SOCServerException): ResponseEntity<ExceptionResponse> =
         Code.INTERNAL_ERROR.toResponse(ex)

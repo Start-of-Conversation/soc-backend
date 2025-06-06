@@ -3,7 +3,6 @@ package toyproject.startofconversation.common.domain.cardgroup.entity
 import jakarta.persistence.*
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.user.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.Users
 
@@ -30,13 +29,8 @@ class CardGroup(
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     var user: Users,
 
-    @ManyToMany
-    @JoinTable(
-        name = "cardgroup_cards",
-        joinColumns = [JoinColumn(name = "cardgroup_id", referencedColumnName = "id")],
-        inverseJoinColumns = [JoinColumn(name = "card_id", referencedColumnName = "id")]
-    )
-    val cards: MutableSet<Card> = mutableSetOf(),
+    @OneToMany(mappedBy = "cardGroup", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf(),
 
     @OneToMany(mappedBy = "cardGroup")
     val likes: MutableSet<Likes> = mutableSetOf()

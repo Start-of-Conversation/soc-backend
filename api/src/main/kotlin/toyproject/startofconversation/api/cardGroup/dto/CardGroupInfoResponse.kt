@@ -12,11 +12,11 @@ data class CardGroupInfoResponse(
     companion object {
         fun from(cardGroup: CardGroup): CardGroupInfoResponse = with(cardGroup) {
             CardGroupInfoResponse(
-                id = getId(),
+                id = id,
                 name = cardGroupName,
                 summary = cardGroupSummary,
                 description = cardGroupDescription,
-                total = cards.size
+                total = cardGroupCards.size
             )
         }
 
