@@ -16,6 +16,8 @@ enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) 
     FORBIDDEN(403, HttpStatus.FORBIDDEN, "Access denied"),
     NOT_FOUND(404, HttpStatus.NOT_FOUND, "Resource not found"),
 
+    DUPLICATE_RESOURCE(409, HttpStatus.CONFLICT, "Resource already exists"),
+    DOMAIN_CONSTRAINT_VIOLATION(409, HttpStatus.CONFLICT, "Domain constraint violation"),
     LOCK_CONFLICT(409, HttpStatus.CONFLICT, "Failed to acquire lock due to concurrent operation"),
 
     //server
