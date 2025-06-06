@@ -1,9 +1,28 @@
+tasks.bootJar {
+    enabled = false
+}
+
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from(project(":common").projectDir.resolve("src/main/resources")) {
+        include("application-common.yml")
+    }
+}
+
+sourceSets {
+    test {
+        resources {
+            srcDir("src/main/resources")
+        }
+    }
+}
+
 dependencies {
     implementation(project(":common"))
 
     //feign
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1" +
-            "")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1")
     implementation("io.github.openfeign:feign-httpclient:13.5")
 
     //oauth
