@@ -8,6 +8,7 @@ import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.*
 import toyproject.startofconversation.auth.kakao.service.KakaoAuthService
 import toyproject.startofconversation.auth.naver.service.NaverAuthService
+import toyproject.startofconversation.common.exception.SOCDomainViolationException
 
 @Service
 class SocialLoginService(
@@ -20,6 +21,7 @@ class SocialLoginService(
         APPLE -> appleAuthService.getParameters()
         KAKAO -> kakaoAuthService.getParameters()
         NAVER -> naverAuthService.getParameters()
+        LOCAL -> throw SOCDomainViolationException("'${provider.name}' login does not require the OAuth parameter.")
     }
 
     // 공통된 소셜 로그인 처리 로직
@@ -32,6 +34,7 @@ class SocialLoginService(
             APPLE -> appleAuthService.loadUser(code)
             KAKAO -> kakaoAuthService.loadUser(code)
             NAVER -> naverAuthService.loadUser(code, state)
+            LOCAL -> throw SOCDomainViolationException("'${authProvider.name}' login is not part of the social login flow.")
         }
         return auth
     }
