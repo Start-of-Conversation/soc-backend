@@ -19,6 +19,7 @@ import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.auth.service.SocialLoginService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
+import toyproject.startofconversation.common.exception.SOCDomainViolationException
 
 @Tag(name = "Auth")
 @RestController

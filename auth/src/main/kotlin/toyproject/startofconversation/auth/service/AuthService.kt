@@ -11,6 +11,7 @@ import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.jwt.service.JwtService
+import toyproject.startofconversation.auth.local.service.LocalAuthService
 import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
@@ -23,6 +24,7 @@ import toyproject.startofconversation.common.transaction.helper.Tx
 class AuthService(
     private val authRepository: AuthRepository,
     private val socialLoginService: SocialLoginService,
+    private val localAuthService: LocalAuthService,
     private val jwtService: JwtService
 ) {
     private val log = logger<AuthService>()
