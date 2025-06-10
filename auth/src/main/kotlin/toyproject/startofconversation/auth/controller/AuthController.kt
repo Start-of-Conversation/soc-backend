@@ -12,14 +12,13 @@ import org.hibernate.annotations.Comment
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
+import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
-import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.auth.service.SocialLoginService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
-import toyproject.startofconversation.common.exception.SOCDomainViolationException
 
 @Tag(name = "Auth")
 @RestController
@@ -69,4 +68,11 @@ class AuthController(
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> =
         authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
+
+    @Comment("로컬 로그인")
+    @PostMapping("/local")
+    fun loginLocalUser(
+        @RequestBody request: LocalLoginRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<ResponseData<AuthResponse>> = authService.loginLocalUser(request, response)
 }
