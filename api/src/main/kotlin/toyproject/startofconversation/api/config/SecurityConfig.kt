@@ -5,11 +5,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import toyproject.startofconversation.auth.jwt.JwtAuthFilter
+import toyproject.startofconversation.common.domain.user.entity.value.Role
 
 @Configuration
 @EnableWebSecurity
@@ -22,6 +21,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
+                it.requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name)
                 it.requestMatchers(
                     "/auth/**",
                     "/api/*/public/**",
@@ -36,7 +36,4 @@ class SecurityConfig(
 
         return http.build()
     }
-
-    @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

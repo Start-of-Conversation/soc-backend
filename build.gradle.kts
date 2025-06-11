@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// ./gradlew clean build --parallel
+
 plugins {
     id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.6"
@@ -42,7 +44,7 @@ allprojects {
     }
 }
 
-subprojects{
+subprojects {
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
@@ -56,6 +58,8 @@ subprojects{
         annotation("jakarta.persistence.MappedSuperclass")
         annotation("jakarta.persistence.Embeddable")
     }
+
+    val querydslVersion = "5.0.0"
 
     dependencies {
         //kotlin
@@ -89,6 +93,16 @@ subprojects{
         testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
         testImplementation("io.kotest:kotest-assertions-core:5.9.1")
         testImplementation("io.kotest:kotest-property:5.9.1")
+
+        // querydsl
+        if (name in listOf("common", "auth", "api")) {
+            implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
+            implementation("jakarta.persistence:jakarta.persistence-api")
+            implementation("jakarta.annotation:jakarta.annotation-api")
+
+            kapt("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
+            kapt("org.springframework.boot:spring-boot-configuration-processor")
+        }
     }
 
     tasks.withType<KotlinCompile> {

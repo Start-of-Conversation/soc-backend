@@ -2,6 +2,7 @@ package toyproject.startofconversation.auth.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -12,14 +13,14 @@ import org.hibernate.annotations.Comment
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
+import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
+import toyproject.startofconversation.auth.controller.dto.LocalRegisterRequest
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
-import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.auth.service.SocialLoginService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
-import toyproject.startofconversation.common.exception.SOCDomainViolationException
 
 @Tag(name = "Auth")
 @RestController
@@ -65,8 +66,41 @@ class AuthController(
             description = "로그인 후 받은 인가 코드 (authorizationCode and accessCode)",
             required = true
         ) @RequestParam("code") authorizationCode: String,
-        @RequestParam(required = false, defaultValue = "state") state: String,
+        @Parameter(
+            name = "state",
+            description = "카카오 로그인 시에만 필요, CSRF 방지 또는 클라이언트 요청 상태 추적을 위한 임의의 문자열",
+            example = "abc123xyz"
+        ) @RequestParam(required = false, defaultValue = "default_state") state: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> =
         authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
+
+    @Comment("로컬 회원가입")
+    @PostMapping("/register")
+    fun registerLocalUser(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "로컬 회원가입",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = LocalRegisterRequest::class)
+            )]
+        )
+        @RequestBody request: LocalRegisterRequest
+    ) : ResponseData<Boolean> = authService.signInUser(request)
+
+    @Comment("로컬 로그인")
+    @PostMapping("/local")
+    fun loginLocalUser(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "로컬 로그인",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = LocalLoginRequest::class)
+            )]
+        )
+        @RequestBody request: LocalLoginRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<ResponseData<AuthResponse>> = authService.loginLocalUser(request, response)
 }
