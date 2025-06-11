@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
+import toyproject.startofconversation.auth.controller.dto.LocalRegisterRequest
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
@@ -62,6 +63,8 @@ class AuthService(
 
         return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
     }
+
+    fun signInUser(request: LocalRegisterRequest) : ResponseData<Boolean> = localAuthService.saveUser(request)
 
     private fun processLogin(
         auth: Auth,

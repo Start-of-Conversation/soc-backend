@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
+import toyproject.startofconversation.auth.controller.dto.LocalRegisterRequest
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
@@ -73,6 +74,20 @@ class AuthController(
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> =
         authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
+
+    @Comment("로컬 회원가입")
+    @PostMapping("/register")
+    fun registerLocalUser(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "로컬 회원가입",
+            required = true,
+            content = [Content(
+                mediaType = "application/json",
+                schema = Schema(implementation = LocalRegisterRequest::class)
+            )]
+        )
+        @RequestBody request: LocalRegisterRequest
+    ) : ResponseData<Boolean> = authService.signInUser(request)
 
     @Comment("로컬 로그인")
     @PostMapping("/local")

@@ -14,4 +14,6 @@ interface AuthRepository : JpaRepository<Auth, String> {
 
     fun deleteAllByUserId(userId: String)
 
+    fun existsByEmail(email: String): Boolean
+
 }

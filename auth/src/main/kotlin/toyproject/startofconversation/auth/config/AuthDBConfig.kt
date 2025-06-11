@@ -6,7 +6,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-@EnableJpaRepositories(basePackages = ["toyproject.startofconversation.auth.domain.repository"])
+@EnableJpaRepositories(
+    basePackages = [
+        "toyproject.startofconversation.auth.domain.repository",
+        "toyproject.startofconversation.common.domain.user.repository"]
+)
 @EntityScan(
     basePackages = [
         "toyproject.startofconversation.common.domain",

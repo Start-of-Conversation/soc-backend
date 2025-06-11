@@ -2,6 +2,7 @@ package toyproject.startofconversation.common.domain.user.entity
 
 import jakarta.persistence.*
 import toyproject.startofconversation.common.base.BaseDateEntity
+import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.device.entity.Device
 import toyproject.startofconversation.common.domain.user.entity.value.Role
@@ -19,6 +20,11 @@ class Users(
 
     @Enumerated(EnumType.STRING)
     var role: Role = Role.USER,
+
+    var isApproved: Boolean = when (role) {
+        Role.ADMIN -> false   // 관리자: 내부 승인 필요
+        else -> true          // 다른 권한일 경우: 기본 활성화
+    },
 
     var isDeleted: Boolean = false,
 
@@ -40,7 +46,12 @@ class Users(
         return this
     }
 
-    fun ensureNotDeleted() : Users{
+    fun approve(): Users {
+        this.isApproved = true
+        return this
+    }
+
+    fun ensureNotDeleted(): Users {
         if (isDeleted) {
             throw DeletedUserException(this.id)
         }
