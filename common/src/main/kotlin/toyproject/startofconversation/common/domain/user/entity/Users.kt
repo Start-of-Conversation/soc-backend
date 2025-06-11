@@ -5,6 +5,7 @@ import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.device.entity.Device
 import toyproject.startofconversation.common.domain.user.entity.value.Role
+import toyproject.startofconversation.common.domain.user.exception.DeletedUserException
 import java.time.LocalDateTime
 
 @Entity
@@ -36,6 +37,14 @@ class Users(
     fun createMarketing(): Users {
         val marketing = Marketing(user = this)
         this.marketing = marketing
+        return this
+    }
+
+    fun ensureNotDeleted() : Users{
+        if (isDeleted) {
+            throw DeletedUserException(this.id)
+        }
+
         return this
     }
 }

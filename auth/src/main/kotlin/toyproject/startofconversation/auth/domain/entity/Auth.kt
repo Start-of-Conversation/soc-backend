@@ -36,4 +36,9 @@ class Auth(
     @Comment("소셜 로그인 제공자의 고유 ID (google, kakao, naver 등)")
     val authId: String? = null
 
-) : BaseCreatedEntity(Domain.AUTH)
+) : BaseCreatedEntity(Domain.AUTH) {
+
+    fun getUser(): Users {
+        return user.ensureNotDeleted()
+    }
+}

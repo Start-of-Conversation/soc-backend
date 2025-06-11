@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
+import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
+import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.jwt.service.JwtService
@@ -16,6 +18,7 @@ import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
+import toyproject.startofconversation.common.domain.user.exception.DeletedUserException
 import toyproject.startofconversation.common.exception.SOCForbiddenException
 import toyproject.startofconversation.common.logger.logger
 import toyproject.startofconversation.common.transaction.helper.Tx
@@ -41,26 +44,14 @@ class AuthService(
         state: String,
         response: HttpServletResponse,
         authProvider: AuthProvider
-    ): ResponseEntity<ResponseData<AuthResponse>> {
-        // 소셜 로그인 처리
-        val auth = socialLoginService.handleSocialLogin(authorizationCode, state, authProvider)
+    ): ResponseEntity<ResponseData<AuthResponse>> =
+        processLogin(socialLoginService.handleSocialLogin(authorizationCode, state, authProvider), response)
 
-        if (auth.user.isDeleted) {
-            throw SOCForbiddenException("User already deleted")
-        }
-
-        // 토큰 생성
-        val headers = jwtService.generateToken(auth.user)
-
-        // refreshToken 쿠키 생성
-        val refreshTokenCookie = jwtService.generateRefreshToken(auth.user)
-
-        // 쿠키 추가
-        response.addCookie(refreshTokenCookie)
-
-        // 성공 응답 반환
-        return ResponseEntity(ResponseData.to(AuthResponse.from(auth)), headers, HttpStatus.OK)
-    }
+    @Comment("로컬 로그인 로직")
+    fun loginLocalUser(
+        request: LocalLoginRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<ResponseData<AuthResponse>> = processLogin(localAuthService.findUser(request), response)
 
     fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> {
         val refreshToken = jwtService.deleteRefreshToken(request)
@@ -72,5 +63,18 @@ class AuthService(
         val headers = jwtService.generateExpiredAccessToken(userId)
 
         return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
+    }
+
+    private fun processLogin(
+        auth: Auth,
+        response: HttpServletResponse
+    ): ResponseEntity<ResponseData<AuthResponse>> {
+        val user = auth.getUser()
+
+        val headers = jwtService.generateToken(user)
+        val refreshTokenCookie = jwtService.generateRefreshToken(user)
+        response.addCookie(refreshTokenCookie)
+
+        return ResponseEntity(ResponseData.to(AuthResponse.from(auth)), headers, HttpStatus.OK)
     }
 }
