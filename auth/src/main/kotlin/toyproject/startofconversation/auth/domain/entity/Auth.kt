@@ -38,7 +38,6 @@ class Auth(
 
 ) : BaseCreatedEntity(Domain.AUTH) {
 
-    fun getUser(): Users {
-        return user.ensureNotDeleted()
-    }
+    val activeUser: Users
+        get() = user.ensureNotDeleted()
 }

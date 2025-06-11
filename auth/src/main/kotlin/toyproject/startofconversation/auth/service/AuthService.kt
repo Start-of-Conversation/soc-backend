@@ -18,8 +18,6 @@ import toyproject.startofconversation.auth.util.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
-import toyproject.startofconversation.common.domain.user.exception.DeletedUserException
-import toyproject.startofconversation.common.exception.SOCForbiddenException
 import toyproject.startofconversation.common.logger.logger
 import toyproject.startofconversation.common.transaction.helper.Tx
 
@@ -69,7 +67,7 @@ class AuthService(
         auth: Auth,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> {
-        val user = auth.getUser()
+        val user = auth.activeUser
 
         val headers = jwtService.generateToken(user)
         val refreshTokenCookie = jwtService.generateRefreshToken(user)
