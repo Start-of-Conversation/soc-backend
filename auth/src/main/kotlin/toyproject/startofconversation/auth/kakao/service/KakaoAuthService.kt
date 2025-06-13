@@ -11,7 +11,7 @@ import toyproject.startofconversation.auth.kakao.dto.OAuthToken
 import toyproject.startofconversation.auth.kakao.feign.KakaoAuthTokenClient
 import toyproject.startofconversation.auth.service.OAuthService
 import toyproject.startofconversation.auth.service.UserAuthStore
-import toyproject.startofconversation.auth.util.RandomNameMaker
+import toyproject.startofconversation.auth.support.RandomNameMaker
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.transaction.helper.Tx
 import java.util.*

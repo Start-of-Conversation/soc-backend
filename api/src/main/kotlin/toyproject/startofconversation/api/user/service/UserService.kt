@@ -3,6 +3,7 @@ package toyproject.startofconversation.api.user.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -18,6 +19,7 @@ class UserService(
 ) {
 
     @Transactional
+    @LoginUserAccess
     fun deleteUser(id: String): ResponseData<Boolean> = usersRepository.findByIdOrNull(id)?.let {
         if (!it.isDeleted) {
             it.isDeleted = true
@@ -29,6 +31,7 @@ class UserService(
         ResponseData.to("success", true)
     } ?: throw UserNotFoundException(id)
 
+    @LoginUserAccess
     fun searchUserById(id: String): ResponseData<UserDataResponse> = usersRepository.findByIdOrNull(id)?.let {
         ResponseData.to(UserDataResponse.to(it))
     } ?: throw UserNotFoundException(id)

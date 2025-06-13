@@ -15,7 +15,7 @@ import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.jwt.service.JwtService
 import toyproject.startofconversation.auth.local.service.LocalAuthService
-import toyproject.startofconversation.auth.util.SecurityUtil
+import toyproject.startofconversation.auth.support.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code

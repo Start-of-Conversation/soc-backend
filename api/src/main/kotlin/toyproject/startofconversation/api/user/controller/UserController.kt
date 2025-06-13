@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.api.user.dto.UserDataResponse
-import toyproject.startofconversation.auth.util.SecurityUtil
+import toyproject.startofconversation.auth.support.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @Tag(name = "User")

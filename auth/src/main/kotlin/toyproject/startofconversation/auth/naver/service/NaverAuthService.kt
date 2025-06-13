@@ -11,7 +11,7 @@ import toyproject.startofconversation.auth.naver.feign.NaverAuthTokenClient
 import toyproject.startofconversation.auth.naver.feign.NaverUserInfoClient
 import toyproject.startofconversation.auth.service.OAuthService
 import toyproject.startofconversation.auth.service.UserAuthStore
-import toyproject.startofconversation.auth.util.RandomNameMaker
+import toyproject.startofconversation.auth.support.RandomNameMaker
 import toyproject.startofconversation.common.transaction.helper.Tx
 import java.util.*
 import javax.security.sasl.AuthenticationException

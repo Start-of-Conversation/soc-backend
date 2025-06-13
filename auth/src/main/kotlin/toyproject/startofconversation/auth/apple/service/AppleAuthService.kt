@@ -10,7 +10,7 @@ import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.OAuthService
 import toyproject.startofconversation.auth.service.UserAuthStore
-import toyproject.startofconversation.auth.util.RandomNameMaker
+import toyproject.startofconversation.auth.support.RandomNameMaker
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.transaction.helper.Tx
 

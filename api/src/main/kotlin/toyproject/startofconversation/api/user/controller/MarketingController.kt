@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.api.user.dto.MarketingResponse
 import toyproject.startofconversation.api.user.dto.MarketingUpdateRequest
 import toyproject.startofconversation.api.user.service.MarketingService
-import toyproject.startofconversation.auth.util.SecurityUtil
+import toyproject.startofconversation.auth.support.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @RestController

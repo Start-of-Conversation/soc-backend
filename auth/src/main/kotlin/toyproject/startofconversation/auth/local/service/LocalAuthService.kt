@@ -8,7 +8,7 @@ import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.exception.InvalidPasswordException
-import toyproject.startofconversation.auth.util.RandomNameMaker
+import toyproject.startofconversation.auth.support.RandomNameMaker
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.EmailAlreadyExistsException

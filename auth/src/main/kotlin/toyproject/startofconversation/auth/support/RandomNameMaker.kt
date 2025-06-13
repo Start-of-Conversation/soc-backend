@@ -1,4 +1,4 @@
-package toyproject.startofconversation.auth.util
+package toyproject.startofconversation.auth.support
 
 class RandomNameMaker {
     companion object {

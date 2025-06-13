@@ -2,12 +2,15 @@ package toyproject.startofconversation.api.card
 
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.dto.*
 import toyproject.startofconversation.api.card.validator.CardValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
+import toyproject.startofconversation.auth.support.AuthValidator
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardDuplicationException
@@ -26,7 +29,8 @@ class CardService(
     private val cardGroupCardsRepository: CardGroupCardsRepository,
     private val lockService: LockService,
     private val userService: UserService,
-    private val validator: CardValidator
+    private val validator: CardValidator,
+    private val authValidator: AuthValidator
 ) {
 
     fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> =
@@ -37,13 +41,17 @@ class CardService(
         } ?: throw CardGroupNotFoundException(cardGroupId)
 
     @Transactional
-    fun updateCard(cardId: String, cardUpdateRequest: CardUpdateRequest): ResponseData<CardDto> {
-        val card = cardRepository.findByIdOrNull(cardId) ?: throw CardNotFoundException(cardId)
+    @LoginUserAccess
+    fun updateCard(cardId: String, cardUpdateRequest: CardUpdateRequest, userId: String): ResponseData<CardDto> {
+        val card = cardRepository.findByIdAndUserId(cardId, userId) ?: throw CardNotFoundException(cardId)
+        authValidator.validateUserAccess(userId, card.user.id)
+
         card.updateQuestion(cardUpdateRequest.newQuestion)
         return ResponseData.to(CardDto(cardId = cardId, question = card.question))
     }
 
     @Transactional
+    @LoginUserAccess
     fun addCard(request: CardSaveRequest, userId: String): ResponseData<CardResponse> {
         val card = withGroupCardLock(request.cardGroupId) {
             createCardAndSave(request.cardGroupId, request.question, userId)
@@ -53,8 +61,12 @@ class CardService(
     }
 
     @Transactional
+    @LoginUserAccess
     fun deleteCard(cardId: String, userId: String): ResponseData<Boolean> {
         val card = cardRepository.findByIdOrNull(cardId) ?: throw CardNotFoundException(cardId)
+
+        authValidator.validateUserAccess(userId, card.user.id)
+
         val user = userService.findUserById(userId)
 
         if (card.user != user) {

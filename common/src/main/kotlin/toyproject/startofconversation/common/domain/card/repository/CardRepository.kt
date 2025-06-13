@@ -7,6 +7,8 @@ import toyproject.startofconversation.common.domain.card.entity.Card
 @Repository
 interface CardRepository : JpaRepository<Card, String> {
 
+    fun findByIdAndUserId(id: String, userId: String): Card?
+
     fun existsByNormalizedQuestion(normalizedQuestion: String): Boolean
 
 }

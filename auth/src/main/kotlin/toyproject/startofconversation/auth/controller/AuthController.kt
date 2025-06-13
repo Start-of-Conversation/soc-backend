@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.hibernate.annotations.Comment
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
@@ -44,7 +43,7 @@ class AuthController(
     fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> =
         authService.logoutUser(request, response)
 
-    @Comment("소셜 로그인 요청하기 위한 파라미터")
+    @Operation(summary = "소셜 로그인 파라미터", description = "소셜 로그인 요청하기 위한 파라미터")
     @GetMapping("/params/{social}")
     fun getOauthParams(
         @Parameter(
@@ -54,7 +53,7 @@ class AuthController(
         ) @PathVariable(required = true, name = "social") social: String
     ): OAuthParameter = socialLoginService.getOauthParams(AuthProvider.from(social))
 
-    @Comment("소셜 로그인")
+    @Operation(summary = "소셜 로그인")
     @PostMapping("/{social}")
     fun loginSocialUser(
         @Parameter(
@@ -75,7 +74,7 @@ class AuthController(
     ): ResponseEntity<ResponseData<AuthResponse>> =
         authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
 
-    @Comment("로컬 회원가입")
+    @Operation(summary = "로컬 회원가입")
     @PostMapping("/register")
     fun registerLocalUser(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -87,9 +86,9 @@ class AuthController(
             )]
         )
         @RequestBody request: LocalRegisterRequest
-    ) : ResponseData<Boolean> = authService.signInUser(request)
+    ): ResponseData<Boolean> = authService.signInUser(request)
 
-    @Comment("로컬 로그인")
+    @Operation(summary = "로컬 로그인")
     @PostMapping("/local")
     fun loginLocalUser(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
