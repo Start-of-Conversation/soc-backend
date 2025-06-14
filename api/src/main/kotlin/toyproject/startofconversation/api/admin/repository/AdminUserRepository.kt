@@ -13,6 +13,7 @@ import toyproject.startofconversation.api.admin.dto.AdminUserListResponse
 import toyproject.startofconversation.auth.domain.entity.QAuth.auth
 import toyproject.startofconversation.common.annotation.QueryRepository
 import toyproject.startofconversation.common.domain.user.entity.QUsers.users
+import java.time.LocalDateTime
 
 @QueryRepository
 class AdminUserRepository(

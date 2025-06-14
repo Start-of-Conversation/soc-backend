@@ -9,6 +9,7 @@ import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.exception.InvalidPasswordException
 import toyproject.startofconversation.auth.support.RandomNameMaker
+import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.EmailAlreadyExistsException
@@ -32,7 +33,7 @@ class LocalAuthService(
     }
 
     //관리자 전용
-    fun saveUser(request: LocalRegisterRequest): Auth = Tx.writeTx {
+    fun saveUser(request: LocalRegisterRequest): ResponseData<Boolean> = Tx.writeTx {
         if (authRepository.existsByEmail(request.email)) {
             throw EmailAlreadyExistsException(request.email)
         }
@@ -50,5 +51,7 @@ class LocalAuthService(
                 authProvider = AuthProvider.LOCAL
             )
         )
+
+        ResponseData("Successfully saved, User Id: ${user.id}", true)
     }
 }

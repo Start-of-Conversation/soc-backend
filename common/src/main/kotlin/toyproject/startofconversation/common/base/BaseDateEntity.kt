@@ -11,6 +11,6 @@ open class BaseDateEntity(domain: Domain) : BaseCreatedEntity(domain) {
 
     @LastModifiedDate
     @Column(name = "updated_at", updatable = true)
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDateTime? = null
 
 }

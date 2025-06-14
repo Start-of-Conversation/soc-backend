@@ -14,5 +14,5 @@ open class BaseCreatedEntity(domain: Domain) : BaseEntity(domain) {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    var createdAt: LocalDateTime? = null
 }

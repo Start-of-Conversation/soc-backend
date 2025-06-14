@@ -2,7 +2,6 @@ package toyproject.startofconversation.auth.jwt.service
 
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
@@ -23,6 +22,7 @@ class JwtService(
     companion object {
         private const val REFRESH_TOKEN = "refreshToken"
     }
+
     private val log = logger()
 
     fun generateToken(user: Users): HttpHeaders {
@@ -40,7 +40,7 @@ class JwtService(
 
         val cookie = Cookie(REFRESH_TOKEN, refreshToken)
         cookie.isHttpOnly = true
-        cookie.secure = true
+        cookie.secure = false   // https일 경우 true로 설정
         cookie.path = "/"
         cookie.maxAge = 60 * 60 * 24 * 14 // 14일
 
@@ -57,15 +57,13 @@ class JwtService(
         return responseHeaders
     }
 
-
-    @Transactional
-    fun deleteRefreshToken(request: HttpServletRequest): Cookie {
+    fun deleteRefreshToken(request: HttpServletRequest, userId: String): Cookie {
         val refreshToken = getCookieValue(request)
 
         if (refreshToken.isNullOrBlank()) {
             log.warn("Refresh token not found in request cookies.")
         } else {
-            redisService.revokeToken(refreshToken)
+            redisService.revokeToken(userId)
             log.info("Refresh token successfully revoked.")
         }
 

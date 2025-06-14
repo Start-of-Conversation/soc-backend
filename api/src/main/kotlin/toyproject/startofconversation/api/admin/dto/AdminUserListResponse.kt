@@ -7,7 +7,7 @@ data class AdminUserListResponse(
     val id: String,
     val nickname: String,
     val role: Role,
-    val registrationDate: LocalDateTime,
+    val registrationDate: LocalDateTime?,
     val isWithdrawn: Boolean,
     val withdrawalDate: LocalDateTime?,
     val auth: Set<AdminUserDto>
