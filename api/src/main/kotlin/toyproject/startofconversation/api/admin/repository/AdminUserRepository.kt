@@ -13,11 +13,15 @@ import toyproject.startofconversation.api.admin.dto.AdminUserListResponse
 import toyproject.startofconversation.auth.domain.entity.QAuth.auth
 import toyproject.startofconversation.common.annotation.QueryRepository
 import toyproject.startofconversation.common.domain.user.entity.QUsers.users
+import toyproject.startofconversation.common.logger.logger
+import java.time.LocalDateTime
 
 @QueryRepository
 class AdminUserRepository(
     private val queryFactory: JPAQueryFactory
 ) {
+
+    private val log = logger()
 
     fun findAllUsers(pageable: Pageable, status: Boolean? = null): Page<AdminUserListResponse> {
         val predicate = BooleanBuilder().apply {
@@ -40,7 +44,7 @@ class AdminUserRepository(
     private fun fetchTuples(pageable: Pageable, predicate: Predicate): List<Tuple> = queryFactory
         .select(users, auth)
         .from(users)
-        .leftJoin(auth).on(auth.user.eq(users))
+        .leftJoin(auth).on(auth.user.id.eq(users.id))
         .where(predicate)
         .offset(pageable.offset)
         .limit(pageable.pageSize.toLong())
@@ -60,12 +64,12 @@ class AdminUserRepository(
             )
         }
 
-    private fun Tuple.toNullableAuthDto(): AdminUserDto? = this[auth.id]?.let {
+    private fun Tuple.toNullableAuthDto(): AdminUserDto? = this[auth]?.let {
         AdminUserDto(
-            id = it,
-            email = this[auth.email] ?: "",
-            channel = this[auth.authProvider]!!,
-            createDate = this[auth.createdAt]!!
+            id = it.id,
+            email = it.email,
+            channel = it.authProvider,
+            createDate = it.createdAt ?: LocalDateTime.now()
         )
     }
 

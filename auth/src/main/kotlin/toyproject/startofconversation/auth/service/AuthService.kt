@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.hibernate.annotations.Comment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
@@ -15,7 +16,6 @@ import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
 import toyproject.startofconversation.auth.jwt.service.JwtService
 import toyproject.startofconversation.auth.local.service.LocalAuthService
-import toyproject.startofconversation.auth.support.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
@@ -32,7 +32,7 @@ class AuthService(
     private val log = logger<AuthService>()
 
     fun deleteAuth(userId: String) = Tx.writeTx {
-        if (authRepository.existsById(userId)) {
+        if (authRepository.existsByUserId(userId)) {
             authRepository.deleteAllByUserId(userId)
         }
     }
@@ -52,19 +52,20 @@ class AuthService(
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> = processLogin(localAuthService.findUser(request), response)
 
-    fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> {
-        val refreshToken = jwtService.deleteRefreshToken(request)
+    @PreAuthorize("isAuthenticated()")
+    fun logoutUser(
+        request: HttpServletRequest, response: HttpServletResponse, userId: String
+    ): ResponseEntity<ResponseInfo> {
+        val refreshToken = jwtService.deleteRefreshToken(request, userId)
         response.addCookie(refreshToken)
 
         SecurityContextHolder.clearContext()
-
-        val userId = SecurityUtil.getCurrentUserId()
         val headers = jwtService.generateExpiredAccessToken(userId)
 
         return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
     }
 
-    fun signInUser(request: LocalRegisterRequest) : ResponseData<Boolean> = localAuthService.saveUser(request)
+    fun signInUser(request: LocalRegisterRequest): ResponseData<Boolean> = localAuthService.saveUser(request)
 
     private fun processLogin(
         auth: Auth,

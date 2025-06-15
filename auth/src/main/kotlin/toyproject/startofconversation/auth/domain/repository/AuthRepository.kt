@@ -16,4 +16,6 @@ interface AuthRepository : JpaRepository<Auth, String> {
 
     fun existsByEmail(email: String): Boolean
 
+    fun existsByUserId(userId: String): Boolean
+
 }

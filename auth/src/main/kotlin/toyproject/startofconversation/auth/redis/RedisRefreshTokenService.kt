@@ -7,16 +7,19 @@ import java.time.Duration
 class RedisRefreshTokenService(
     private val repository: RedisRefreshTokenRepository
 ) {
-    fun issueRefreshToken(token: String, userId: String) {
-        val ttl = Duration.ofDays(14)
-        repository.save(token, userId, ttl)
-    }
+    fun issueRefreshToken(token: String, userId: String) = repository.save(
+        key = makeKey(userId), value = token, ttl = ttl
+    )
 
-    fun validateToken(token: String): String? {
-        return repository.findUserIdByToken(token)
-    }
+    fun validateToken(userId: String, token: String): Boolean =
+        repository.findUserIdByToken(key = makeKey(userId))?.let { it == token } ?: false
 
-    fun revokeToken(token: String) {
-        repository.delete(token)
+    fun revokeToken(userId: String) = repository.delete(makeKey(userId))
+
+
+    private fun makeKey(userId: String): String = "refresh:user_$userId"
+
+    companion object {
+        private val ttl : Duration = Duration.ofDays(14)
     }
 }

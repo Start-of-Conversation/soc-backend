@@ -23,6 +23,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
+                it.requestMatchers("/auth/logout").authenticated()
                 it.requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name)
                 it.requestMatchers(
                     "/auth/**",

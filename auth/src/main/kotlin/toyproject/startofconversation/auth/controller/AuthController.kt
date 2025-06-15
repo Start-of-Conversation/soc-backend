@@ -18,8 +18,10 @@ import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.auth.service.SocialLoginService
+import toyproject.startofconversation.auth.support.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
+import toyproject.startofconversation.common.logger.logger
 
 @Tag(name = "Auth")
 @RestController
@@ -29,19 +31,21 @@ class AuthController(
     private val authService: AuthService
 ) {
 
+    private val log = logger()
+
     @Operation(
         summary = "로그아웃",
         responses = [
             ApiResponse(responseCode = "200", description = "조회 성공"),
             ApiResponse(responseCode = "401", description = "인증 실패"),
-            ApiResponse(responseCode = "403", description = "정지/탈퇴 유저"),
+            ApiResponse(responseCode = "403", description = "인증 실패 or 정지/탈퇴 유저"),
             ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")],
         security = [SecurityRequirement(name = "bearerAuth")]
     )
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
     fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> =
-        authService.logoutUser(request, response)
+        authService.logoutUser(request, response, SecurityUtil.getCurrentUserId())
 
     @Operation(summary = "소셜 로그인 파라미터", description = "소셜 로그인 요청하기 위한 파라미터")
     @GetMapping("/params/{social}")
@@ -67,7 +71,7 @@ class AuthController(
         ) @RequestParam("code") authorizationCode: String,
         @Parameter(
             name = "state",
-            description = "카카오 로그인 시에만 필요, CSRF 방지 또는 클라이언트 요청 상태 추적을 위한 임의의 문자열",
+            description = "네이버 로그인 시에만 필요, CSRF 방지 또는 클라이언트 요청 상태 추적을 위한 임의의 문자열",
             example = "abc123xyz"
         ) @RequestParam(required = false, defaultValue = "default_state") state: String,
         response: HttpServletResponse

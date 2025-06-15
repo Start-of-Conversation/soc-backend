@@ -13,6 +13,7 @@ import toyproject.startofconversation.auth.redis.RedisRefreshTokenRepository
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCNotFoundException
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
+import toyproject.startofconversation.common.logger.logger
 
 @Component
 class JwtAuthFilter(
@@ -21,14 +22,17 @@ class JwtAuthFilter(
     private val usersRepository: UsersRepository
 ) : OncePerRequestFilter() {
 
+    private val log = logger()
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
         val requestURI = request.requestURI
+        log.info("요청 api: $requestURI")
 
-        //whiteList에 있는 경로의 경우 인증 없이 패스
+        // 화이트리스트 경로는 인증 없이 통과
         if (isPublicApi(requestURI) || isSwagger(requestURI)) {
             filterChain.doFilter(request, response)
             return
@@ -37,47 +41,59 @@ class JwtAuthFilter(
         val accessToken = resolveAccessToken(request)
         val refreshToken = resolveRefreshToken(request)
 
-        try {
-            val claims = accessToken?.let { jwtProvider.validateToken(it) }
+        /*
+                request.cookies?.forEach {
+                    log.debug("쿠키 확인 - 이름: ${it.name}, 값: ${it.value}")
+                }
+                log.debug("추출된 refreshToken: {}", refreshToken)
 
+                log.debug("요청 URI: {}", requestURI)
+                log.debug("액세스 토큰: {}", accessToken)
+        */
+
+        try {
+            // ✅ Access Token이 유효한 경우
+            val claims = accessToken?.let { jwtProvider.validateToken(it) }
             if (claims != null) {
-                // 유효한 accessToken
-                val userId = claims.subject
-                setAuthentication(userId, claims)
+                setAuthentication(claims.subject, claims)
                 filterChain.doFilter(request, response)
                 return
             }
 
-            // accessToken이 만료되었고, refreshToken이 존재할 때
+            // ✅ Access Token 만료, Refresh Token이 있는 경우
             if (!refreshToken.isNullOrBlank()) {
                 val refreshClaims = jwtProvider.validateToken(refreshToken)
-
                 if (refreshClaims != null) {
                     val userId = refreshTokenRepository.findUserIdByToken(refreshToken)
                         ?: throw SOCUnauthorizedException("Invalid refresh token")
+                    val user = usersRepository.findUsersById(userId)
+                        ?: throw SOCNotFoundException("User not found")
 
-                    val user = usersRepository.findUsersById(userId) ?: throw SOCNotFoundException("User not found")
                     val newAccessToken = jwtProvider.generateToken(user)
-
                     response.setHeader("Authorization", "Bearer $newAccessToken")
 
-                    // SecurityContext 설정 후 통과
                     setAuthentication(userId, refreshClaims)
                     filterChain.doFilter(request, response)
                     return
                 }
             }
 
+            // ✅ Access, Refresh 모두 유효하지 않으면 예외
             throw SOCUnauthorizedException("Unauthorized")
 
         } catch (e: Exception) {
+            // ❗ 응답을 확실히 마무리
+            log.warn("인증 실패: {}", e.message)
             response.status = HttpServletResponse.SC_UNAUTHORIZED
-            response.writer.write("Authentication failed: ${e.message}")
+            response.contentType = "application/json;charset=UTF-8"
+            response.writer.write("{\"error\": \"Authentication failed: ${e.message}\"}")
+            response.writer.flush()
+            response.writer.close()
         }
     }
 
     private fun isPublicApi(requestURI: String): Boolean =
-        requestURI.startsWith("/auth")
+        (requestURI.startsWith("/auth") && requestURI != "/auth/logout")
             || requestURI.matches(Regex("/api/.*/public/.*"))
             || requestURI.startsWith("/favicon.ico")
 
@@ -90,7 +106,8 @@ class JwtAuthFilter(
     private fun resolveAccessToken(request: HttpServletRequest): String? {
         val header = request.getHeader("Authorization")
         return if (!header.isNullOrBlank() && header.startsWith("Bearer ")) {
-            header.substring(7)
+            val substring = header.substring(7)
+            substring
         } else null
     }
 
@@ -102,5 +119,7 @@ class JwtAuthFilter(
         val role = claims["role"] as String
         val auth = UsernamePasswordAuthenticationToken(userId, null, listOf(SimpleGrantedAuthority(role)))
         SecurityContextHolder.getContext().authentication = auth
+
+        log.info("✅ 인증 객체: {}, 인증 여부: {}", auth, auth.isAuthenticated)
     }
 }
