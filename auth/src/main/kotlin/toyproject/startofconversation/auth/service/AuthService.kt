@@ -32,7 +32,7 @@ class AuthService(
     private val log = logger<AuthService>()
 
     fun deleteAuth(userId: String) = Tx.writeTx {
-        if (authRepository.existsById(userId)) {
+        if (authRepository.existsByUserId(userId)) {
             authRepository.deleteAllByUserId(userId)
         }
     }

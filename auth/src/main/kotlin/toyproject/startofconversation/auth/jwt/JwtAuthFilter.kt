@@ -29,8 +29,6 @@ class JwtAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        log.info("필터 시작")
-
         val requestURI = request.requestURI
         log.info("요청 api: $requestURI")
 
@@ -40,21 +38,18 @@ class JwtAuthFilter(
             return
         }
 
-        log.info("checklist 통과")
-
         val accessToken = resolveAccessToken(request)
-
-        log.info("accessToken : $accessToken")
-
         val refreshToken = resolveRefreshToken(request)
 
-        request.cookies?.forEach {
-            log.info("쿠키 확인 - 이름: ${it.name}, 값: ${it.value}")
-        }
-        log.info("추출된 refreshToken: {}", refreshToken)
+        /*
+                request.cookies?.forEach {
+                    log.debug("쿠키 확인 - 이름: ${it.name}, 값: ${it.value}")
+                }
+                log.debug("추출된 refreshToken: {}", refreshToken)
 
-        log.info("요청 URI: {}", requestURI)
-        log.info("액세스 토큰: {}", accessToken)
+                log.debug("요청 URI: {}", requestURI)
+                log.debug("액세스 토큰: {}", accessToken)
+        */
 
         try {
             // ✅ Access Token이 유효한 경우
@@ -110,10 +105,8 @@ class JwtAuthFilter(
 
     private fun resolveAccessToken(request: HttpServletRequest): String? {
         val header = request.getHeader("Authorization")
-        log.info("header: $header")
         return if (!header.isNullOrBlank() && header.startsWith("Bearer ")) {
             val substring = header.substring(7)
-            log.info("액세스 토큰 in resolveAccessToken: {}", substring)
             substring
         } else null
     }

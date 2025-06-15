@@ -44,10 +44,8 @@ class AuthController(
     )
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
-    fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> {
-        log.info("logoutUser()")
-        return authService.logoutUser(request, response, SecurityUtil.getCurrentUserId())
-    }
+    fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> =
+        authService.logoutUser(request, response, SecurityUtil.getCurrentUserId())
 
     @Operation(summary = "소셜 로그인 파라미터", description = "소셜 로그인 요청하기 위한 파라미터")
     @GetMapping("/params/{social}")
