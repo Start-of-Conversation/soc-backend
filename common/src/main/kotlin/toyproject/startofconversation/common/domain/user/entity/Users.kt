@@ -30,16 +30,17 @@ class Users(
 
     var deletedAt: LocalDateTime? = null,
 
-    @OneToMany(mappedBy = "user")
-    var devices: MutableSet<Device> = mutableSetOf(),
-
-    @OneToMany(mappedBy = "user")
-    var likes: MutableSet<Likes> = mutableSetOf(),
-
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
     var marketing: Marketing? = null
 
 ) : BaseDateEntity(Domain.USER) {
+
+    @OneToMany(mappedBy = "user")
+    var devices: MutableSet<Device> = mutableSetOf()
+
+    @OneToMany(mappedBy = "user")
+    var likes: MutableSet<Likes> = mutableSetOf()
+
     fun createMarketing(): Users {
         val marketing = Marketing(user = this)
         this.marketing = marketing
