@@ -37,9 +37,8 @@ class CardGroup(
     @OneToMany(mappedBy = "cardGroup")
     val likes: MutableSet<Likes> = mutableSetOf()
 
-    fun setThumbs(thumbnail: String?): CardGroup = thumbnail?.let {
-        cardGroupThumbnail = thumbnail
-        this
-    } ?: this
+    fun setThumbs(thumbnail: String?): CardGroup = apply {
+        thumbnail?.let { cardGroupThumbnail = it }
+    }
 
 }

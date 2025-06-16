@@ -40,4 +40,19 @@ class CardGroupService(
 
         ResponseData.to(CardGroupInfoResponse.from(cardGroup))
     }
+
+    /**
+     * TODO
+     *  객체와 연결된 card들을 어떻게 할지 고민..
+     */
+    @Transactional
+    @LoginUserAccess
+    fun delete(cardGroupId: String, userId: String): ResponseData<Boolean> {
+        val cardGroup = cardGroupRepository.findByIdAndUserId(cardGroupId, userId)
+            ?: throw CardGroupNotFoundException(cardGroupId)
+
+        cardGroupRepository.delete(cardGroup)
+
+        return ResponseData.to("CardGroup $cardGroupId has been successfully removed.", true)
+    }
 }
