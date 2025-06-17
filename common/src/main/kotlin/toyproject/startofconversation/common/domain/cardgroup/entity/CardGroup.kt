@@ -27,12 +27,18 @@ class CardGroup(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    var user: Users,
+    var user: Users
+
+) : BaseDateEntity(Domain.CARD_GROUP) {
 
     @OneToMany(mappedBy = "cardGroup", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf(),
+    val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf()
 
     @OneToMany(mappedBy = "cardGroup")
     val likes: MutableSet<Likes> = mutableSetOf()
 
-) : BaseDateEntity(Domain.CARD_GROUP)
+    fun setThumbs(thumbnail: String?): CardGroup = apply {
+        thumbnail?.let { cardGroupThumbnail = it }
+    }
+
+}

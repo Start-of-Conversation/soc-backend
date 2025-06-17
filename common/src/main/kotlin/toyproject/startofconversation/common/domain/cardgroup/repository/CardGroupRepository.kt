@@ -7,5 +7,7 @@ import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 @Repository
 interface CardGroupRepository : JpaRepository<CardGroup, String> {
 
+    fun findByIdAndUserId(id: String, userId: String): CardGroup?
+
     fun countByCardGroupCardsContains(cardGroup: CardGroup): Long
 }
