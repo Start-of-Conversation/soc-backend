@@ -24,7 +24,8 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 @RequestMapping("/api/user")
 @SecurityRequirement(name = "bearerAuth")
 class UserController(
-    private val usersService: UserService
+    private val usersService: UserService,
+    private val cardService: CardService,
 ) : BaseController() {
 
     @Operation(
@@ -48,4 +49,11 @@ class UserController(
     )
     @DeleteMapping("/withdrawal")
     fun withdrawalUser(): ResponseData<Boolean> = usersService.deleteUser(getUserId())
+
+
+    @GetMapping("/mypage/card")
+    fun getMyPageCards(
+        @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
+    ): PageResponseData<List<CardDto>> = cardService.findCardsByUserId(getUserId(), pageable)
+
 }

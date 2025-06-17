@@ -2,7 +2,6 @@ package toyproject.startofconversation.api.card
 
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
@@ -13,7 +12,6 @@ import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.auth.support.AuthValidator
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.card.entity.Card
-import toyproject.startofconversation.common.domain.card.exception.CardDuplicationException
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
@@ -21,6 +19,7 @@ import toyproject.startofconversation.common.domain.cardgroup.repository.CardGro
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.exception.UserMismatchException
 import toyproject.startofconversation.common.lock.strategy.LockService
+import java.time.LocalDateTime
 
 @Service
 class CardService(
@@ -40,6 +39,24 @@ class CardService(
             PageResponseData(CardListResponse.from(cardGroupId, cards.content), cards)
         } ?: throw CardGroupNotFoundException(cardGroupId)
 
+    fun findCardsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardDto>> =
+        cardRepository.findByUserId(userId, pageable).run {
+            PageResponseData(map(CardDto::from).toList(), this)
+        }
+
+    @Transactional(readOnly = true)
+    fun findCardsWithFilter(
+        cardGroupId: String?,
+        from: LocalDateTime?,
+        to: LocalDateTime?,
+        userId: String?,
+        pageable: Pageable
+    ): PageResponseData<List<CardDto>> = cardRepository.findFilteredCards(
+        cardGroupId, from, to, userId, pageable
+    ).run {
+        PageResponseData(map(CardDto::from).toList(), this)
+    }
+
     @Transactional
     @LoginUserAccess
     fun updateCard(cardId: String, cardUpdateRequest: CardUpdateRequest, userId: String): ResponseData<CardDto> {
@@ -47,7 +64,7 @@ class CardService(
         authValidator.validateUserAccess(userId, card.user.id)
 
         card.updateQuestion(cardUpdateRequest.newQuestion)
-        return ResponseData.to(CardDto(cardId = cardId, question = card.question))
+        return ResponseData.to(CardDto.from(card))
     }
 
     @Transactional
@@ -56,7 +73,7 @@ class CardService(
         val card = withGroupCardLock(request.cardGroupId) {
             createCardAndSave(request.cardGroupId, request.question, userId)
         }
-        val cardDto = CardDto(card.id, card.question)
+        val cardDto = CardDto.from(card)
         return ResponseData.to(CardResponse(request.cardGroupId, cardDto))
     }
 
