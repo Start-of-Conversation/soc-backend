@@ -3,55 +3,44 @@ package toyproject.startofconversation.api.card
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.web.PageableDefault
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.*
-import toyproject.startofconversation.api.card.dto.CardDto
-import toyproject.startofconversation.api.card.dto.CardListResponse
-import toyproject.startofconversation.api.card.dto.CardResponse
-import toyproject.startofconversation.api.card.dto.CardSaveRequest
-import toyproject.startofconversation.api.card.dto.CardUpdateRequest
+import toyproject.startofconversation.api.card.dto.*
+import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.api.paging.PageResponseData
-import toyproject.startofconversation.auth.support.SecurityUtil
 import toyproject.startofconversation.common.base.dto.ResponseData
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/card")
 class CardController(
     private val cardService: CardService
-) {
+) : BaseController() {
 
-    /**
-     * TODO
-     *  - 수정 예정
-     *      카드 정렬이
-     *          1. 랜덤으로 할 것인지
-     *          2. 아니라면 생성일순인지 수정일순인지
-     *          3. 오름차순으로 할 것인지 내림차순으로 할 것인지
-     *      결정 필요
-     *      -> id 기준 최신순
-     */
     @GetMapping("/public")
-    fun getCards(
-        @RequestParam("id") cardGroupId: String,
+    fun getCardsWithFilters(
+        @RequestParam("card-group") cardGroupId: String,
+        @RequestParam("from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) from: LocalDateTime?,
+        @RequestParam("to", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) to: LocalDateTime?,
+        @RequestParam("user-id", required = false) userId: String?,
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
-    ): PageResponseData<CardListResponse> = cardService.getCards(cardGroupId, pageable)
+    ): PageResponseData<List<CardDto>> = cardService.findCardsWithFilter(cardGroupId, from, to, userId, pageable)
 
     @PostMapping("/add")
-    fun addCard(@RequestBody request: CardSaveRequest): ResponseData<CardResponse> = cardService.addCard(
-        request = request,
-        userId = SecurityUtil.getCurrentUserId()
-    )
+    fun addCard(
+        @RequestBody request: CardSaveRequest
+    ): ResponseData<CardResponse> = cardService.addCard(request, getUserId())
 
     @PatchMapping("/{id}")
     fun updateCard(
         @PathVariable("id") cardId: String,
         @RequestBody request: CardUpdateRequest
-    ): ResponseData<CardDto> = cardService.updateCard(cardId, request, SecurityUtil.getCurrentUserId())
+    ): ResponseData<CardDto> = cardService.updateCard(cardId, request, getUserId())
 
     @DeleteMapping("/{id}")
     fun deleteCard(
         @PathVariable("id") cardId: String
-    ): ResponseData<Boolean> = cardService.deleteCard(
-        cardId = cardId,
-        userId = SecurityUtil.getCurrentUserId()
-    )
+    ): ResponseData<Boolean> = cardService.deleteCard(cardId, getUserId())
 }
