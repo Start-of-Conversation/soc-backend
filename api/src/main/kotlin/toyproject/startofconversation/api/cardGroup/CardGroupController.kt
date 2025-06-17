@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
-import toyproject.startofconversation.auth.support.SecurityUtil
+import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @Tag(name = "CardGroup")
@@ -19,7 +19,7 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 @RequestMapping("/api/cardgroup")
 class CardGroupController(
     private val cardGroupService: CardGroupService
-) {
+) : BaseController() {
 
     @GetMapping("/public")
     fun publicCardGroup(@RequestParam("id") cardGroupId: String): ResponseData<CardGroupInfoResponse> =
@@ -27,9 +27,9 @@ class CardGroupController(
 
     @PostMapping("/add")
     fun createCardGroup(@RequestBody request: CardGroupCreateRequest): ResponseData<CardGroupInfoResponse> =
-        cardGroupService.create(request, SecurityUtil.getCurrentUserId())
+        cardGroupService.create(request, getUserId())
 
     @DeleteMapping("/{cardGroupId}")
     fun deleteCardGroup(@PathVariable cardGroupId: String): ResponseData<Boolean> =
-        cardGroupService.delete(cardGroupId, SecurityUtil.getCurrentUserId())
+        cardGroupService.delete(cardGroupId, getUserId())
 }
