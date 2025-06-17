@@ -5,7 +5,10 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
-import toyproject.startofconversation.api.card.dto.*
+import toyproject.startofconversation.api.card.dto.CardDto
+import toyproject.startofconversation.api.card.dto.CardResponse
+import toyproject.startofconversation.api.card.dto.CardSaveRequest
+import toyproject.startofconversation.api.card.dto.CardUpdateRequest
 import toyproject.startofconversation.api.card.validator.CardValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
@@ -15,7 +18,6 @@ import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
-import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.exception.UserMismatchException
 import toyproject.startofconversation.common.lock.strategy.LockService
@@ -25,19 +27,11 @@ import java.time.LocalDateTime
 class CardService(
     private val cardRepository: CardRepository,
     private val cardGroupRepository: CardGroupRepository,
-    private val cardGroupCardsRepository: CardGroupCardsRepository,
     private val lockService: LockService,
     private val userService: UserService,
     private val validator: CardValidator,
     private val authValidator: AuthValidator
 ) {
-
-    fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> =
-        cardGroupRepository.findByIdOrNull(cardGroupId)?.let {
-            val cards = cardGroupCardsRepository.findAllByCardGroup(pageable, it)
-                .map { cardGroupCards -> cardGroupCards.card }
-            PageResponseData(CardListResponse.from(cardGroupId, cards.content), cards)
-        } ?: throw CardGroupNotFoundException(cardGroupId)
 
     fun findCardsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardDto>> =
         cardRepository.findByUserId(userId, pageable).run {

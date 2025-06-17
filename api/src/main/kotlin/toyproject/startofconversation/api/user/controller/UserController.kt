@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import toyproject.startofconversation.api.card.CardService
 import toyproject.startofconversation.api.card.dto.CardDto
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.dto.UserDataResponse
@@ -24,8 +24,7 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 @RequestMapping("/api/user")
 @SecurityRequirement(name = "bearerAuth")
 class UserController(
-    private val usersService: UserService,
-    private val cardService: CardService,
+    private val usersService: UserService
 ) : BaseController() {
 
     @Operation(
@@ -50,10 +49,16 @@ class UserController(
     @DeleteMapping("/withdrawal")
     fun withdrawalUser(): ResponseData<Boolean> = usersService.deleteUser(getUserId())
 
-
-    @GetMapping("/mypage/card")
+    @Operation(summary = "회원이 생성한 카드 조회")
+    @GetMapping("/mypage/cards")
     fun getMyPageCards(
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
-    ): PageResponseData<List<CardDto>> = cardService.findCardsByUserId(getUserId(), pageable)
+    ): PageResponseData<List<CardDto>> = usersService.findCardsByUserId(getUserId(), pageable)
+
+    @Operation(summary = "회원이 생성한 카드 그룹 조회")
+    @GetMapping("/mypage/card-groups")
+    fun getMyPageCardGroups(
+        @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
+    ): PageResponseData<List<CardGroupInfoResponse>> = usersService.findCardGroupsByUserId(getUserId(), pageable)
 
 }

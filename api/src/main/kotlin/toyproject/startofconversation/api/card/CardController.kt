@@ -18,19 +18,13 @@ class CardController(
 ) : BaseController() {
 
     @GetMapping("/public")
-    fun getCardsByCardGroup(
-        @RequestParam("id") cardGroupId: String,
-        @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
-    ): PageResponseData<CardListResponse> = cardService.getCards(cardGroupId, pageable)
-
-    @GetMapping("filter")
     fun getCardsWithFilters(
         @RequestParam("card-group") cardGroupId: String,
         @RequestParam("from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) from: LocalDateTime?,
         @RequestParam("to", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) to: LocalDateTime?,
-        @RequestParam("userId", required = false) userId: String?,
+        @RequestParam("user-id", required = false) userId: String?,
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
     ): PageResponseData<List<CardDto>> = cardService.findCardsWithFilter(cardGroupId, from, to, userId, pageable)
 

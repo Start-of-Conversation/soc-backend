@@ -1,9 +1,15 @@
 package toyproject.startofconversation.api.user.service
 
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
+import toyproject.startofconversation.api.card.CardService
+import toyproject.startofconversation.api.card.dto.CardDto
+import toyproject.startofconversation.api.cardGroup.CardGroupService
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
+import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -16,6 +22,8 @@ import java.time.LocalDateTime
 class UserService(
     private val usersRepository: UsersRepository,
     private val authService: AuthService,
+    private val cardService: CardService,
+    private val cardGroupService: CardGroupService
 ) {
 
     @Transactional
@@ -38,5 +46,12 @@ class UserService(
 
     fun findUserById(id: String): Users = usersRepository.findByIdOrNull(id)
         ?: throw UserNotFoundException(id)
+
+    fun findCardsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardDto>> =
+        cardService.findCardsByUserId(userId, pageable)
+
+    fun findCardGroupsByUserId(
+        userId: String, pageable: Pageable
+    ): PageResponseData<List<CardGroupInfoResponse>> = cardGroupService.getCardGroupsByUserId(userId, pageable)
 
 }
