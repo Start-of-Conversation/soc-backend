@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.logger.logger
-import java.util.*
+import java.util.Date
 import javax.crypto.SecretKey
 
 @Component

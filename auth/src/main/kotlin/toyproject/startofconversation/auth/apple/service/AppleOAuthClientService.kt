@@ -6,7 +6,7 @@ import toyproject.startofconversation.auth.apple.dto.AppleOAuthProperties
 import toyproject.startofconversation.auth.apple.dto.AppleTokenResponse
 import toyproject.startofconversation.auth.apple.feign.AppleAuthTokenClient
 import toyproject.startofconversation.auth.apple.security.AppleKeyLoader
-import java.util.*
+import java.util.Date
 
 @Service
 class AppleOAuthClientService(
