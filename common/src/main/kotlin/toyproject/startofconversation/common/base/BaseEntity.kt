@@ -4,8 +4,8 @@ import jakarta.persistence.Column
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import toyproject.startofconversation.common.base.value.Domain
+import toyproject.startofconversation.common.support.UUIDUtil
 import java.io.Serializable
-import java.util.*
 
 @MappedSuperclass
 open class BaseEntity : Serializable {
@@ -18,7 +18,7 @@ open class BaseEntity : Serializable {
     protected constructor()
 
     protected constructor(domain: Domain) {
-        id = createId(domain)
+        id = UUIDUtil.createId(domain)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -28,11 +28,5 @@ open class BaseEntity : Serializable {
     }
 
     override fun hashCode(): Int = id.hashCode()
-
-    private fun createId(domain: Domain): String =
-        domain.toString().plus("_").plus(getRandomUUID())
-
-    private fun getRandomUUID(): String =
-        UUID.randomUUID().toString().replace("-", "");
 
 }
