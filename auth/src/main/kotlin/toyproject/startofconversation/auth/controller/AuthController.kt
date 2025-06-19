@@ -21,6 +21,7 @@ import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
 import toyproject.startofconversation.auth.controller.dto.LocalRegisterRequest
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
+import toyproject.startofconversation.auth.controller.dto.PasswordUpdateRequest
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.auth.service.SocialLoginService
@@ -51,7 +52,7 @@ class AuthController(
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/logout")
     fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<ResponseInfo> =
-        authService.logoutUser(request, response, SecurityUtil.getCurrentUserId())
+        authService.logoutUser(request, response, getUserId())
 
     @Operation(summary = "소셜 로그인 파라미터", description = "소셜 로그인 요청하기 위한 파라미터")
     @GetMapping("/params/{social}")
@@ -112,4 +113,12 @@ class AuthController(
         @RequestBody request: LocalLoginRequest,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> = authService.loginLocalUser(request, response)
+
+    @Operation(summary = "비밀번호 변경")
+    @PostMapping("/local/password")
+    fun updateLocalPassword(
+        @RequestBody request: PasswordUpdateRequest
+    ): ResponseData<Boolean> = authService.updatePassword(request, getUserId())
+
+    private fun getUserId() = SecurityUtil.getCurrentUserId()
 }

@@ -19,7 +19,7 @@ class ImageController(
     private val imageService: ImageService
 ) {
 
-    @GetMapping("/{domain}/{filename:.+}")
+    @GetMapping("/public/{domain}/{filename:.+}")
     fun loadImage(
         @PathVariable domain: String, @PathVariable filename: String
     ): ResponseEntity<Resource> = ResponseEntity.ok()
