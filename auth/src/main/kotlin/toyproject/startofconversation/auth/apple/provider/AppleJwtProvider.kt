@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import java.nio.charset.StandardCharsets
 import java.security.PublicKey
-import java.util.*
+import java.util.Base64
 
 
 @Component

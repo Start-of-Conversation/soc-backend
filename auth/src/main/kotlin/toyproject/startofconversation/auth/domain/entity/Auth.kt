@@ -1,6 +1,13 @@
 package toyproject.startofconversation.auth.domain.entity
 
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import jakarta.validation.constraints.Email
 import org.hibernate.annotations.Comment
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider

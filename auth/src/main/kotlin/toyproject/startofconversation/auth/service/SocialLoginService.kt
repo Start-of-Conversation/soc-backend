@@ -5,7 +5,10 @@ import toyproject.startofconversation.auth.apple.service.AppleAuthService
 import toyproject.startofconversation.auth.controller.dto.OAuthParameter
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
-import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.*
+import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.APPLE
+import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.KAKAO
+import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.LOCAL
+import toyproject.startofconversation.auth.domain.entity.value.AuthProvider.NAVER
 import toyproject.startofconversation.auth.kakao.service.KakaoAuthService
 import toyproject.startofconversation.auth.naver.service.NaverAuthService
 import toyproject.startofconversation.common.exception.SOCDomainViolationException

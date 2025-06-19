@@ -2,7 +2,7 @@ package toyproject.startofconversation.common.base.value
 
 import org.springframework.http.HttpStatus
 import toyproject.startofconversation.common.exception.SOCException
-import java.util.*
+import java.util.Arrays
 
 enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) {
 

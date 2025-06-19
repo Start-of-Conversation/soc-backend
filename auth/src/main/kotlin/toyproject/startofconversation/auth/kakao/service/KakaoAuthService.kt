@@ -14,7 +14,7 @@ import toyproject.startofconversation.auth.service.UserAuthStore
 import toyproject.startofconversation.auth.support.RandomNameMaker
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.transaction.helper.Tx
-import java.util.*
+import java.util.UUID
 
 @Service
 class KakaoAuthService(

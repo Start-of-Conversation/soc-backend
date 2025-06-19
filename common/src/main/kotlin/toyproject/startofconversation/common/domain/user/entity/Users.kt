@@ -1,8 +1,14 @@
 package toyproject.startofconversation.common.domain.user.entity
 
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
+import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseDateEntity
-import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.device.entity.Device
 import toyproject.startofconversation.common.domain.user.entity.value.Role
