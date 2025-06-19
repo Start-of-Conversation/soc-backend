@@ -12,6 +12,8 @@ interface AuthRepository : JpaRepository<Auth, String> {
 
     fun findByAuthProviderAndAuthId(provider: AuthProvider, authId: String): Auth?
 
+    fun findByAuthProviderAndUserId(provider: AuthProvider, userId: String): Auth?
+
     fun deleteAllByUserId(userId: String)
 
     fun existsByEmail(email: String): Boolean

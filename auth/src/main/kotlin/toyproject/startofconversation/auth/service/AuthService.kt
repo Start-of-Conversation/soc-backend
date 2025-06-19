@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import toyproject.startofconversation.auth.controller.dto.AuthResponse
 import toyproject.startofconversation.auth.controller.dto.LocalLoginRequest
 import toyproject.startofconversation.auth.controller.dto.LocalRegisterRequest
+import toyproject.startofconversation.auth.controller.dto.PasswordUpdateRequest
 import toyproject.startofconversation.auth.domain.entity.Auth
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.domain.repository.AuthRepository
@@ -64,6 +65,11 @@ class AuthService(
 
         return ResponseEntity(ResponseInfo.to(Code.OK, "Logout successful"), headers, HttpStatus.OK)
     }
+
+    @PreAuthorize("isAuthenticated()")
+    fun updatePassword(
+        request: PasswordUpdateRequest, userId: String
+    ): ResponseData<Boolean> = localAuthService.updatePassword(request, userId)
 
     fun signInUser(request: LocalRegisterRequest): ResponseData<Boolean> = localAuthService.saveUser(request)
 

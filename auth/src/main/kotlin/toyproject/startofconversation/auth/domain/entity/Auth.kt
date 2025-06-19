@@ -14,6 +14,7 @@ import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.common.base.BaseCreatedEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.user.entity.Users
+import java.time.LocalDateTime
 
 @Table(name = "user_auth")
 @Entity
@@ -36,10 +37,20 @@ class Auth(
 
     @Column(length = 100)
     @Comment("소셜 로그인 제공자의 고유 ID (google, kakao, naver 등)")
-    val authId: String? = null
+    val authId: String? = null,
+
+    @Column(nullable = false)
+    var lastPasswordModifiedAt: LocalDateTime = LocalDateTime.now()
 
 ) : BaseCreatedEntity(Domain.AUTH) {
 
     val activeUser: Users
         get() = user.ensureNotDeleted()
+
+    fun updatePassword(newPassword: String): Auth {
+        this.password = newPassword
+        this.lastPasswordModifiedAt = LocalDateTime.now()
+
+        return this
+    }
 }

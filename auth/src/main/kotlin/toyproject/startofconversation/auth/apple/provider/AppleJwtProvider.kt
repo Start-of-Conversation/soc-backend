@@ -1,5 +1,6 @@
 package toyproject.startofconversation.auth.apple.provider
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -20,8 +21,9 @@ class AppleJwtProvider {
     fun parseHeaders(token: String): Map<String, String> =
         runCatching {
             val header = token.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0]
-            return OBJECT_MAPPER.readValue(
-                decodeHeader(header), Map::class.java
+            OBJECT_MAPPER.readValue(
+                decodeHeader(header),
+                object : TypeReference<Map<String, String>>() {}
             ) as Map<String, String>
         }.getOrNull() ?: throw SOCUnauthorizedException("Apple OAuth Identity Token 형식이 올바르지 않습니다.")
 
