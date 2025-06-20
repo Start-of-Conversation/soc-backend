@@ -49,6 +49,11 @@ class CardGroupController(
         @PathVariable cardGroupId: String
     ): ResponseData<Boolean> = cardGroupService.like(cardGroupId, getUserId())
 
+    @Operation(summary = "카드그룹 좋아요 취소")
+    @DeleteMapping("/{cardGroupId}/like")
+    fun unlikeCardGroup(
+        @PathVariable cardGroupId: String
+    ): ResponseData<Boolean> = cardGroupService.unlike(cardGroupId, getUserId())
 
     @PostMapping("/add")
     fun createCardGroup(@RequestBody request: CardGroupCreateRequest): ResponseData<CardGroupInfoResponse> =

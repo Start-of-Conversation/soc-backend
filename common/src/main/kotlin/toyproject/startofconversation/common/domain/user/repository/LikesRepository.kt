@@ -11,4 +11,8 @@ interface LikesRepository : JpaRepository<Likes, String> {
 
     fun existsByUserAndCardGroup(user: Users, cardGroup: CardGroup): Boolean
 
+    fun existsByUserIdAndCardGroupId(userId: String, cardGroupId: String): Boolean
+
+    fun deleteByUserIdAndCardGroupId(userId: String, cardGroupId: String)
+
 }

@@ -18,6 +18,7 @@ import toyproject.startofconversation.common.domain.cardgroup.exception.Duplicat
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.entity.Likes
+import toyproject.startofconversation.common.domain.user.exception.LikeNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.LikesRepository
 
 @Service
@@ -59,6 +60,17 @@ class CardGroupService(
         cardGroup.likes.add(Likes(user, cardGroup))
 
         return ResponseData.to("Successfully liked ${cardGroupId}!", true)
+    }
+
+    @Transactional
+    @LoginUserAccess
+    fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
+        if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
+            throw LikeNotFoundException(cardGroupId, userId)
+        }
+        likesRepository.deleteByUserIdAndCardGroupId(cardGroupId, userId)
+
+        return ResponseData.to("Successfully unliked ${cardGroupId}!", true)
     }
 
     @Transactional
