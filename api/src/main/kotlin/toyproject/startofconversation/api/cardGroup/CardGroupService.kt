@@ -14,13 +14,17 @@ import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
+import toyproject.startofconversation.common.domain.cardgroup.exception.DuplicateLikeException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
+import toyproject.startofconversation.common.domain.user.entity.Likes
+import toyproject.startofconversation.common.domain.user.repository.LikesRepository
 
 @Service
 class CardGroupService(
     private val cardGroupRepository: CardGroupRepository,
     private val cardGroupCardsRepository: CardGroupCardsRepository,
+    private val likesRepository: LikesRepository,
     private val userService: UserService
 ) {
     fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> =
@@ -40,6 +44,22 @@ class CardGroupService(
 
     fun getCardGroupsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
         toPageResponse(cardGroupRepository.findAllByUserId(userId, pageable))
+
+    @Transactional
+    @LoginUserAccess
+    fun like(cardGroupId: String, userId: String): ResponseData<Boolean> {
+        val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId)
+            ?: throw CardGroupNotFoundException(cardGroupId)
+        val user = userService.findUserById(userId)
+
+        if (likesRepository.existsByUserAndCardGroup(user, cardGroup)) {
+            throw DuplicateLikeException(cardGroupId, userId)
+        }
+
+        cardGroup.likes.add(Likes(user, cardGroup))
+
+        return ResponseData.to("Successfully liked ${cardGroupId}!", true)
+    }
 
     @Transactional
     @LoginUserAccess

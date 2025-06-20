@@ -43,6 +43,13 @@ class CardGroupController(
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
     ): PageResponseData<CardListResponse> = cardGroupService.getCards(cardGroupId, pageable)
 
+    @Operation(summary = "카드그룹 좋아요")
+    @PostMapping("/{cardGroupId}/like")
+    fun likeCardGroup(
+        @PathVariable cardGroupId: String
+    ): ResponseData<Boolean> = cardGroupService.like(cardGroupId, getUserId())
+
+
     @PostMapping("/add")
     fun createCardGroup(@RequestBody request: CardGroupCreateRequest): ResponseData<CardGroupInfoResponse> =
         cardGroupService.create(request, getUserId())
