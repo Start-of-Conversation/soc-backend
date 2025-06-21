@@ -10,7 +10,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.user.entity.Likes
+import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.Users
 
 @Table(name = "cardgroup")

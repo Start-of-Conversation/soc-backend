@@ -1,4 +1,4 @@
-package toyproject.startofconversation.common.domain.user.exception
+package toyproject.startofconversation.common.domain.like.exception
 
 import toyproject.startofconversation.common.exception.SOCNotFoundException
 

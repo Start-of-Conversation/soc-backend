@@ -1,0 +1,52 @@
+package toyproject.startofconversation.api.like
+
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import toyproject.startofconversation.api.annotation.LoginUserAccess
+import toyproject.startofconversation.api.user.service.UserService
+import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.domain.card.repository.CardRepository
+import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
+import toyproject.startofconversation.common.domain.cardgroup.exception.DuplicateLikeException
+import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
+import toyproject.startofconversation.common.domain.like.entity.Likes
+import toyproject.startofconversation.common.domain.like.exception.LikeNotFoundException
+import toyproject.startofconversation.common.domain.like.repository.LikesRepository
+
+@Service
+class LikeService(
+    private val cardRepository: CardRepository,
+    private val userService: UserService,
+    private val cardGroupRepository: CardGroupRepository,
+    private val likesRepository: LikesRepository,
+) {
+
+    @Transactional
+    @LoginUserAccess
+    fun like(cardGroupId: String, userId: String): ResponseData<Boolean> {
+        val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId)
+            ?: throw CardGroupNotFoundException(cardGroupId)
+        val user = userService.findUserById(userId)
+
+        if (likesRepository.existsByUserAndCardGroup(user, cardGroup)) {
+            throw DuplicateLikeException(cardGroupId, userId)
+        }
+
+        cardGroup.likes.add(Likes(user, cardGroup))
+
+        return ResponseData.Companion.to("Successfully liked ${cardGroupId}!", true)
+    }
+
+    @Transactional
+    @LoginUserAccess
+    fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
+        if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
+            throw LikeNotFoundException(cardGroupId, userId)
+        }
+        likesRepository.deleteByUserIdAndCardGroupId(cardGroupId, userId)
+
+        return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
+    }
+
+}
