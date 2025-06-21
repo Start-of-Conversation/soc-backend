@@ -16,13 +16,13 @@ class LikeController(
 ) : BaseController() {
 
     @Operation(summary = "카드그룹 좋아요")
-    @PostMapping("/{cardGroupId}/like")
+    @PostMapping("/card-group/{cardGroupId}/like")
     fun likeCardGroup(
         @PathVariable cardGroupId: String
     ): ResponseData<Boolean> = likeService.like(cardGroupId, getUserId())
 
     @Operation(summary = "카드그룹 좋아요 취소")
-    @DeleteMapping("/{cardGroupId}/like")
+    @DeleteMapping("/card-group/{cardGroupId}/like")
     fun unlikeCardGroup(
         @PathVariable cardGroupId: String
     ): ResponseData<Boolean> = likeService.unlike(cardGroupId, getUserId())
