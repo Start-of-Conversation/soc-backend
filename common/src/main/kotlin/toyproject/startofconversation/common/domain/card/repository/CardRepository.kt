@@ -13,6 +13,8 @@ interface CardRepository : JpaRepository<Card, String>, CardQueryRepository {
 
     fun findByUserId(userId: String, pageable: Pageable): Page<Card>
 
+    fun findAllByIdIn(ids: List<String>): List<Card>
+
     fun existsByNormalizedQuestion(normalizedQuestion: String): Boolean
 
 }
