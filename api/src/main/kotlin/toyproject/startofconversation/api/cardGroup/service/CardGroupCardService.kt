@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.dto.CardListResponse
 import toyproject.startofconversation.api.cardGroup.dto.AddCardToGroupRequest
+import toyproject.startofconversation.api.cardGroup.dto.RemoveCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.validator.CardGroupCardValidator
 import toyproject.startofconversation.api.cardGroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
@@ -46,6 +47,20 @@ class CardGroupCardService(
 
         val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
         PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)
+    }
+
+    @Transactional
+    @LoginUserAccess
+    fun deleteCardToGroup(
+        cardGroupId: String, request: RemoveCardToGroupRequest, userId: String
+    ): ResponseData<CardListResponse> = with(request) {
+        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
+        val groupCards = cardGroupCardValidator.filterRemovalCards(cardIds, cardGroup)
+            .map { CardGroupCards(cardGroup, it) }
+        cardGroup.cardGroupCards.removeAll(groupCards)
+
+        val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
+        return PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)
     }
 
 

@@ -30,6 +30,20 @@ class CardGroupCardValidator(
         return foundCards.filterNot { it.id in existingIds }
     }
 
+    fun filterRemovalCards(requestedIds: List<String>, cardGroup: CardGroup): List<Card> {
+        val existingIds = cardGroup.cardGroupCards.map { it.card.id }.toSet()
+        val foundCards = cardRepository.findAllByIdIn(requestedIds)
+        val foundIds = foundCards.map { it.id }.toSet()
+
+        validateMissingCards(foundIds, requestedIds)
+        val nonExistentIds = foundIds.subtract(existingIds)
+        if (nonExistentIds.isNotEmpty()) {
+            log.info("Skipping cards not in group: $nonExistentIds")
+        }
+
+        return foundCards.filter { it.id in existingIds }
+    }
+
     private fun validateMissingCards(foundIds: Set<String>, requestedIds: List<String>) =
         requestedIds.filterNot(foundIds::contains)
             .takeIf { it.isNotEmpty() }

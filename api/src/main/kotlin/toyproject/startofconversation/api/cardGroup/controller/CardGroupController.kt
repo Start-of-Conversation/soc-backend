@@ -31,8 +31,8 @@ class CardGroupController(
     ): ResponseData<List<CardGroupInfoResponse>> = cardGroupService.getCardGroups(pageable)
 
     @Operation(summary = "카드그룹 정보 조회")
-    @GetMapping("/public/{id}")
-    fun publicCardGroupInfo(@PathVariable("id") cardGroupId: String): ResponseData<CardGroupInfoResponse> =
+    @GetMapping("/public/{cardGroupId}")
+    fun publicCardGroupInfo(@PathVariable cardGroupId: String): ResponseData<CardGroupInfoResponse> =
         cardGroupService.getCardGroupInfo(cardGroupId)
 
     @PostMapping("/add")
