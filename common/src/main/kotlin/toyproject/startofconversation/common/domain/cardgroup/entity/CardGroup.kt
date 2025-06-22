@@ -48,4 +48,20 @@ class CardGroup(
         thumbnail?.let { cardGroupThumbnail = it }
     }
 
+    fun setName(name: String?): CardGroup = apply {
+        name?.let { cardGroupName = it }
+    }
+
+    fun setSummary(summary: String?): CardGroup = apply {
+        summary?.let { cardGroupSummary = it }
+    }
+
+    fun setDesc(description: String?): CardGroup = apply {
+        description?.let { cardGroupDescription = it }
+    }
+
+    fun setCustomized(customized: Boolean?): CardGroup = apply {
+        customized?.let { isCustomized = it }
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
 import toyproject.startofconversation.api.cardGroup.service.CardGroupService
 import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -34,6 +36,13 @@ class CardGroupController(
     @GetMapping("/public/{cardGroupId}")
     fun publicCardGroupInfo(@PathVariable cardGroupId: String): ResponseData<CardGroupInfoResponse> =
         cardGroupService.getCardGroupInfo(cardGroupId)
+
+    @Operation(summary = "카드그룹 수정")
+    @PatchMapping("/{cardGroupId}")
+    fun updateCardGroupInfo(
+        @PathVariable cardGroupId: String,
+        @RequestBody request: CardGroupUpdateRequest
+    ): ResponseData<CardGroupInfoResponse> = cardGroupService.update(cardGroupId, request, getUserId())
 
     @PostMapping("/add")
     fun createCardGroup(@RequestBody request: CardGroupCreateRequest): ResponseData<CardGroupInfoResponse> =

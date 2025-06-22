@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
+import toyproject.startofconversation.api.cardGroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -18,7 +20,8 @@ import toyproject.startofconversation.common.domain.cardgroup.repository.CardGro
 @Service
 class CardGroupService(
     private val cardGroupRepository: CardGroupRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val cardGroupValidator: CardGroupValidator
 ) {
     fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> =
         cardGroupRepository.findByIdOrNull(id)?.let {
@@ -46,6 +49,21 @@ class CardGroupService(
             user = user
         ).setThumbs(thumbnail)
         cardGroupRepository.save(cardGroup)
+
+        ResponseData.to(CardGroupInfoResponse.from(cardGroup))
+    }
+
+    @Transactional
+    @LoginUserAccess
+    fun update(
+        cardGroupId: String, request: CardGroupUpdateRequest, userId: String
+    ): ResponseData<CardGroupInfoResponse> = with(request) {
+        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
+            .setName(name)
+            .setSummary(summary)
+            .setDesc(description)
+            .setThumbs(thumbnail)
+            .setCustomized(isCustomized)
 
         ResponseData.to(CardGroupInfoResponse.from(cardGroup))
     }
