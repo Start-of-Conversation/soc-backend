@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.CardService
 import toyproject.startofconversation.api.card.dto.CardDto
-import toyproject.startofconversation.api.cardGroup.CardGroupService
+import toyproject.startofconversation.api.cardGroup.service.CardGroupService
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.dto.UserDataResponse

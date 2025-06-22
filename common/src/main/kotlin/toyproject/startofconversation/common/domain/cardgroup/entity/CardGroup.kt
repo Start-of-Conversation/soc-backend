@@ -10,7 +10,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.user.entity.Likes
+import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.Users
 
 @Table(name = "cardgroup")
@@ -46,6 +46,22 @@ class CardGroup(
 
     fun setThumbs(thumbnail: String?): CardGroup = apply {
         thumbnail?.let { cardGroupThumbnail = it }
+    }
+
+    fun setName(name: String?): CardGroup = apply {
+        name?.let { cardGroupName = it }
+    }
+
+    fun setSummary(summary: String?): CardGroup = apply {
+        summary?.let { cardGroupSummary = it }
+    }
+
+    fun setDesc(description: String?): CardGroup = apply {
+        description?.let { cardGroupDescription = it }
+    }
+
+    fun setCustomized(customized: Boolean?): CardGroup = apply {
+        customized?.let { isCustomized = it }
     }
 
 }
