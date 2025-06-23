@@ -13,7 +13,9 @@ import toyproject.startofconversation.api.admin.dto.AdminUserListResponse
 import toyproject.startofconversation.auth.domain.entity.QAuth.auth
 import toyproject.startofconversation.common.annotation.QueryRepository
 import toyproject.startofconversation.common.domain.user.entity.QUsers.users
+import toyproject.startofconversation.common.domain.user.sort.UserSortField
 import toyproject.startofconversation.common.logger.logger
+import toyproject.startofconversation.common.support.QueryDslUtil
 import java.time.LocalDateTime
 
 @QueryRepository
@@ -46,6 +48,7 @@ class AdminUserRepository(
         .from(users)
         .leftJoin(auth).on(auth.user.id.eq(users.id))
         .where(predicate)
+        .orderBy(*getOrderSpecifiers(pageable).toTypedArray())
         .offset(pageable.offset)
         .limit(pageable.pageSize.toLong())
         .fetch()
@@ -71,6 +74,10 @@ class AdminUserRepository(
             channel = it.authProvider,
             createDate = it.createdAt ?: LocalDateTime.now()
         )
+    }
+
+    private fun getOrderSpecifiers(pageable: Pageable) = QueryDslUtil.getOrderSpecifiers(pageable) {
+        UserSortField.fromProperty(it)
     }
 
     private fun isDeleted(flag: Boolean): BooleanExpression = users.isDeleted.eq(flag)
