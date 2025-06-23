@@ -35,6 +35,10 @@ object QueryDslUtil {
         if (direction.isAscending) Order.ASC else Order.DESC, expression
     )
 
+    /**
+     * Pageable에 들어있는 정렬 정보(Sort)를 기반으로 다수의 정렬 조건을 한 번에 처리
+     * 동적 정렬 조건 처리
+     */
     fun getOrderSpecifiers(
         pageable: Pageable, fieldMapper: (String) -> ComparableExpressionBase<out Comparable<*>>?
     ): List<OrderSpecifier<*>> = pageable.sort.mapNotNull { sort ->

@@ -1,12 +1,15 @@
 package toyproject.startofconversation.api.like
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
+import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
-import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.exception.DuplicateLikeException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
@@ -15,18 +18,16 @@ import toyproject.startofconversation.common.domain.like.exception.LikeNotFoundE
 import toyproject.startofconversation.common.domain.like.repository.LikesRepository
 
 @Service
+@LoginUserAccess
 class LikeService(
-    private val cardRepository: CardRepository,
     private val userService: UserService,
     private val cardGroupRepository: CardGroupRepository,
-    private val likesRepository: LikesRepository,
+    private val likesRepository: LikesRepository
 ) {
 
     @Transactional
-    @LoginUserAccess
     fun like(cardGroupId: String, userId: String): ResponseData<Boolean> {
-        val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId)
-            ?: throw CardGroupNotFoundException(cardGroupId)
+        val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId) ?: throw CardGroupNotFoundException(cardGroupId)
         val user = userService.findUserById(userId)
 
         if (likesRepository.existsByUserAndCardGroup(user, cardGroup)) {
@@ -39,7 +40,6 @@ class LikeService(
     }
 
     @Transactional
-    @LoginUserAccess
     fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
         if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
             throw LikeNotFoundException(cardGroupId, userId)
@@ -49,4 +49,10 @@ class LikeService(
         return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
     }
 
+    fun findCardGroupsByUser(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
+        toPageResponse(likesRepository.findByUserId(userId, pageable))
+
+
+    private fun toPageResponse(data: Page<Likes>): PageResponseData<List<CardGroupInfoResponse>> =
+        PageResponseData(data.map(CardGroupInfoResponse::from).toList(), data)
 }

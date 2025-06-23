@@ -1,6 +1,7 @@
 package toyproject.startofconversation.api.cardGroup.dto
 
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
+import toyproject.startofconversation.common.domain.like.entity.Likes
 
 data class CardGroupInfoResponse(
     val id: String,
@@ -19,6 +20,8 @@ data class CardGroupInfoResponse(
                 total = cardGroupCards.size
             )
         }
+
+        fun from(like: Likes): CardGroupInfoResponse = from(like.cardGroup)
 
     }
 }

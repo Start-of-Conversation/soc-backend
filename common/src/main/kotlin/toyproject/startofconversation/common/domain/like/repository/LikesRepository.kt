@@ -7,7 +7,7 @@ import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.Users
 
 @Repository
-interface LikesRepository : JpaRepository<Likes, String> {
+interface LikesRepository : JpaRepository<Likes, String>, LikesQueryRepository {
 
     fun existsByUserAndCardGroup(user: Users, cardGroup: CardGroup): Boolean
 
