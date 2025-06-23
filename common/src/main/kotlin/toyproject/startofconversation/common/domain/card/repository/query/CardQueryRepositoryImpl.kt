@@ -1,4 +1,4 @@
-package toyproject.startofconversation.api.card.repository
+package toyproject.startofconversation.common.domain.card.repository.query
 
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -7,10 +7,9 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import toyproject.startofconversation.common.annotation.QueryRepository
 import toyproject.startofconversation.common.domain.card.entity.Card
-import toyproject.startofconversation.common.domain.card.entity.QCard.card
-import toyproject.startofconversation.common.domain.card.repository.CardQueryRepository
+import toyproject.startofconversation.common.domain.card.entity.QCard
 import toyproject.startofconversation.common.domain.card.sort.CardSortField
-import toyproject.startofconversation.common.domain.cardgroup.entity.QCardGroupCards.cardGroupCards
+import toyproject.startofconversation.common.domain.cardgroup.entity.QCardGroupCards
 import toyproject.startofconversation.common.support.QueryDslUtil
 import java.time.LocalDateTime
 
@@ -29,39 +28,39 @@ class CardQueryRepositoryImpl(
         val whereBuilder = BooleanBuilder()
 
         cardGroupId?.let {
-            whereBuilder.and(cardGroupCards.cardGroup.id.eq(it))
+            whereBuilder.and(QCardGroupCards.cardGroupCards.cardGroup.id.eq(it))
         }
 
         from?.let {
-            whereBuilder.and(card.createdAt.goe(it))
+            whereBuilder.and(QCard.card.createdAt.goe(it))
         }
 
         to?.let {
-            whereBuilder.and(card.createdAt.loe(it))
+            whereBuilder.and(QCard.card.createdAt.loe(it))
         }
 
         userId?.let {
-            whereBuilder.and(card.user.id.eq(it))
+            whereBuilder.and(QCard.card.user.id.eq(it))
         }
 
         val orderSpecifiers = QueryDslUtil.getOrderSpecifiers(pageable) {
-            CardSortField.fromProperty(it)
+            CardSortField.Companion.fromProperty(it)
         }
 
         val results = queryFactory
-            .selectFrom(card)
-            .leftJoin(cardGroupCards).on(cardGroupCards.card.eq(card))
+            .selectFrom(QCard.card)
+            .leftJoin(QCardGroupCards.cardGroupCards).on(QCardGroupCards.cardGroupCards.card.eq(QCard.card))
             .where(whereBuilder)
             .orderBy(*orderSpecifiers.toTypedArray())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-            .orderBy(card.createdAt.desc())
+            .orderBy(QCard.card.createdAt.desc())
             .fetch()
 
         val total = queryFactory
-            .select(card.count())
-            .from(card)
-            .leftJoin(cardGroupCards).on(cardGroupCards.card.eq(card))
+            .select(QCard.card.count())
+            .from(QCard.card)
+            .leftJoin(QCardGroupCards.cardGroupCards).on(QCardGroupCards.cardGroupCards.card.eq(QCard.card))
             .where(whereBuilder)
             .fetchOne() ?: 0L
 

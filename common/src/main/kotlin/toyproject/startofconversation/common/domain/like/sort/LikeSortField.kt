@@ -1,7 +1,7 @@
 package toyproject.startofconversation.common.domain.like.sort
 
 import com.querydsl.core.types.dsl.ComparableExpressionBase
-import toyproject.startofconversation.common.domain.user.entity.QLikes
+import toyproject.startofconversation.common.domain.like.entity.QLikes
 
 enum class LikeSortField(
     val propertyName: String,

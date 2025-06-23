@@ -5,14 +5,15 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
-import toyproject.startofconversation.api.card.CardService
 import toyproject.startofconversation.api.card.dto.CardDto
-import toyproject.startofconversation.api.cardGroup.service.CardGroupService
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.domain.card.repository.CardRepository
+import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
@@ -22,8 +23,8 @@ import java.time.LocalDateTime
 class UserService(
     private val usersRepository: UsersRepository,
     private val authService: AuthService,
-    private val cardService: CardService,
-    private val cardGroupService: CardGroupService
+    private val cardRepository: CardRepository,
+    private val cardGroupRepository: CardGroupRepository
 ) {
 
     @Transactional
@@ -47,11 +48,14 @@ class UserService(
     fun findUserById(id: String): Users = usersRepository.findByIdOrNull(id)
         ?: throw UserNotFoundException(id)
 
-    fun findCardsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardDto>> =
-        cardService.findCardsByUserId(userId, pageable)
+    fun findCardsByUserId(
+        userId: String, pageable: Pageable
+    ): PageResponseData<List<CardDto>> = cardRepository.findByUserId(userId, pageable).run {
+        PageResponseData(map(CardDto::from).toList(), this)
+    }
 
     fun findCardGroupsByUserId(
         userId: String, pageable: Pageable
-    ): PageResponseData<List<CardGroupInfoResponse>> = cardGroupService.getCardGroupsByUserId(userId, pageable)
-
+    ): PageResponseData<List<CardGroupInfoResponse>> = cardGroupRepository.findAllByUserId(userId, pageable)
+        .toPageResponse(CardGroupInfoResponse::from)
 }

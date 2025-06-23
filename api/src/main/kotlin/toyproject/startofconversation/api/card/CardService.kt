@@ -33,11 +33,6 @@ class CardService(
     private val authValidator: AuthValidator
 ) {
 
-    fun findCardsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardDto>> =
-        cardRepository.findByUserId(userId, pageable).run {
-            PageResponseData(map(CardDto::from).toList(), this)
-        }
-
     @Transactional(readOnly = true)
     fun findCardsWithFilter(
         cardGroupId: String?,
