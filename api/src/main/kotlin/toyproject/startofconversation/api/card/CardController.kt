@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.card.dto.CardDto
-import toyproject.startofconversation.api.card.dto.CardResponse
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.card.dto.CardUpdateRequest
 import toyproject.startofconversation.api.common.BaseController
@@ -42,7 +41,7 @@ class CardController(
     @PostMapping("/add")
     fun addCard(
         @RequestBody request: CardSaveRequest
-    ): ResponseData<CardResponse> = cardService.addCard(request, getUserId())
+    ): ResponseData<CardDto> = cardService.addCard(request, getUserId())
 
     @PatchMapping("/{id}")
     fun updateCard(

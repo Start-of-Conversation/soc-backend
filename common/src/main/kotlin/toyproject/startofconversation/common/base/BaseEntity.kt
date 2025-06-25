@@ -23,8 +23,9 @@ open class BaseEntity : Serializable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other == null || this::class != other::class) return false
-        return (other as BaseEntity).id == this.id
+        if (other == null) return false
+        if (other !is BaseEntity) return false
+        return this.id == other.id
     }
 
     override fun hashCode(): Int = id.hashCode()

@@ -12,4 +12,6 @@ interface CardGroupCardsRepository : JpaRepository<CardGroupCards, String> {
 
     fun findAllByCardGroup(pageable: Pageable, cardGroup: CardGroup): Page<CardGroupCards>
 
+    fun countByCardGroup(cardGroup: CardGroup): Int
+
 }
