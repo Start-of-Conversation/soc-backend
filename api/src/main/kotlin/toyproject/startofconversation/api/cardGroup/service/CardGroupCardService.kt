@@ -60,9 +60,8 @@ class CardGroupCardService(
         cardGroupId: String, request: RemoveCardToGroupRequest, userId: String
     ): ResponseData<CardListResponse> = with(request) {
         val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
-        val groupCards = cardGroupCardValidator.filterRemovalCards(cardIds, cardGroup)
-            .map { CardGroupCards(cardGroup, it) }
-        cardGroup.cardGroupCards.removeAll(groupCards)
+        val cardsInGroup = cardGroupCardValidator.filterRemovalCards(cardIds, cardGroup)
+        cardGroupCardsRepository.deleteAllByCardGroupAndCardIn(cardGroup, cardsInGroup)
 
         val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
         return PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)

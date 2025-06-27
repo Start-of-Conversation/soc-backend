@@ -29,7 +29,7 @@ class CardController(
 
     @GetMapping("/public")
     fun getCardsWithFilters(
-        @RequestParam("card-group") cardGroupId: String,
+        @RequestParam("card-group") cardGroupId: String?,
         @RequestParam("from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) from: LocalDateTime?,
         @RequestParam("to", required = false)

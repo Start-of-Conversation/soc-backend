@@ -5,7 +5,7 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 
 class PageResponseData<T> : ResponseData<T> {
 
-    private val pageInfo: PageInfo
+    val pageInfo: PageInfo
 
     constructor(wrapper: T, pageInfo: PageInfo) : super(wrapper) {
         this.pageInfo = pageInfo

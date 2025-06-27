@@ -5,43 +5,48 @@ import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.SomeCardsNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
+import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.logger.logger
 
 @Component
 class CardGroupCardValidator(
     private val cardRepository: CardRepository,
+    private val cardGroupCardRepository: CardGroupCardsRepository
 ) {
     private val log = logger()
 
-    fun filterValidCards(
+    fun filterValidCards(requestedIds: List<String>, cardGroup: CardGroup): List<Card> = filterCardsByGroup(
+        requestedIds,
+        cardGroup,
+        filterCondition = { found, existing -> found - existing },
+        logMessage = { skipped -> "Skipping already in cards: $skipped" }
+    )
+
+    fun filterRemovalCards(requestedIds: List<String>, cardGroup: CardGroup): List<Card> = filterCardsByGroup(
+        requestedIds,
+        cardGroup,
+        filterCondition = { found, existing -> found.intersect(existing) },
+        logMessage = { skipped -> "Skipping cards not in group: $skipped" }
+    )
+
+    private fun filterCardsByGroup(
         requestedIds: List<String>,
-        cardGroup: CardGroup
+        cardGroup: CardGroup,
+        filterCondition: (Set<String>, Set<String>) -> Set<String>,
+        logMessage: (Set<String>) -> String
     ): List<Card> {
-        val existingIds = cardGroup.cardGroupCards.map { it.card.id }.toSet()
+        val existingIds = cardGroupCardRepository.findAllByCardGroup(cardGroup).map { it.card.id }.toSet()
         val foundCards = cardRepository.findAllByIdIn(requestedIds)
         val foundIds = foundCards.map { it.id }.toSet()
 
         validateMissingCards(foundIds, requestedIds)
-        val duplicateIds = foundIds.intersect(existingIds)
-        if (duplicateIds.isNotEmpty()) {
-            log.info("Skipping already in cards: $duplicateIds")
+
+        val targetIds = filterCondition(foundIds, existingIds)
+        if (targetIds.size != foundCards.size) {
+            log.info(logMessage(foundIds.subtract(targetIds)))
         }
 
-        return foundCards.filterNot { it.id in existingIds }
-    }
-
-    fun filterRemovalCards(requestedIds: List<String>, cardGroup: CardGroup): List<Card> {
-        val existingIds = cardGroup.cardGroupCards.map { it.card.id }.toSet()
-        val foundCards = cardRepository.findAllByIdIn(requestedIds)
-        val foundIds = foundCards.map { it.id }.toSet()
-
-        validateMissingCards(foundIds, requestedIds)
-        val nonExistentIds = foundIds.subtract(existingIds)
-        if (nonExistentIds.isNotEmpty()) {
-            log.info("Skipping cards not in group: $nonExistentIds")
-        }
-
-        return foundCards.filter { it.id in existingIds }
+        return foundCards.filter { it.id in targetIds }
     }
 
     private fun validateMissingCards(foundIds: Set<String>, requestedIds: List<String>) =

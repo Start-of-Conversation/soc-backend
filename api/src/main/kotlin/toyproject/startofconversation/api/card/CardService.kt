@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.dto.CardDto
-import toyproject.startofconversation.api.card.dto.CardResponse
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.card.dto.CardUpdateRequest
 import toyproject.startofconversation.api.card.validator.CardValidator
@@ -17,19 +16,11 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
-import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
-import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCards
-import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
-import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
-import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
-import toyproject.startofconversation.common.domain.user.entity.Users
 import java.time.LocalDateTime
 
 @Service
 class CardService(
     private val cardRepository: CardRepository,
-    private val cardGroupRepository: CardGroupRepository,
-    private val cardGroupCardsRepository: CardGroupCardsRepository,
     private val userService: UserService,
     private val validator: CardValidator,
     private val authValidator: AuthValidator

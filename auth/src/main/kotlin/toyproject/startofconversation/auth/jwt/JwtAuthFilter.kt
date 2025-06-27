@@ -30,7 +30,7 @@ class JwtAuthFilter(
         filterChain: FilterChain
     ) {
         val requestURI = request.requestURI
-        log.info("요청 api: $requestURI")
+        log.info("요청 methde: ${request.method} api: $requestURI")
 
         // 화이트리스트 경로는 인증 없이 통과
         if (isPublicApi(requestURI) || isSwagger(requestURI)) {
