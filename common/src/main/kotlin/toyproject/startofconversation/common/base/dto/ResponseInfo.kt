@@ -2,7 +2,7 @@ package toyproject.startofconversation.common.base.dto
 
 import toyproject.startofconversation.common.base.value.Code
 
-open class ResponseInfo(private val code: String, private val message: String) {
+open class ResponseInfo(val code: String, val message: String) {
 
     companion object {
 

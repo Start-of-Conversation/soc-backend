@@ -35,7 +35,7 @@ class LikeService(
             throw DuplicateLikeException(cardGroupId, userId)
         }
 
-        cardGroup.likes.add(Likes(user, cardGroup))
+        likesRepository.save(Likes(user, cardGroup))
 
         return ResponseData.Companion.to("Successfully liked ${cardGroupId}!", true)
     }
@@ -45,7 +45,7 @@ class LikeService(
         if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
             throw LikeNotFoundException(cardGroupId, userId)
         }
-        likesRepository.deleteByUserIdAndCardGroupId(cardGroupId, userId)
+        likesRepository.deleteByUserIdAndCardGroupId(userId, cardGroupId)
 
         return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
     }

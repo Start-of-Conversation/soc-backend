@@ -37,7 +37,7 @@ class UserService(
 
         authService.deleteAuth(id)
 
-        ResponseData.to("success", true)
+        ResponseData.to("Your account has been successfully deleted.", true)
     } ?: throw UserNotFoundException(id)
 
     @LoginUserAccess
