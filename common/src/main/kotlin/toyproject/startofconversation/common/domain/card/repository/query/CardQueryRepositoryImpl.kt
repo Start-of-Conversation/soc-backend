@@ -1,4 +1,4 @@
-package toyproject.startofconversation.api.card.repository
+package toyproject.startofconversation.common.domain.card.repository.query
 
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable
 import toyproject.startofconversation.common.annotation.QueryRepository
 import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.entity.QCard.card
-import toyproject.startofconversation.common.domain.card.repository.CardQueryRepository
 import toyproject.startofconversation.common.domain.card.sort.CardSortField
 import toyproject.startofconversation.common.domain.cardgroup.entity.QCardGroupCards.cardGroupCards
 import toyproject.startofconversation.common.support.QueryDslUtil
@@ -45,23 +44,22 @@ class CardQueryRepositoryImpl(
         }
 
         val orderSpecifiers = QueryDslUtil.getOrderSpecifiers(pageable) {
-            CardSortField.fromProperty(it)
+            CardSortField.Companion.fromProperty(it)
         }
 
         val results = queryFactory
             .selectFrom(card)
-            .leftJoin(cardGroupCards).on(cardGroupCards.card.eq(card))
+            .leftJoin(card.cardGroupCards, cardGroupCards)
             .where(whereBuilder)
             .orderBy(*orderSpecifiers.toTypedArray())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-            .orderBy(card.createdAt.desc())
             .fetch()
 
         val total = queryFactory
             .select(card.count())
             .from(card)
-            .leftJoin(cardGroupCards).on(cardGroupCards.card.eq(card))
+            .leftJoin(card.cardGroupCards, cardGroupCards)
             .where(whereBuilder)
             .fetchOne() ?: 0L
 

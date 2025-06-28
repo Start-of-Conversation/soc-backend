@@ -17,16 +17,16 @@ import toyproject.startofconversation.common.domain.user.entity.Users
 @Entity
 class CardGroup(
 
-    @Column(nullable = false, length = 40)
+    @Column(name = "cardgroup_name", nullable = false, length = 40)
     var cardGroupName: String,
 
-    @Column(nullable = false, length = 20)
+    @Column(name = "cardgroup_summary", nullable = false, length = 20)
     var cardGroupSummary: String,
 
-    @Column(nullable = false)
+    @Column(name = "cardgroup_description", nullable = false)
     var cardGroupDescription: String,
 
-    @Column(nullable = false)
+    @Column(name = "cardgroup_thumbnail", nullable = false)
     var cardGroupThumbnail: String = "~/image/cardgroups/default_profile.png",
 
     @Column(nullable = false)

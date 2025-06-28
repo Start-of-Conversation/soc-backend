@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
@@ -34,7 +35,7 @@ class LikeService(
             throw DuplicateLikeException(cardGroupId, userId)
         }
 
-        cardGroup.likes.add(Likes(user, cardGroup))
+        likesRepository.save(Likes(user, cardGroup))
 
         return ResponseData.Companion.to("Successfully liked ${cardGroupId}!", true)
     }
@@ -44,15 +45,11 @@ class LikeService(
         if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
             throw LikeNotFoundException(cardGroupId, userId)
         }
-        likesRepository.deleteByUserIdAndCardGroupId(cardGroupId, userId)
+        likesRepository.deleteByUserIdAndCardGroupId(userId, cardGroupId)
 
         return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
     }
 
     fun findCardGroupsByUser(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        toPageResponse(likesRepository.findByUserId(userId, pageable))
-
-
-    private fun toPageResponse(data: Page<Likes>): PageResponseData<List<CardGroupInfoResponse>> =
-        PageResponseData(data.map(CardGroupInfoResponse::from).toList(), data)
+        likesRepository.findByUserId(userId, pageable).toPageResponse(CardGroupInfoResponse::from)
 }

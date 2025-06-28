@@ -1,4 +1,4 @@
-package toyproject.startofconversation.common.domain.like.repository
+package toyproject.startofconversation.common.domain.like.repository.query
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

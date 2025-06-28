@@ -1,14 +1,13 @@
-package toyproject.startofconversation.api.like.repository
+package toyproject.startofconversation.common.domain.like.repository.query
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import toyproject.startofconversation.common.domain.cardgroup.entity.QCardGroup.cardGroup
+import toyproject.startofconversation.common.domain.cardgroup.entity.QCardGroup
 import toyproject.startofconversation.common.domain.like.entity.Likes
-import toyproject.startofconversation.common.domain.like.repository.LikesQueryRepository
+import toyproject.startofconversation.common.domain.like.entity.QLikes.likes
 import toyproject.startofconversation.common.domain.like.sort.LikeSortField
-import toyproject.startofconversation.common.domain.user.entity.QLikes.likes
 import toyproject.startofconversation.common.support.QueryDslUtil
 
 class LikesQueryRepositoryImpl(
@@ -20,12 +19,12 @@ class LikesQueryRepositoryImpl(
         userId: String, pageable: Pageable
     ): Page<Likes> {
         val orderSpecifiers = QueryDslUtil.getOrderSpecifiers(pageable) {
-            LikeSortField.fromProperty(it)
+            LikeSortField.Companion.fromProperty(it)
         }
 
         val results = queryFactory
             .selectFrom(likes)
-            .leftJoin(likes.cardGroup, cardGroup).fetchJoin()
+            .leftJoin(likes.cardGroup, QCardGroup.cardGroup).fetchJoin()
             .where(likes.user.id.eq(userId))
             .orderBy(*orderSpecifiers.toTypedArray())
             .offset(pageable.offset)

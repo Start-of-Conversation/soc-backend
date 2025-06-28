@@ -1,6 +1,5 @@
 package toyproject.startofconversation.api.cardGroup.service
 
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -11,6 +10,7 @@ import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
 import toyproject.startofconversation.api.cardGroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
@@ -29,10 +29,7 @@ class CardGroupService(
         } ?: throw CardGroupNotFoundException(id)
 
     fun getCardGroups(pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        toPageResponse(cardGroupRepository.findAll(pageable))
-
-    fun getCardGroupsByUserId(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        toPageResponse(cardGroupRepository.findAllByUserId(userId, pageable))
+        cardGroupRepository.findAll(pageable).toPageResponse(CardGroupInfoResponse::from)
 
     @Transactional
     @LoginUserAccess
@@ -79,6 +76,4 @@ class CardGroupService(
         return ResponseData.to("CardGroup $cardGroupId has been successfully removed.", true)
     }
 
-    private fun toPageResponse(data: Page<CardGroup>): PageResponseData<List<CardGroupInfoResponse>> =
-        PageResponseData(data.map(CardGroupInfoResponse::from).toList(), data)
 }

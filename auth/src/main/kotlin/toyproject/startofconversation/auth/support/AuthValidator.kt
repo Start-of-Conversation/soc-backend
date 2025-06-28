@@ -8,11 +8,14 @@ import toyproject.startofconversation.common.domain.user.exception.UserMismatchE
 import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCForbiddenException
+import toyproject.startofconversation.common.logger.logger
 
 @Component
 class AuthValidator(
     private val usersRepository: UsersRepository
 ) {
+
+    private val log = logger()
 
     /**
      * 요청한 사용자와 현재 로그인한 사용자가 일치하는지 검증합니다.
@@ -20,6 +23,7 @@ class AuthValidator(
      */
     fun validateUserAccess(userId: String, currentUserId: String) {
         if (userId != currentUserId) {
+            log.info("userId: {}, currentUserId: {}", userId, currentUserId)
             throw UserMismatchException(currentUserId)
         }
     }

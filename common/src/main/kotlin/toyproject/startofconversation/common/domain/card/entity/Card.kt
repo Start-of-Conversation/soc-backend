@@ -10,7 +10,6 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCards
 import toyproject.startofconversation.common.domain.user.entity.Users
 
@@ -40,10 +39,8 @@ class Card(
     }
 
     companion object {
-        fun from(question: String, cardGroup: CardGroup, user: Users): Card {
+        fun from(question: String, user: Users): Card {
             val card = Card(question = question, user = user)
-            val cardGroupCards = CardGroupCards(cardGroup = cardGroup, card = card)
-            card.addCardGroup(cardGroupCards)
             return card
         }
 

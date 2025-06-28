@@ -20,13 +20,15 @@ import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCa
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
+import toyproject.startofconversation.common.lock.strategy.LockService
 
 @Service
 class CardGroupCardService(
     private val cardGroupCardsRepository: CardGroupCardsRepository,
     private val cardGroupCardValidator: CardGroupCardValidator,
     private val cardGroupRepository: CardGroupRepository,
-    private val cardGroupValidator: CardGroupValidator
+    private val cardGroupValidator: CardGroupValidator,
+    private val lockService: LockService
 ) {
 
     fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> =
@@ -41,8 +43,11 @@ class CardGroupCardService(
         cardGroupId: String, request: AddCardToGroupRequest, userId: String
     ): ResponseData<CardListResponse> = with(request) {
         val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
-        val newCardGroupCards = cardGroupCardValidator.filterValidCards(cardIds, cardGroup)
-            .map { CardGroupCards(cardGroup, it) }
+        val newCardGroupCards = withGroupCardLock(cardGroupId) {
+            cardGroupCardValidator.filterValidCards(cardIds, cardGroup)
+                .map { CardGroupCards(cardGroup, it) }
+                .also { cardGroup.cardGroupCards.addAll(it) }
+        }
         cardGroup.cardGroupCards.addAll(newCardGroupCards)
 
         val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
@@ -55,9 +60,8 @@ class CardGroupCardService(
         cardGroupId: String, request: RemoveCardToGroupRequest, userId: String
     ): ResponseData<CardListResponse> = with(request) {
         val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
-        val groupCards = cardGroupCardValidator.filterRemovalCards(cardIds, cardGroup)
-            .map { CardGroupCards(cardGroup, it) }
-        cardGroup.cardGroupCards.removeAll(groupCards)
+        val cardsInGroup = cardGroupCardValidator.filterRemovalCards(cardIds, cardGroup)
+        cardGroupCardsRepository.deleteAllByCardGroupAndCardIn(cardGroup, cardsInGroup)
 
         val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
         return PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)
@@ -67,4 +71,11 @@ class CardGroupCardService(
     fun getCardListByCardGroup(cardGroup: CardGroup, pageable: Pageable): Page<Card> =
         cardGroupCardsRepository.findAllByCardGroup(pageable, cardGroup)
             .map { cardGroupCards -> cardGroupCards.card }
+
+    private fun <T> withGroupCardLock(groupId: String, block: () -> T): T =
+        lockService.executeWithLock(lockKey = groupCardLockKey(groupId), block = block)
+
+    companion object {
+        private fun groupCardLockKey(groupId: String) = "lock:card-group:$groupId:add-card"
+    }
 }

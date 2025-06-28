@@ -62,7 +62,7 @@ class LocalAuthService(
 
         checkPasswordOrThrow(request.oldPassword, auth.password, userId)
 
-        auth.updatePassword(newPassword = request.newPassword)
+        auth.updatePassword(newPassword = passwordEncoder.encode(request.newPassword))
 
         ResponseData("Successfully updated, User Id: $userId", true)
     }
