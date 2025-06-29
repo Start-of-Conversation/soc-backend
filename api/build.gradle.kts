@@ -15,11 +15,15 @@ tasks.processResources {
     from(project(":auth").projectDir.resolve("src/main/resources")) {
         include("application-auth.yml")
     }
+    from(project(":notification").projectDir.resolve("src/main/resources")) {
+        include("application-notification.yml")
+    }
 }
 
 dependencies {
     implementation(project(":common"))
     implementation(project(":auth"))
+    implementation(project(":notification"))
 
     //security
     implementation("org.springframework.security:spring-security-crypto")
