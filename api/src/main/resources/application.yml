@@ -6,5 +6,6 @@ spring:
     include:
       - common
       - auth
+      - notification
 #logging:
 #  config: classpath:log4j2-dev.xml

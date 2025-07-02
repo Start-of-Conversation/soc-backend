@@ -1,4 +1,4 @@
-package toyproject.startofconversation.common.domain.device.entity
+package toyproject.startofconversation.notification.domain.entity
 
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -11,7 +11,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.Comment
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.device.entity.value.DeviceType
+import toyproject.startofconversation.notification.domain.entity.value.DeviceType
 import toyproject.startofconversation.common.domain.user.entity.Users
 import java.time.LocalDateTime
 
@@ -31,8 +31,17 @@ class Device(
     @Comment("'ios', 'android', 'web'")
     val deviceType: DeviceType,
 
-    var isActive: Boolean = false,
+    @Comment("앱 버전(오류 시 로그용)")
+    var appVersion: String,
 
+    @Comment("기기에서 푸시 권한 동의 여부")
+    var isPushEnabled: Boolean = false,
+    var pushEnabledUpdatedAt: LocalDateTime? = null,
+
+    @Comment("토큰 유효 여부")
+    var isTokenValid: Boolean = false,
+
+    @Comment("마지막 활동 시간")
     var lastSeenAt: LocalDateTime = LocalDateTime.now(),
 
     @ManyToOne(cascade = [CascadeType.ALL])

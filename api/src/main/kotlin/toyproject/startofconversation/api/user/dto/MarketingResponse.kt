@@ -3,25 +3,40 @@ package toyproject.startofconversation.api.user.dto
 import toyproject.startofconversation.common.domain.user.entity.Marketing
 import java.time.LocalDateTime
 
-data class MarketingResponse(val userId: String, val marketingConsent: MarketingDto) {
+data class MarketingResponse(
+    val userId: String,
+    val marketing: ConsentStatus,
+    val availableChannels: ChannelConsentDto
+) {
     companion object {
         fun from(marketing: Marketing): MarketingResponse = with(marketing) {
             MarketingResponse(
                 userId = user.id,
-                marketingConsent = MarketingDto(
-                    appPushYn = appPushConsentYn,
-                    appPushDate = appPushConsentDate,
-                    marketingYn = marketingConsentYn,
-                    marketingDate = marketingConsentDate
+                marketing = ConsentStatus(
+                    consentYn = marketingConsentYn,
+                    consentDate = marketingConsentDate
+                ),
+                availableChannels = ChannelConsentDto(
+                    appPush = ConsentStatus(
+                        consentYn = appPushConsentYn,
+                        consentDate = appPushConsentDate
+                    ),
+                    email = ConsentStatus(
+                        consentYn = emailConsentYn,
+                        consentDate = emailConsentDate
+                    )
                 )
             )
         }
     }
 }
 
-data class MarketingDto(
-    val appPushYn: Boolean,
-    val appPushDate: LocalDateTime?,
-    val marketingYn: Boolean,
-    val marketingDate: LocalDateTime?
+data class ChannelConsentDto(
+    val appPush: ConsentStatus,
+    val email: ConsentStatus
+)
+
+data class ConsentStatus(
+    val consentYn: Boolean,
+    val consentDate: LocalDateTime?
 )

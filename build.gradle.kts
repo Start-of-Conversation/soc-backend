@@ -23,12 +23,6 @@ repositories {
     maven { url = uri("https://repo.spring.io/release") }
 }
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2024.0.1")
-    }
-}
-
 tasks.bootJar {
     enabled = false
 }
@@ -57,6 +51,12 @@ subprojects {
         annotation("jakarta.persistence.Entity")
         annotation("jakarta.persistence.MappedSuperclass")
         annotation("jakarta.persistence.Embeddable")
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.0.0")
+        }
     }
 
     val querydslVersion = "5.0.0"

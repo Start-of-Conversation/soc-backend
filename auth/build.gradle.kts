@@ -22,8 +22,7 @@ dependencies {
     implementation(project(":common"))
 
     //feign
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.2.1")
-    implementation("io.github.openfeign:feign-httpclient:13.5")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.3.0")
 
     //oauth
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")

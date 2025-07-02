@@ -25,8 +25,9 @@ class MarketingService(
     @Transactional
     fun updateMarketing(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
         val marketing = getOrCreateMarketing(userId).updateConsent(
+            marketingYn = request.marketingConsentYn,
             appPushYn = request.appPushConsentYn,
-            marketingYn = request.marketingConsentYn
+            emailYn = request.emailConsentYn
         )
         return ResponseData(MarketingResponse.from(marketing))
     }
