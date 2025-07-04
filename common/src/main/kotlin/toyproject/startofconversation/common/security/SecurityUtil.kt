@@ -1,4 +1,4 @@
-package toyproject.startofconversation.auth.support
+package toyproject.startofconversation.common.security
 
 import org.springframework.security.core.context.SecurityContextHolder
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException

@@ -25,7 +25,7 @@ import toyproject.startofconversation.auth.controller.dto.PasswordUpdateRequest
 import toyproject.startofconversation.auth.domain.entity.value.AuthProvider
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.auth.service.SocialLoginService
-import toyproject.startofconversation.auth.support.SecurityUtil
+import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.logger.logger
@@ -36,7 +36,7 @@ import toyproject.startofconversation.common.logger.logger
 class AuthController(
     private val socialLoginService: SocialLoginService,
     private val authService: AuthService
-) {
+) : BaseController() {
 
     private val log = logger()
 
@@ -61,8 +61,8 @@ class AuthController(
             description = "소셜 로그인 제공자 (가능한 값: kakao, apple, naver)",
             example = "kakao",
             schema = Schema(implementation = AuthProvider::class)
-        ) @PathVariable(required = true, name = "social") social: String
-    ): OAuthParameter = socialLoginService.getOauthParams(AuthProvider.from(social))
+        ) @PathVariable(required = true, name = "social") social: AuthProvider
+    ): OAuthParameter = socialLoginService.getOauthParams(social)
 
     @Operation(summary = "소셜 로그인")
     @PostMapping("/{social}")
@@ -71,7 +71,7 @@ class AuthController(
             description = "소셜 로그인 제공자 (가능한 값: kakao, apple, naver)",
             example = "kakao",
             schema = Schema(implementation = AuthProvider::class)
-        ) @PathVariable("social") social: String,
+        ) @PathVariable("social") social: AuthProvider,
         @Parameter(
             description = "로그인 후 받은 인가 코드 (authorizationCode and accessCode)",
             required = true
@@ -83,7 +83,7 @@ class AuthController(
         ) @RequestParam(required = false, defaultValue = "default_state") state: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> =
-        authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
+        authService.loginUser(authorizationCode, state, response, social)
 
     @Operation(summary = "로컬 회원가입")
     @PostMapping("/register")
@@ -120,5 +120,4 @@ class AuthController(
         @RequestBody request: PasswordUpdateRequest
     ): ResponseData<Boolean> = authService.updatePassword(request, getUserId())
 
-    private fun getUserId() = SecurityUtil.getCurrentUserId()
 }

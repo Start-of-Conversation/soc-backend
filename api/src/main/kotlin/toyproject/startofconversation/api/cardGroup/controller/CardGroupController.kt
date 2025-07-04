@@ -17,7 +17,7 @@ import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
 import toyproject.startofconversation.api.cardGroup.service.CardGroupService
-import toyproject.startofconversation.api.common.BaseController
+import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @Tag(name = "CardGroup")

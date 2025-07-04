@@ -21,7 +21,7 @@ class Device(
 
     @Column(nullable = false, unique = true)
     @Comment("푸시 알림 토큰")
-    val deviceToken: String,
+    var deviceToken: String,
 
     @Column(nullable = false, unique = true)
     @Comment("기기 고유값")

@@ -15,8 +15,8 @@ import toyproject.startofconversation.api.card.dto.CardListResponse
 import toyproject.startofconversation.api.cardGroup.dto.AddCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.dto.RemoveCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.service.CardGroupCardService
-import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @RestController

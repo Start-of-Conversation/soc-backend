@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
-import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.api.user.service.UserService
+import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @Tag(name = "User")

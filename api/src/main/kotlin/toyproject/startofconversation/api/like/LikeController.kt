@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
-import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @RestController
