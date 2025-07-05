@@ -21,8 +21,8 @@ class MarketingController(
     fun getMarketing(): ResponseData<MarketingResponse> =
         marketingService.getMarketingInfo(getUserId())
 
-    @PatchMapping("/update")
+    @PatchMapping
     fun updateMarketing(@RequestBody request: MarketingUpdateRequest): ResponseData<MarketingResponse> =
-        marketingService.updateMarketing(getUserId(), request)
+        marketingService.updateMarketingWithFCM(getUserId(), request)
 
 }

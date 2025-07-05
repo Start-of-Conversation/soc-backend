@@ -10,12 +10,12 @@ import toyproject.startofconversation.notification.controller.dto.DeviceSaveRequ
 import toyproject.startofconversation.notification.service.DeviceService
 
 @RestController
-@RequestMapping("/api/device")
+@RequestMapping("/api/devices")
 class DeviceController(
     private val deviceService: DeviceService
 ) : BaseController() {
 
-    @PostMapping()
+    @PostMapping
     fun registerDevice(@RequestBody request: DeviceSaveRequest): ResponseData<Boolean> =
         deviceService.saveDevice(request, getUserId())
 

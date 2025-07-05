@@ -39,7 +39,7 @@ class Device(
     var pushEnabledUpdatedAt: LocalDateTime? = null,
 
     @Comment("토큰 유효 여부")
-    var isTokenValid: Boolean = false,
+    var isTokenValid: Boolean = true,
 
     @Comment("마지막 활동 시간")
     var lastSeenAt: LocalDateTime = LocalDateTime.now(),
@@ -48,4 +48,38 @@ class Device(
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     val user: Users
 
-) : BaseDateEntity(Domain.DEVICE)
+) : BaseDateEntity(Domain.DEVICE) {
+    fun updateToken(deviceToken: String): Device {
+        if (this.deviceToken != deviceToken) {
+            this.deviceToken = deviceToken
+        }
+        return this
+    }
+
+    fun updateVersion(appVersion: String): Device {
+        if (this.appVersion != appVersion) {
+            this.appVersion = appVersion
+        }
+        return this
+    }
+
+    fun updateAppPushStatus(isPushEnabled: Boolean): Device {
+        if (this.isPushEnabled != isPushEnabled) {
+            this.isPushEnabled = isPushEnabled
+            this.updatePushTimestampIfNeeded()
+        }
+        return this
+    }
+
+    fun updatePushTimestampIfNeeded(): Device {
+        if (this.isPushEnabled) {
+            pushEnabledUpdatedAt = LocalDateTime.now()
+        }
+        return this
+    }
+
+    fun updateLastSeenAt(): Device {
+        this.lastSeenAt = LocalDateTime.now()
+        return this
+    }
+}

@@ -4,12 +4,13 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
+import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
 import toyproject.startofconversation.notification.controller.dto.DeviceSaveRequest
 import toyproject.startofconversation.notification.domain.entity.Device
 import toyproject.startofconversation.notification.domain.repository.DeviceRepository
-import java.time.LocalDateTime
 
 @Service
 class DeviceService(
@@ -18,18 +19,20 @@ class DeviceService(
 ) {
 
     @Transactional
-    fun saveDevice(request: DeviceSaveRequest, userId: String): ResponseData<Boolean> = with(request) {
+    fun saveDevice(request: DeviceSaveRequest, userId: String): ResponseData<Boolean> {
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
-        val device = Device(
-            deviceToken = deviceToken,
-            deviceId = deviceId,
-            appVersion = appVersion,
-            deviceType = deviceType,
-            user = user,
-            isPushEnabled = isPushEnabled,
-            pushEnabledUpdatedAt = LocalDateTime.now()
-        )
+        val device = getOrCreateDevice(request, user)
+
         deviceRepository.save(device)
-        return ResponseData.to("Successfully saved: ", true)
+        return ResponseData.to("Successfully saved: ${device.id}", true)
+    }
+
+    private fun getOrCreateDevice(request: DeviceSaveRequest, user: Users): Device = with(request) {
+        deviceRepository.findByDeviceId(deviceId)?.apply {
+            updateToken(deviceToken)
+            updateVersion(appVersion)
+            updateAppPushStatus(isPushEnabled)
+            updateLastSeenAt()
+        } ?: to(user)
     }
 }

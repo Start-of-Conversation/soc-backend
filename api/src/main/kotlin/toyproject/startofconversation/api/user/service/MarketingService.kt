@@ -9,12 +9,14 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.entity.Marketing
 import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.MarketingRepository
+import toyproject.startofconversation.notification.fcm.FCMService
 
 @Service
 @LoginUserAccess
 class MarketingService(
     private val marketingRepository: MarketingRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val fcmService: FCMService
 ) {
 
     fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> =
@@ -23,13 +25,27 @@ class MarketingService(
         } ?: throw UserNotFoundException(userId)
 
     @Transactional
-    fun updateMarketing(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
+    fun updateMarketing(userId: String, request: MarketingUpdateRequest): MarketingResponse {
         val marketing = getOrCreateMarketing(userId).updateConsent(
             marketingYn = request.marketingConsentYn,
             appPushYn = request.appPushConsentYn,
             emailYn = request.emailConsentYn
         )
-        return ResponseData(MarketingResponse.from(marketing))
+
+        return MarketingResponse.from(marketing)
+    }
+
+    fun updateMarketingWithFCM(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
+        val response = updateMarketing(userId, request)
+
+        val shouldSubscribe = response.marketing.consentYn && response.availableChannels.appPush.consentYn
+        if (shouldSubscribe) {
+            fcmService.subscribeMarketing(userId)
+        } else {
+            fcmService.unsubscribeMarketing(userId)
+        }
+
+        return ResponseData(response)
     }
 
     private fun getOrCreateMarketing(userId: String): Marketing {

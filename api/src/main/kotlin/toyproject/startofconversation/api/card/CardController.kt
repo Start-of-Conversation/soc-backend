@@ -22,7 +22,7 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 import java.time.LocalDateTime
 
 @RestController
-@RequestMapping("/api/card")
+@RequestMapping("/api/cards")
 class CardController(
     private val cardService: CardService
 ) : BaseController() {

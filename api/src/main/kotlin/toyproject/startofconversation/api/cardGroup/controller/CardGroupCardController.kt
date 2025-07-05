@@ -20,7 +20,7 @@ import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
 @RestController
-@RequestMapping("/api/card-group")
+@RequestMapping("/api/card-groups")
 class CardGroupCardController(
     private val cardGroupCardService: CardGroupCardService
 ) : BaseController() {

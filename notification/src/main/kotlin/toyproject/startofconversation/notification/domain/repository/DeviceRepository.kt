@@ -6,4 +6,8 @@ import toyproject.startofconversation.notification.domain.entity.Device
 
 @Repository
 interface DeviceRepository : JpaRepository<Device, String> {
+
+    fun findByDeviceId(deviceId: String): Device?
+
+    fun findAllByUserId(userId: String): List<Device>
 }
