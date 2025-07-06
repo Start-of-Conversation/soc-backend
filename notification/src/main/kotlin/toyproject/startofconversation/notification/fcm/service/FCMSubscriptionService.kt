@@ -10,9 +10,9 @@ import toyproject.startofconversation.notification.fcm.config.properties.FCMProp
 
 @Service
 class FCMSubscriptionService(
-    private val deviceRepository: DeviceRepository,
-    private val fcmProperties: FCMProperties
-) {
+    private val fcmProperties: FCMProperties,
+    deviceRepository: DeviceRepository
+) : FCMBaseService(deviceRepository) {
     private val log = logger()
 
     fun subscribeMarketing(userId: String) = withValidTokens(userId) { tokens ->
@@ -54,7 +54,4 @@ class FCMSubscriptionService(
         }
     }
 
-    private fun getDeviceToken(userId: String): List<String> = deviceRepository.findAllByUserId(userId)
-        .filter { it.isPushEnabled && it.isTokenValid }
-        .map { it.deviceToken }
 }

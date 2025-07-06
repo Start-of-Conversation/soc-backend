@@ -8,11 +8,19 @@ import com.google.firebase.messaging.Notification
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.logger.logger
+import toyproject.startofconversation.notification.domain.repository.DeviceRepository
 
 @Service
-class FCMNotificationService {
+class FCMNotificationService(deviceRepository: DeviceRepository) : FCMBaseService(deviceRepository) {
+
     private val log = logger()
 
+    fun sendMessageToUser(userId: String, title: String, body: String, data: Map<String, String> = emptyMap()) =
+        sendMessagesToDevices(tokens = getDeviceToken(userId), title, body, data)
+
+    /**
+     * 단일 메세지 전송
+     */
     fun sendMessageToDevice(
         token: String,
         title: String,
@@ -32,6 +40,9 @@ class FCMNotificationService {
         log.info("FCM 메시지 전송 성공: {}", response)
     }
 
+    /**
+     * 다중 메세지 전송
+     */
     fun sendMessagesToDevices(
         tokens: List<String>,
         title: String,
