@@ -1,9 +1,7 @@
-package toyproject.startofconversation.notification.fcm
+package toyproject.startofconversation.notification.fcm.service
 
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingException
-import com.google.firebase.messaging.Message
-import com.google.firebase.messaging.Notification
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.logger.logger
@@ -11,7 +9,7 @@ import toyproject.startofconversation.notification.domain.repository.DeviceRepos
 import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
 
 @Service
-class FCMService(
+class FCMSubscriptionService(
     private val deviceRepository: DeviceRepository,
     private val fcmProperties: FCMProperties
 ) {
@@ -32,32 +30,6 @@ class FCMService(
             return
         }
         action(tokens)
-    }
-
-    fun sendMessageToDevice(
-        token: String,
-        title: String,
-        body: String,
-        data: Map<String, String>? = null
-    ) {
-        val notification = Notification.builder().setTitle(title).setBody(body).build()
-        val messageBuilder = Message.builder()
-            .setToken(token)
-            .setNotification(notification)
-
-        data?.let {
-            messageBuilder.putAllData(it)
-        }
-
-        val message = messageBuilder.build()
-
-        try {
-            val response = FirebaseMessaging.getInstance().send(message)
-            log.info("✅ FCM 메시지 전송 성공: {}", response)
-        } catch (e: FirebaseMessagingException) {
-            log.error("FCM 메시지 전송 실패", e)
-            throw FirebaseException("FCM 메시지 전송 중 오류 발생", e)
-        }
     }
 
     fun subscribeToTopic(token: String, topic: String) = subscribeToTopic(listOf(token), topic)

@@ -9,14 +9,14 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.entity.Marketing
 import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.MarketingRepository
-import toyproject.startofconversation.notification.fcm.FCMService
+import toyproject.startofconversation.notification.fcm.service.FCMSubscriptionService
 
 @Service
 @LoginUserAccess
 class MarketingService(
     private val marketingRepository: MarketingRepository,
     private val userService: UserService,
-    private val fcmService: FCMService
+    private val fcmSubscriptionService: FCMSubscriptionService
 ) {
 
     fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> =
@@ -40,9 +40,9 @@ class MarketingService(
 
         val shouldSubscribe = response.marketing.consentYn && response.availableChannels.appPush.consentYn
         if (shouldSubscribe) {
-            fcmService.subscribeMarketing(userId)
+            fcmSubscriptionService.subscribeMarketing(userId)
         } else {
-            fcmService.unsubscribeMarketing(userId)
+            fcmSubscriptionService.unsubscribeMarketing(userId)
         }
 
         return ResponseData(response)
