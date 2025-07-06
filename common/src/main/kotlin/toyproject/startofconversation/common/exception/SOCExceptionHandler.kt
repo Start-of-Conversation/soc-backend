@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import toyproject.startofconversation.common.base.dto.ExceptionResponse
 import toyproject.startofconversation.common.base.value.Code
+import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.lock.exception.LockAcquisitionException
 
 @RestControllerAdvice
@@ -25,6 +26,10 @@ class SOCExceptionHandler {
     @ExceptionHandler(SOCDomainViolationException::class)
     fun handleDomainViolationException(ex: SOCDomainViolationException): ResponseEntity<ExceptionResponse> =
         Code.DOMAIN_CONSTRAINT_VIOLATION.toResponse(ex)
+
+    @ExceptionHandler(FirebaseException::class)
+    fun handleFirebaseException(ex: FirebaseException): ResponseEntity<ExceptionResponse> =
+        Code.FIREBASE_ERROR.toResponse(ex)
 
     @ExceptionHandler(SOCServerException::class)
     fun handleSOCServerException(ex: SOCServerException): ResponseEntity<ExceptionResponse> =

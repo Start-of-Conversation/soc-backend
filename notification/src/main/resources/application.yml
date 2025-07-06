@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: notification
+  profiles:
+    default: notification
+    include: common

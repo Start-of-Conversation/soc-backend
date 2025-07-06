@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.card.dto.CardUpdateRequest
-import toyproject.startofconversation.api.common.BaseController
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 import java.time.LocalDateTime
 
 @RestController
-@RequestMapping("/api/card")
+@RequestMapping("/api/cards")
 class CardController(
     private val cardService: CardService
 ) : BaseController() {

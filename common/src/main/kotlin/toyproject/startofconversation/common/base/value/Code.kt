@@ -22,7 +22,8 @@ enum class Code(val code: Int, val httpStatus: HttpStatus, val message: String) 
 
     //server
     INTERNAL_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error"),
-    DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Database access error");
+    DATA_ACCESS_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "Database access error"),
+    FIREBASE_ERROR(502, HttpStatus.BAD_GATEWAY, "FCM communication error.");
 
     fun getMessage(e: Throwable): String = getMessage("$message - ${e.message}")
 

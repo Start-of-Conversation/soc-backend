@@ -10,7 +10,6 @@ import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.common.domain.device.entity.Device
 import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.DeletedUserException
@@ -41,9 +40,6 @@ class Users(
     var marketing: Marketing? = null
 
 ) : BaseDateEntity(Domain.USER) {
-
-    @OneToMany(mappedBy = "user")
-    var devices: MutableSet<Device> = mutableSetOf()
 
     @OneToMany(mappedBy = "user")
     var likes: MutableSet<Likes> = mutableSetOf()

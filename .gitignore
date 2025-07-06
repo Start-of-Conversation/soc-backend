@@ -50,3 +50,7 @@ out/
 /api/src/main/resources/application-dev.yml
 /auth/src/main/resources/application-auth.yml
 /common/src/main/resources/application-common.yml
+/notification/src/main/resources/application-notification.yml
+
+### key ###
+/notification/src/main/resources/key/firebase-service-account.json
