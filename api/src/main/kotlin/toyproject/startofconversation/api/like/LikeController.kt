@@ -25,7 +25,7 @@ class LikeController(
     @PostMapping("/card-groups/{cardGroupId}/like")
     fun likeCardGroup(
         @PathVariable cardGroupId: String
-    ): ResponseData<Boolean> = likeService.like(cardGroupId, getUserId())
+    ): ResponseData<Boolean> = likeService.likeWithNotification(cardGroupId, getUserId())
 
     @Operation(summary = "카드그룹 좋아요 취소")
     @DeleteMapping("/card-groups/{cardGroupId}/like")
