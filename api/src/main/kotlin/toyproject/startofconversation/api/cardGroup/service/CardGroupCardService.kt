@@ -10,8 +10,8 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.dto.CardListResponse
 import toyproject.startofconversation.api.cardGroup.dto.AddCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.dto.RemoveCardToGroupRequest
-import toyproject.startofconversation.api.cardGroup.validator.CardGroupCardValidator
-import toyproject.startofconversation.api.cardGroup.validator.CardGroupValidator
+import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupCardValidator
+import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.card.entity.Card

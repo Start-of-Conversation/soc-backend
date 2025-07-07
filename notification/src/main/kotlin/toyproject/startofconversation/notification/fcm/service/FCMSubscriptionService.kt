@@ -5,7 +5,7 @@ import com.google.firebase.messaging.FirebaseMessagingException
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.logger.logger
-import toyproject.startofconversation.notification.domain.repository.DeviceRepository
+import toyproject.startofconversation.notification.device.domain.repository.DeviceRepository
 import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
 
 @Service

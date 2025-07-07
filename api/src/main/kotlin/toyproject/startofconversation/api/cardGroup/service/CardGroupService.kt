@@ -8,7 +8,7 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
-import toyproject.startofconversation.api.cardGroup.validator.CardGroupValidator
+import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.service.UserService

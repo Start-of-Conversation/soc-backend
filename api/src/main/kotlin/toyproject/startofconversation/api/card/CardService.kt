@@ -8,7 +8,7 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.card.dto.CardUpdateRequest
-import toyproject.startofconversation.api.card.validator.CardValidator
+import toyproject.startofconversation.common.domain.card.validator.CardValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.auth.support.AuthValidator

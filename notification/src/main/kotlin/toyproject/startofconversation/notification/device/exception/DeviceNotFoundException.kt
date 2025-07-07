@@ -1,4 +1,4 @@
-package toyproject.startofconversation.notification.exception
+package toyproject.startofconversation.notification.device.exception
 
 import toyproject.startofconversation.common.exception.SOCNotFoundException
 

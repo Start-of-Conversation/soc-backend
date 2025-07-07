@@ -7,6 +7,4 @@ import toyproject.startofconversation.common.domain.user.entity.Users
 @Repository
 interface UsersRepository : JpaRepository<Users, String> {
 
-    fun findUsersById(id: String): Users?
-
 }

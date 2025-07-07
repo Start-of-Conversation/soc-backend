@@ -1,8 +1,8 @@
 package toyproject.startofconversation.notification.fcm.service
 
 import toyproject.startofconversation.common.domain.user.entity.Users
-import toyproject.startofconversation.notification.domain.entity.Device
-import toyproject.startofconversation.notification.domain.repository.DeviceRepository
+import toyproject.startofconversation.notification.device.domain.entity.Device
+import toyproject.startofconversation.notification.device.domain.repository.DeviceRepository
 
 abstract class FCMBaseService(
     protected val deviceRepository: DeviceRepository
