@@ -8,6 +8,9 @@ tasks.processResources {
     from(project(":common").projectDir.resolve("src/main/resources")) {
         include("application-common.yml")
     }
+    from(project(":notification").projectDir.resolve("src/main/resources")) {
+        include("application-notification.yml")
+    }
 }
 
 sourceSets {
@@ -20,6 +23,7 @@ sourceSets {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":notification"))
 
     //feign
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.3.0")

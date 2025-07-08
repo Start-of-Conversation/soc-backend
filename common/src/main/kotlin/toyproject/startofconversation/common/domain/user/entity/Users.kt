@@ -13,6 +13,8 @@ import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.DeletedUserException
+import java.time.Clock
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
@@ -62,4 +64,7 @@ class Users(
 
         return this
     }
+
+    fun isNew(clock: Clock = Clock.systemDefaultZone()): Boolean =
+        createdAt?.toLocalDate() == LocalDate.now(clock)
 }

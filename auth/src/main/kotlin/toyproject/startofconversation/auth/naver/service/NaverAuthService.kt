@@ -31,7 +31,7 @@ class NaverAuthService(
         state = UUID.randomUUID().toString()
     )
 
-    fun loadUser(token: String, state: String): Auth = Tx.writeTx {
+    fun loadUser(token: String, state: String): Pair<Auth, Boolean> = Tx.writeTx {
         val tokenResponse = naverAuthTokenClient.getAccessToken(
             NaverTokenRequest(
                 client_id = naverOAuthProperties.params.clientId,

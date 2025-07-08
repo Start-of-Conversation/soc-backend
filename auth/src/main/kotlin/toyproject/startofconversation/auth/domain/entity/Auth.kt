@@ -47,6 +47,9 @@ class Auth(
     val activeUser: Users
         get() = user.ensureNotDeleted()
 
+    val isNewUser: Boolean
+        get() = user.isNew()
+
     fun updatePassword(newPassword: String): Auth {
         this.password = newPassword
         this.lastPasswordModifiedAt = LocalDateTime.now()

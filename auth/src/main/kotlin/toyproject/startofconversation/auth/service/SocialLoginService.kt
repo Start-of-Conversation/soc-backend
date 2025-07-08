@@ -32,13 +32,10 @@ class SocialLoginService(
         code: String,
         state: String,
         authProvider: AuthProvider
-    ): Auth {
-        val auth = when (authProvider) {
-            APPLE -> appleAuthService.loadUser(code)
-            KAKAO -> kakaoAuthService.loadUser(code)
-            NAVER -> naverAuthService.loadUser(code, state)
-            LOCAL -> throw SOCDomainViolationException("'${authProvider.name}' login is not part of the social login flow.")
-        }
-        return auth
+    ): Pair<Auth, Boolean> = when (authProvider) {
+        APPLE -> appleAuthService.loadUser(code)
+        KAKAO -> kakaoAuthService.loadUser(code)
+        NAVER -> naverAuthService.loadUser(code, state)
+        LOCAL -> throw SOCDomainViolationException("'${authProvider.name}' login is not part of the social login flow.")
     }
 }
