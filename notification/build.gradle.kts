@@ -27,4 +27,7 @@ dependencies {
 
     //fcm
     implementation("com.google.firebase:firebase-admin:9.5.0")
+
+    //mail
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 }
