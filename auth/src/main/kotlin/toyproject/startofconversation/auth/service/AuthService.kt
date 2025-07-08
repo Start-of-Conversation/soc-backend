@@ -2,7 +2,6 @@ package toyproject.startofconversation.auth.service
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.hibernate.annotations.Comment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,13 +21,15 @@ import toyproject.startofconversation.common.base.dto.ResponseInfo
 import toyproject.startofconversation.common.base.value.Code
 import toyproject.startofconversation.common.logger.logger
 import toyproject.startofconversation.common.transaction.helper.Tx
+import toyproject.startofconversation.notification.mail.MailService
 
 @Service
 class AuthService(
     private val authRepository: AuthRepository,
     private val socialLoginService: SocialLoginService,
     private val localAuthService: LocalAuthService,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val mailService: MailService
 ) {
     private val log = logger<AuthService>()
 
@@ -38,7 +39,9 @@ class AuthService(
         }
     }
 
-    @Comment("소셜 로그인 공통 로직")
+    /**
+     * 소셜 로그인 공통 로직
+     */
     fun loginUser(
         authorizationCode: String,
         state: String,
@@ -47,7 +50,9 @@ class AuthService(
     ): ResponseEntity<ResponseData<AuthResponse>> =
         processLogin(socialLoginService.handleSocialLogin(authorizationCode, state, authProvider), response)
 
-    @Comment("로컬 로그인 로직")
+    /**
+     * 로컬 로그인 로직
+     */
     fun loginLocalUser(
         request: LocalLoginRequest,
         response: HttpServletResponse
@@ -74,15 +79,36 @@ class AuthService(
     fun signInUser(request: LocalRegisterRequest): ResponseData<Boolean> = localAuthService.saveUser(request)
 
     private fun processLogin(
-        auth: Auth,
+        loginResult: Pair<Auth, Boolean>,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> {
+        val (auth, isNewAuth) = loginResult
         val user = auth.activeUser
+
+        if (isNewAuth) {
+            sendWelcomeMailIfNeeded(auth)
+        }
 
         val headers = jwtService.generateToken(user)
         val refreshTokenCookie = jwtService.generateRefreshToken(user)
         response.addCookie(refreshTokenCookie)
 
         return ResponseEntity(ResponseData.to(AuthResponse.from(auth)), headers, HttpStatus.OK)
+    }
+
+    /**
+     * todo
+     *  html 코드 부분 나중에 대체할 것!
+     */
+    private fun sendWelcomeMailIfNeeded(auth: Auth) {
+        if (auth.isNewUser) {
+            mailService.sendHtmlMail(
+                to = auth.email,
+                subject = "가입을 축하드립니다!",
+                html = "<h1>Welcome!</h1><p>가입해주셔서 감사합니다.</p>"
+            )
+
+            log.info("가입 축하 메일을 전송하였습니다. authId: {}, to: {}", auth.id, auth.email)
+        }
     }
 }

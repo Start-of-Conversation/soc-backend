@@ -24,12 +24,12 @@ class LocalAuthService(
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    fun findUser(request: LocalLoginRequest): Auth = Tx.readTx {
+    fun findUser(request: LocalLoginRequest): Pair<Auth, Boolean> = Tx.readTx {
         val auth = authRepository.findByEmail(request.email) ?: throw UserNotFoundException(request.email)
 
         checkPasswordOrThrow(request.password, auth.password, request.email)
 
-        auth
+        auth to false
     }
 
     //관리자 전용

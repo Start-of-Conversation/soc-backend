@@ -31,7 +31,7 @@ class KakaoAuthService(
         state = UUID.randomUUID().toString() // 필요에 따라 사용
     )
 
-    fun loadUser(accessCode: String): Auth = Tx.writeTx {
+    fun loadUser(accessCode: String): Pair<Auth, Boolean> = Tx.writeTx {
         val oAuthToken = requestToken(accessCode)
 
         val authorization = "Bearer ${oAuthToken.access_token}"

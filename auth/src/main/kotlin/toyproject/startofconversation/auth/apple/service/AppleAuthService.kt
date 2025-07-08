@@ -32,7 +32,7 @@ class AppleAuthService(
     )
 
     @Throws(SOCUnauthorizedException::class)
-    fun loadUser(authorizationCode: String): Auth = Tx.writeTx {
+    fun loadUser(authorizationCode: String): Pair<Auth, Boolean> = Tx.writeTx {
         val tokenResponse = oAuthClientService.requestToken(authorizationCode)
         val accountId: String = identityParser.getAppleAccountId(tokenResponse.id_token)
 

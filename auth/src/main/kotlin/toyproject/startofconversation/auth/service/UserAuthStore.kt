@@ -28,6 +28,8 @@ class UserAuthStore(
         provider: AuthProvider,
         authId: String,
         createAuth: () -> Auth
-    ): Auth = authRepository.findByAuthProviderAndAuthId(provider, authId) ?: createAuth()
+    ): Pair<Auth, Boolean> = authRepository.findByAuthProviderAndAuthId(provider, authId)
+        ?.let { it to false }
+        ?: (createAuth() to true)
 
 }
