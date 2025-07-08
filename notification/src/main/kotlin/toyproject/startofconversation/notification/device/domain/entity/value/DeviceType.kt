@@ -1,4 +1,4 @@
-package toyproject.startofconversation.notification.domain.entity.value
+package toyproject.startofconversation.notification.device.domain.entity.value
 
 import com.fasterxml.jackson.annotation.JsonCreator
 

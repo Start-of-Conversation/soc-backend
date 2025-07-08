@@ -1,4 +1,4 @@
-package toyproject.startofconversation.api.card.validator
+package toyproject.startofconversation.common.domain.card.validator
 
 import org.springframework.stereotype.Component
 import toyproject.startofconversation.common.domain.cardgroup.config.CardGroupProperties

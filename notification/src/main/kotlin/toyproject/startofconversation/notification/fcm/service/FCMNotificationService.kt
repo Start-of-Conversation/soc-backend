@@ -6,17 +6,53 @@ import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.MulticastMessage
 import com.google.firebase.messaging.Notification
 import org.springframework.stereotype.Service
+import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.logger.logger
-import toyproject.startofconversation.notification.domain.repository.DeviceRepository
+import toyproject.startofconversation.notification.device.domain.repository.DeviceRepository
+import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
 
 @Service
-class FCMNotificationService(deviceRepository: DeviceRepository) : FCMBaseService(deviceRepository) {
+class FCMNotificationService(
+    deviceRepository: DeviceRepository,
+    private val fcmProperties: FCMProperties
+) : FCMBaseService(deviceRepository) {
 
     private val log = logger()
 
     fun sendMessageToUser(userId: String, title: String, body: String, data: Map<String, String> = emptyMap()) =
         sendMessagesToDevices(tokens = getDeviceToken(userId), title, body, data)
+
+    fun sendMessageToUser(user: Users, title: String, body: String, data: Map<String, String> = emptyMap()) =
+        sendMessagesToDevices(tokens = getDeviceToken(user), title, body, data)
+
+    /**
+     * 기본 토픽으로 메세지 전송
+     */
+    fun sendMessageToSubscriber(
+        title: String,
+        body: String,
+        data: Map<String, String> = emptyMap()
+    ) = sendMessageToSubscriber(fcmProperties.topicName, title, body, data)
+
+    /**
+     * 구독자들에게 메세지 전송
+     */
+    fun sendMessageToSubscriber(
+        topic: String,
+        title: String,
+        body: String,
+        data: Map<String, String> = emptyMap()
+    ) = sendWithCatch {
+        val message = Message.builder()
+            .setNotification(buildNotification(title, body))
+            .setTopic(topic)
+            .putAllData(data)
+            .build()
+
+        val response = FirebaseMessaging.getInstance().send(message)
+        log.info("FCM 메시지 전송 성공: {}", response)
+    }
 
     /**
      * 단일 메세지 전송
@@ -25,17 +61,14 @@ class FCMNotificationService(deviceRepository: DeviceRepository) : FCMBaseServic
         token: String,
         title: String,
         body: String,
-        data: Map<String, String>? = null
+        data: Map<String, String> = emptyMap()
     ) = sendWithCatch {
-        val messageBuilder = Message.builder()
+        val message = Message.builder()
             .setToken(token)
             .setNotification(buildNotification(title, body))
+            .putAllData(data)
+            .build()
 
-        data?.let {
-            messageBuilder.putAllData(it)
-        }
-
-        val message = messageBuilder.build()
         val response = FirebaseMessaging.getInstance().send(message)
         log.info("FCM 메시지 전송 성공: {}", response)
     }

@@ -5,13 +5,13 @@ import com.google.firebase.messaging.FirebaseMessagingException
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.logger.logger
-import toyproject.startofconversation.notification.domain.repository.DeviceRepository
+import toyproject.startofconversation.notification.device.domain.repository.DeviceRepository
 import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
 
 @Service
 class FCMSubscriptionService(
-    private val fcmProperties: FCMProperties,
-    deviceRepository: DeviceRepository
+    deviceRepository: DeviceRepository,
+    private val fcmProperties: FCMProperties
 ) : FCMBaseService(deviceRepository) {
     private val log = logger()
 
@@ -21,15 +21,6 @@ class FCMSubscriptionService(
 
     fun unsubscribeMarketing(userId: String) = withValidTokens(userId) { tokens ->
         unsubscribeFromTopic(tokens, fcmProperties.topicName)
-    }
-
-    private fun withValidTokens(userId: String, action: (List<String>) -> Unit) {
-        val tokens = getDeviceToken(userId)
-        if (tokens.isEmpty()) {
-            log.warn("유저 [{}]에 대한 유효한 deviceToken이 없습니다.", userId)
-            return
-        }
-        action(tokens)
     }
 
     fun subscribeToTopic(token: String, topic: String) = subscribeToTopic(listOf(token), topic)
@@ -52,6 +43,15 @@ class FCMSubscriptionService(
         } catch (e: FirebaseMessagingException) {
             throw FirebaseException("FCM 토픽 구독 해제 실패: ${e.message}", e)
         }
+    }
+
+    private fun withValidTokens(userId: String, action: (List<String>) -> Unit) {
+        val tokens = getDeviceToken(userId)
+        if (tokens.isEmpty()) {
+            log.warn("유저 [{}]에 대한 유효한 deviceToken이 없습니다.", userId)
+            return
+        }
+        action(tokens)
     }
 
 }

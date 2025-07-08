@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -66,7 +67,7 @@ class JwtAuthFilter(
                 if (refreshClaims != null) {
                     val userId = refreshTokenRepository.findUserIdByToken(refreshToken)
                         ?: throw SOCUnauthorizedException("Invalid refresh token")
-                    val user = usersRepository.findUsersById(userId)
+                    val user = usersRepository.findByIdOrNull(userId)
                         ?: throw SOCNotFoundException("User not found")
 
                     val newAccessToken = jwtProvider.generateToken(user)

@@ -1,4 +1,4 @@
-package toyproject.startofconversation.notification.domain.entity
+package toyproject.startofconversation.notification.device.domain.entity
 
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -11,7 +11,7 @@ import jakarta.persistence.Table
 import org.hibernate.annotations.Comment
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
-import toyproject.startofconversation.notification.domain.entity.value.DeviceType
+import toyproject.startofconversation.notification.device.domain.entity.value.DeviceType
 import toyproject.startofconversation.common.domain.user.entity.Users
 import java.time.LocalDateTime
 

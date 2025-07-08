@@ -1,6 +1,8 @@
 package toyproject.startofconversation.api.user.dto
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import toyproject.startofconversation.common.domain.user.entity.Marketing
+import toyproject.startofconversation.common.jackson.LocalDateTimeSerializer
 import java.time.LocalDateTime
 
 data class MarketingResponse(
@@ -38,5 +40,7 @@ data class ChannelConsentDto(
 
 data class ConsentStatus(
     val consentYn: Boolean,
+
+    @JsonSerialize(using = LocalDateTimeSerializer::class)
     val consentDate: LocalDateTime?
 )
