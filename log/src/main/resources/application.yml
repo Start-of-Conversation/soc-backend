@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: log
+  profiles:
+    default: log
+    include: common
