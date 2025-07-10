@@ -5,10 +5,10 @@ import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 
 object SecurityUtil {
 
-    fun getCurrentUserId(): String {
-        val auth = SecurityContextHolder.getContext().authentication
-        return auth?.principal as? String
-            ?: throw SOCUnauthorizedException("No authenticated user")
-    }
+    fun getCurrentUserId(): String =
+        getCurrentUserIdOrNull() ?: throw SOCUnauthorizedException("No authenticated user")
+
+    fun getCurrentUserIdOrNull(): String? =
+        SecurityContextHolder.getContext().authentication?.principal as? String
 
 }

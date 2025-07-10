@@ -20,4 +20,5 @@ sourceSets {
 }
 
 dependencies {
+    implementation(project(":common"))
 }

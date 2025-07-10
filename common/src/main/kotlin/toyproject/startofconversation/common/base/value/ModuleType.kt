@@ -5,4 +5,17 @@ package toyproject.startofconversation.common.base.value
  */
 enum class ModuleType {
     SYSTEM, NOTIFICATION, AUTH, API, PAYMENT;
+
+    companion object {
+        fun resolveFromURI(uri: String): ModuleType {
+            return when {
+                uri.startsWith("/auth") -> AUTH
+                uri.startsWith("/notifications") -> NOTIFICATION
+                uri.startsWith("/api/devices") -> NOTIFICATION
+                uri.startsWith("/payment") -> PAYMENT
+                uri.startsWith("/api") -> API
+                else -> SYSTEM
+            }
+        }
+    }
 }
