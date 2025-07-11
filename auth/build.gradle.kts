@@ -8,6 +8,9 @@ tasks.processResources {
     from(project(":common").projectDir.resolve("src/main/resources")) {
         include("application-common.yml")
     }
+    from(project(":log").projectDir.resolve("src/main/resources")) {
+        include("application-log.yml")
+    }
     from(project(":notification").projectDir.resolve("src/main/resources")) {
         include("application-notification.yml")
     }
@@ -23,6 +26,7 @@ sourceSets {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":log"))
     implementation(project(":notification"))
 
     //feign

@@ -12,6 +12,9 @@ tasks.processResources {
     from(project(":common").projectDir.resolve("src/main/resources")) {
         include("application-common.yml")
     }
+    from(project(":log").projectDir.resolve("src/main/resources")) {
+        include("application-log.yml")
+    }
     from(project(":auth").projectDir.resolve("src/main/resources")) {
         include("application-auth.yml")
     }
@@ -22,6 +25,7 @@ tasks.processResources {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":log"))
     implementation(project(":auth"))
     implementation(project(":notification"))
 
