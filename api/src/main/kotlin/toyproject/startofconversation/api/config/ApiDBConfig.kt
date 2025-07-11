@@ -8,12 +8,17 @@ import org.springframework.context.annotation.Configuration
 @EntityScan(
     basePackages = [
         "toyproject.startofconversation.common.domain",
+        "toyproject.startofconversation.log.notification.domain",
+        "toyproject.startofconversation.log.system.domain",
+        "toyproject.startofconversation.notification.device.domain",
         "toyproject.startofconversation.auth.domain"
     ]
 )
 @ComponentScan(
     basePackages = [
         "toyproject.startofconversation.common",
+        "toyproject.startofconversation.log",
+        "toyproject.startofconversation.notification",
         "toyproject.startofconversation.auth",
         "toyproject.startofconversation.api"
     ]

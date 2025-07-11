@@ -12,9 +12,17 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EntityScan(
     basePackages = [
         "toyproject.startofconversation.common.domain",
-        "toyproject.startofconversation.auth.domain",
-        "toyproject.startofconversation.notification.device.domain"
+        "toyproject.startofconversation.log.notification.domain",
+        "toyproject.startofconversation.log.system.domain",
+        "toyproject.startofconversation.notification.device.domain",
+        "toyproject.startofconversation.auth.domain"
     ]
 )
-@ComponentScan(basePackages = ["toyproject.startofconversation.common"])
+@ComponentScan(
+    basePackages = [
+        "toyproject.startofconversation.common",
+        "toyproject.startofconversation.log",
+        "toyproject.startofconversation.notification"
+    ]
+)
 class AuthDBConfig

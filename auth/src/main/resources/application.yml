@@ -3,5 +3,8 @@ spring:
     name: auth
   profiles:
     default: auth
-    include: common
+    include:
+      - common
+      - log
+      - notification
 

@@ -7,13 +7,21 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
 @EnableJpaRepositories(
-    basePackages = ["toyproject.startofconversation.notification.domain.repository"]
+    basePackages = ["toyproject.startofconversation.notification.device.domain.repository"]
 )
 @EntityScan(
     basePackages = [
         "toyproject.startofconversation.common.domain",
+        "toyproject.startofconversation.log.notification.domain",
+        "toyproject.startofconversation.log.system.domain",
         "toyproject.startofconversation.notification.domain"
     ]
 )
-@ComponentScan(basePackages = ["toyproject.startofconversation.common"])
+@ComponentScan(
+    basePackages = [
+        "toyproject.startofconversation.common",
+        "toyproject.startofconversation.log",
+        "toyproject.startofconversation.notification"
+    ]
+)
 class NotificationDBConfig
