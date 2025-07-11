@@ -6,25 +6,32 @@ import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.MulticastMessage
 import com.google.firebase.messaging.Notification
 import org.springframework.stereotype.Service
+import toyproject.startofconversation.common.base.value.ChannelType
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.exception.external.FirebaseException
 import toyproject.startofconversation.common.logger.logger
+import toyproject.startofconversation.log.notification.publisher.NotificationLogPublisher
 import toyproject.startofconversation.notification.device.domain.repository.DeviceRepository
 import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
 
 @Service
 class FCMNotificationService(
     deviceRepository: DeviceRepository,
-    private val fcmProperties: FCMProperties
+    private val fcmProperties: FCMProperties,
+    private val logPublisher: NotificationLogPublisher
 ) : FCMBaseService(deviceRepository) {
 
     private val log = logger()
 
     fun sendMessageToUser(userId: String, title: String, body: String, data: Map<String, String> = emptyMap()) =
-        sendMessagesToDevices(tokens = getDeviceToken(userId), title, body, data)
+        logPublisher.withNotificationLog(userId, title, body, ChannelType.APP_PUSH) {
+            sendMessagesToDevices(tokens = getDeviceToken(userId), title, body, data)
+        }
 
     fun sendMessageToUser(user: Users, title: String, body: String, data: Map<String, String> = emptyMap()) =
-        sendMessagesToDevices(tokens = getDeviceToken(user), title, body, data)
+        logPublisher.withNotificationLog(user, title, body, ChannelType.APP_PUSH) {
+            sendMessagesToDevices(tokens = getDeviceToken(user), title, body, data)
+        }
 
     /**
      * 기본 토픽으로 메세지 전송
