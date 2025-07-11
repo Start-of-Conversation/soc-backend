@@ -1,7 +1,8 @@
 rootProject.name = 'startOfConversation'
-include(":common", ":auth", ":notification", ":api")
+include(":common", ":log", ":auth", ":notification", ":api")
 
 project(":common").name = "common"
+project(":log").name = "log"
 project(":auth").name = "auth"
 project(":notification").name = "notification"
 project(":api").name = "api"
