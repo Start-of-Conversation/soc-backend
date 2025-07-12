@@ -20,7 +20,7 @@ class Card(
     @Column(nullable = false)
     var question: String,
 
-    @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf(),
 
     @ManyToOne(fetch = FetchType.LAZY)

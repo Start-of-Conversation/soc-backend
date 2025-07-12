@@ -1,7 +1,6 @@
 package toyproject.startofconversation.api.user.service
 
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
@@ -29,7 +28,7 @@ class UserService(
 
     @Transactional
     @LoginUserAccess
-    fun deleteUser(id: String): ResponseData<Boolean> = usersRepository.findByIdOrNull(id)?.let {
+    fun deleteUser(id: String): ResponseData<Boolean> = usersRepository.findUserById(id)?.let {
         if (!it.isDeleted) {
             it.isDeleted = true
             it.deletedAt = LocalDateTime.now()
@@ -41,11 +40,11 @@ class UserService(
     } ?: throw UserNotFoundException(id)
 
     @LoginUserAccess
-    fun searchUserById(id: String): ResponseData<UserDataResponse> = usersRepository.findByIdOrNull(id)?.let {
+    fun searchUserById(id: String): ResponseData<UserDataResponse> = usersRepository.findUserById(id)?.let {
         ResponseData.to(UserDataResponse.to(it))
     } ?: throw UserNotFoundException(id)
 
-    fun findUserById(id: String): Users = usersRepository.findByIdOrNull(id)
+    fun findUserById(id: String): Users = usersRepository.findUserById(id)
         ?: throw UserNotFoundException(id)
 
     fun findCardsByUserId(

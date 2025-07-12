@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         "toyproject.startofconversation.common.domain",
         "toyproject.startofconversation.log.notification.domain",
         "toyproject.startofconversation.log.system.domain",
-        "toyproject.startofconversation.notification.domain"
+        "toyproject.startofconversation.notification.device.domain"
     ]
 )
 @ComponentScan(

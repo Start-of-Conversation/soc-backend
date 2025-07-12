@@ -1,7 +1,6 @@
 package toyproject.startofconversation.notification.device.service
 
 import jakarta.transaction.Transactional
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.entity.Users
@@ -30,7 +29,7 @@ class DeviceService(
 
     @Transactional
     fun saveDevice(request: DeviceSaveRequest, userId: String): ResponseData<AppPushInfoResponse> {
-        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
+        val user = userRepository.findUserById(userId) ?: throw UserNotFoundException(userId)
         val device = getOrCreateDevice(request, user)
 
         deviceRepository.save(device)

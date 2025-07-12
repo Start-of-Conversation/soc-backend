@@ -61,8 +61,8 @@ class AuthController(
             description = "소셜 로그인 제공자 (가능한 값: kakao, apple, naver)",
             example = "kakao",
             schema = Schema(implementation = AuthProvider::class)
-        ) @PathVariable(required = true, name = "social") social: AuthProvider
-    ): OAuthParameter = socialLoginService.getOauthParams(social)
+        ) @PathVariable(required = true, name = "social") social: String
+    ): OAuthParameter = socialLoginService.getOauthParams(AuthProvider.from(social))
 
     @Operation(summary = "소셜 로그인")
     @PostMapping("/{social}")
@@ -71,7 +71,7 @@ class AuthController(
             description = "소셜 로그인 제공자 (가능한 값: kakao, apple, naver)",
             example = "kakao",
             schema = Schema(implementation = AuthProvider::class)
-        ) @PathVariable("social") social: AuthProvider,
+        ) @PathVariable("social") social: String,
         @Parameter(
             description = "로그인 후 받은 인가 코드 (authorizationCode and accessCode)",
             required = true
@@ -83,7 +83,7 @@ class AuthController(
         ) @RequestParam(required = false, defaultValue = "default_state") state: String,
         response: HttpServletResponse
     ): ResponseEntity<ResponseData<AuthResponse>> =
-        authService.loginUser(authorizationCode, state, response, social)
+        authService.loginUser(authorizationCode, state, response, AuthProvider.from(social))
 
     @Operation(summary = "로컬 회원가입")
     @PostMapping("/register")

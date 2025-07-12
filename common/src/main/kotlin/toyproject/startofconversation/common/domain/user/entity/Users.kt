@@ -1,10 +1,12 @@
 package toyproject.startofconversation.common.domain.user.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -38,7 +40,8 @@ class Users(
 
     var deletedAt: LocalDateTime? = null,
 
-    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonIgnore
     var marketing: Marketing? = null
 
 ) : BaseDateEntity(Domain.USER) {

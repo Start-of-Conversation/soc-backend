@@ -13,14 +13,6 @@ tasks.processResources {
     }
 }
 
-sourceSets {
-    test {
-        resources {
-            srcDir("src/main/resources")
-        }
-    }
-}
-
 dependencies {
     implementation(project(":common"))
     implementation(project(":log"))

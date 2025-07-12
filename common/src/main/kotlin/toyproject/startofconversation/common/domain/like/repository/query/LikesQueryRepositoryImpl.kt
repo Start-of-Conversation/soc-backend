@@ -21,14 +21,20 @@ class LikesQueryRepositoryImpl(
         val orderSpecifiers = QueryDslUtil.getOrderSpecifiers(pageable) {
             LikeSortField.Companion.fromProperty(it)
         }
-
-        val results = queryFactory
-            .selectFrom(likes)
-            .leftJoin(likes.cardGroup, QCardGroup.cardGroup).fetchJoin()
+        val ids = queryFactory
+            .select(likes.id)
+            .from(likes)
             .where(likes.user.id.eq(userId))
             .orderBy(*orderSpecifiers.toTypedArray())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
+            .fetch()
+
+        val results = queryFactory
+            .selectFrom(likes)
+            .leftJoin(likes.cardGroup, QCardGroup.cardGroup).fetchJoin()
+            .where(likes.id.`in`(ids))
+            .orderBy(*orderSpecifiers.toTypedArray())
             .fetch()
 
         val count = queryFactory
@@ -36,6 +42,7 @@ class LikesQueryRepositoryImpl(
             .from(likes)
             .where(likes.user.id.eq(userId))
             .fetchOne() ?: 0L
+
 
         return PageImpl(results, pageable, count)
     }

@@ -19,7 +19,7 @@ class CardGroupValidator(
     fun getValidCardGroupOwnedByUser(cardGroupId: String, userId: String): CardGroup {
         val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
-        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
+        val user = userRepository.findUserById(userId) ?: throw UserNotFoundException(userId)
 
         if (user.role != Role.ADMIN && cardGroup.user != user) {
             throw UserMismatchException(userId)

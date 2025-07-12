@@ -30,4 +30,6 @@ open class BaseEntity : Serializable {
 
     override fun hashCode(): Int = id.hashCode()
 
+    override fun toString(): String = "${this::class.simpleName}(id=$id)"
+
 }

@@ -1,6 +1,5 @@
 package toyproject.startofconversation.auth.support
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.domain.user.entity.value.Role
@@ -58,7 +57,7 @@ class AuthValidator(
         validateApprovedUser(user)
     }
 
-    private fun findUser(userId: String): Users = usersRepository.findByIdOrNull(userId)
+    private fun findUser(userId: String): Users = usersRepository.findUserById(userId)
         ?: throw UserNotFoundException("User with ID $userId not found.")
 
 }
