@@ -21,6 +21,7 @@ interface AuthRepository : JpaRepository<Auth, String> {
         @Param("authId") authId: String
     ): Auth?
 
+    @EntityGraph(attributePaths = ["user, marketing"])
     fun findByAuthProviderAndUserId(provider: AuthProvider, userId: String): Auth?
 
     fun deleteAllByUserId(userId: String)

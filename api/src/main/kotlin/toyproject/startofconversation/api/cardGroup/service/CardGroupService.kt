@@ -1,14 +1,12 @@
 package toyproject.startofconversation.api.cardGroup.service
 
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
-import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.service.UserService
@@ -16,6 +14,7 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
+import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
 
 @Service
 class CardGroupService(
@@ -24,12 +23,12 @@ class CardGroupService(
     private val cardGroupValidator: CardGroupValidator
 ) {
     fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> =
-        cardGroupRepository.findByIdOrNull(id)?.let {
+        cardGroupRepository.findCardGroupInfoById(id)?.let {
             ResponseData.to(CardGroupInfoResponse.from(it))
         } ?: throw CardGroupNotFoundException(id)
 
     fun getCardGroups(pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        cardGroupRepository.findAll(pageable).toPageResponse(CardGroupInfoResponse::from)
+        cardGroupRepository.findCardGroupsWithCardCount(pageable).toPageResponse(CardGroupInfoResponse::from)
 
     @Transactional
     @LoginUserAccess
@@ -47,7 +46,7 @@ class CardGroupService(
         ).setThumbs(thumbnail)
         cardGroupRepository.save(cardGroup)
 
-        ResponseData.to(CardGroupInfoResponse.from(cardGroup))
+        ResponseData.to(CardGroupInfoResponse.from(cardGroup to 0))
     }
 
     @Transactional
@@ -55,14 +54,15 @@ class CardGroupService(
     fun update(
         cardGroupId: String, request: CardGroupUpdateRequest, userId: String
     ): ResponseData<CardGroupInfoResponse> = with(request) {
-        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
+        val result = cardGroupValidator.getValidCardGroupWithCountOwnedByUser(cardGroupId, userId)
+        result.first
             .setName(name)
             .setSummary(summary)
             .setDesc(description)
             .setThumbs(thumbnail)
             .setCustomized(isCustomized)
 
-        ResponseData.to(CardGroupInfoResponse.from(cardGroup))
+        ResponseData.to(CardGroupInfoResponse.from(result))
     }
 
     @Transactional

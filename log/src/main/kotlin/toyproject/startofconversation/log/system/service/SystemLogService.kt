@@ -16,7 +16,9 @@ class SystemLogService(
 
     @Async
     @Transactional
-    fun asyncSave(event: SystemLogEvent) = systemLogRepository.save(event.to {
-        event.userId?.let(usersRepository::findByIdOrNull)
-    })
+    fun asyncSave(event: SystemLogEvent) {
+        systemLogRepository.save(event.to {
+            event.userId?.let(usersRepository::findByIdOrNull)
+        })
+    }
 }

@@ -15,7 +15,9 @@ class NotificationLogService(
 ) {
     @Async
     @Transactional
-    fun asyncSave(event: NotificationLogEvent) = notificationLogRepository.save(event.to {
-        event.recipientId?.let(usersRepository::findByIdOrNull)
-    })
+    fun asyncSave(event: NotificationLogEvent) {
+        notificationLogRepository.save(event.to {
+            event.recipientId?.let(usersRepository::findByIdOrNull)
+        })
+    }
 }

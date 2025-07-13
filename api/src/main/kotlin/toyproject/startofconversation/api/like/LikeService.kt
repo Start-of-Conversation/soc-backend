@@ -55,13 +55,13 @@ class LikeService(
 
     @Transactional
     fun like(cardGroupId: String, userId: String): Pair<CardGroup, Users> {
+        if (likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
+            throw DuplicateLikeException(cardGroupId, userId)
+        }
+
         val cardGroup = cardGroupRepository.findWithUserById(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
         val user = userService.findUserById(userId)
-
-        if (likesRepository.existsByUserAndCardGroup(user, cardGroup)) {
-            throw DuplicateLikeException(cardGroupId, userId)
-        }
 
         likesRepository.save(Likes(user, cardGroup))
         return cardGroup to user
@@ -78,5 +78,5 @@ class LikeService(
     }
 
     fun findCardGroupsByUser(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        likesRepository.findByUserId(userId, pageable).toPageResponse(CardGroupInfoResponse::from)
+        likesRepository.findLikedCardGroupsByUserId(userId, pageable).toPageResponse(CardGroupInfoResponse::from)
 }
