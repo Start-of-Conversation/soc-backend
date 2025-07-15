@@ -1,14 +1,10 @@
 package toyproject.startofconversation.common.domain.user.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.FetchType
 import jakarta.persistence.OneToMany
-import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
@@ -38,22 +34,12 @@ class Users(
 
     var isDeleted: Boolean = false,
 
-    var deletedAt: LocalDateTime? = null,
-
-    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    @JsonIgnore
-    var marketing: Marketing? = null
+    var deletedAt: LocalDateTime? = null
 
 ) : BaseDateEntity(Domain.USER) {
 
     @OneToMany(mappedBy = "user")
     var likes: MutableSet<Likes> = mutableSetOf()
-
-    fun createMarketing(): Users {
-        val marketing = Marketing(user = this)
-        this.marketing = marketing
-        return this
-    }
 
     fun approve(): Users {
         this.isApproved = true

@@ -15,7 +15,7 @@ class UserAuthStore(
 ) {
     fun getOrCreateUser(email: String, name: String): Users = Tx.writeTx {
         authRepository.findByEmail(email)?.user
-            ?: usersRepository.save(Users(nickname = name).createMarketing())
+            ?: usersRepository.save(Users(nickname = name))
     }
 
     fun saveAuth(user: Users, email: String, authProvider: AuthProvider, authId: String): Auth = Tx.writeTx {

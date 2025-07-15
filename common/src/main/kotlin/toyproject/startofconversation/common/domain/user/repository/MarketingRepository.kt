@@ -10,4 +10,6 @@ interface MarketingRepository : JpaRepository<Marketing, String> {
     fun findByUserId(userId: String): Marketing?
 
     fun findByUser(user: Users): Marketing?
+
+    fun existsByUserId(userId: String): Boolean
 }

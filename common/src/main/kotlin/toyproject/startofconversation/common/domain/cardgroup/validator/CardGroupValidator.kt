@@ -1,5 +1,6 @@
 package toyproject.startofconversation.common.domain.cardgroup.validator
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
@@ -18,7 +19,7 @@ class CardGroupValidator(
     fun getValidCardGroupOwnedByUser(cardGroupId: String, userId: String): CardGroup {
         val cardGroup = cardGroupRepository.findWithUserById(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
-        val user = userRepository.findUserById(userId) ?: throw UserNotFoundException(userId)
+        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
 
         if (user.role != Role.ADMIN && cardGroup.user.id != user.id) {
             throw UserMismatchException(userId)
@@ -29,7 +30,7 @@ class CardGroupValidator(
     fun getValidCardGroupWithCountOwnedByUser(cardGroupId: String, userId: String): Pair<CardGroup, Long> {
         val cardGroup = cardGroupRepository.findCardGroupInfoAndUserById(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
-        val user = userRepository.findUserById(userId) ?: throw UserNotFoundException(userId)
+        val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
 
         if (user.role != Role.ADMIN && cardGroup.first.user.id != user.id) {
             throw UserMismatchException(userId)

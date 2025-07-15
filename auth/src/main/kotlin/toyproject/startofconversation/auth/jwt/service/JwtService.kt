@@ -48,7 +48,7 @@ class JwtService(
     }
 
     fun generateExpiredAccessToken(userId: String): HttpHeaders {
-        val user = usersRepository.findUserById(userId) ?: throw UserNotFoundException(userId)
+        val user = usersRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
         val expiredToken = jwtProvider.generateExpiredToken(user)
         val responseHeaders = HttpHeaders().apply {
             set("Authorization", "Bearer $expiredToken") // 헤더에 토큰을 추가

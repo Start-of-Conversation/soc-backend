@@ -14,7 +14,6 @@ interface CardRepository : JpaRepository<Card, String>, CardQueryRepository {
     @EntityGraph(attributePaths = ["user"])
     fun findByIdAndUserId(id: String, userId: String): Card?
 
-    @EntityGraph(attributePaths = ["user"])
     fun findByUserId(userId: String, pageable: Pageable): Page<Card>
 
     fun findAllByIdIn(ids: List<String>): List<Card>

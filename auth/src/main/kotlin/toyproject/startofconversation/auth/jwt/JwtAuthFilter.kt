@@ -67,7 +67,7 @@ class JwtAuthFilter(
                 if (refreshClaims != null) {
                     val userId = refreshTokenRepository.findUserIdByToken(refreshToken)
                         ?: throw SOCUnauthorizedException("Invalid refresh token")
-                    val user = usersRepository.findUserById(userId)
+                    val user = usersRepository.findByIdOrNull(userId)
                         ?: throw SOCNotFoundException("User not found")
 
                     val newAccessToken = jwtProvider.generateToken(user)

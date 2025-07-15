@@ -23,10 +23,9 @@ import toyproject.startofconversation.notification.fcm.util.transactionalWithNot
 @Service
 @LoginUserAccess
 class LikeService(
-    private val userService: UserService,
-    private val cardGroupRepository: CardGroupRepository,
     private val likesRepository: LikesRepository,
-    private val fcmNotificationService: FCMNotificationService
+    private val fcmNotificationService: FCMNotificationService,
+    private val likeTransactionalService: LikeTransactionalService
 ) {
 
     /**
@@ -36,7 +35,7 @@ class LikeService(
     fun likeWithNotification(
         cardGroupId: String, userId: String
     ): ResponseData<Boolean> = transactionalWithNotification(
-        block = { like(cardGroupId, userId) },
+        block = { likeTransactionalService.like(cardGroupId, userId) },
         notify = { (cardGroup, user) ->
             fcmNotificationService.sendMessageToUser(
                 user = cardGroup.user,
@@ -54,6 +53,26 @@ class LikeService(
     }
 
     @Transactional
+    fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
+        if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
+            throw LikeNotFoundException(cardGroupId, userId)
+        }
+        likesRepository.deleteByUserIdAndCardGroupId(userId, cardGroupId)
+
+        return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
+    }
+
+    fun findCardGroupsByUser(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
+        likesRepository.findLikedCardGroupsByUserId(userId, pageable).toPageResponse(CardGroupInfoResponse::from)
+}
+
+@Service
+class LikeTransactionalService(
+    private val userService: UserService,
+    private val cardGroupRepository: CardGroupRepository,
+    private val likesRepository: LikesRepository
+) {
+    @Transactional
     fun like(cardGroupId: String, userId: String): Pair<CardGroup, Users> {
         if (likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
             throw DuplicateLikeException(cardGroupId, userId)
@@ -66,17 +85,4 @@ class LikeService(
         likesRepository.save(Likes(user, cardGroup))
         return cardGroup to user
     }
-
-    @Transactional
-    fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
-        if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
-            throw LikeNotFoundException(cardGroupId, userId)
-        }
-        likesRepository.deleteByUserIdAndCardGroupId(userId, cardGroupId)
-
-        return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
-    }
-
-    fun findCardGroupsByUser(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        likesRepository.findLikedCardGroupsByUserId(userId, pageable).toPageResponse(CardGroupInfoResponse::from)
 }

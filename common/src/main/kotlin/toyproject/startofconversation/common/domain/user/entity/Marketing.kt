@@ -27,10 +27,10 @@ class Marketing(
     var emailConsentDate: LocalDateTime? = null,
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    val user: Users
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    val user: Users,
 
-) : BaseEntity(Domain.MARKETING) {
+    ) : BaseEntity(Domain.MARKETING) {
 
     fun updateConsent(marketingYn: Boolean, appPushYn: Boolean, emailYn: Boolean): Marketing {
         if (marketingYn != marketingConsentYn) {
