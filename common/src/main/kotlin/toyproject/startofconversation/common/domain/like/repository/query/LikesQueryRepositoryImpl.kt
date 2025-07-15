@@ -61,6 +61,10 @@ class LikesQueryRepositoryImpl(
             .limit(pageable.pageSize.toLong())
             .fetch()
 
+        if (ids.isEmpty()) {
+            return PageImpl(emptyList(), pageable, 0)
+        }
+
         val results = queryFactory
             .select(cardGroup, cardGroupCards.count())
             .from(cardGroup)

@@ -32,22 +32,22 @@ class CardGroupQueryRepositoryImpl(
         }
     }
 
-    override fun findCardGroupInfoAndUserById(id: String): Pair<CardGroup, Long>? {
-        val result = queryFactory
-            .select(cardGroup, cardGroupCards.count())
-            .from(cardGroup)
-            .leftJoin(cardGroup.cardGroupCards, cardGroupCards)
-            .join(cardGroup.user, users).fetchJoin()
-            .where(cardGroup.id.eq(id))
-            .groupBy(cardGroup.id)
-            .fetchOne()
-
-        return result?.let {
-            val cg: CardGroup? = it.get(cardGroup)
-            val count: Long? = it.get(cardGroupCards.count())
-            if (cg != null && count != null) (cg to count) else null
-        }
-    }
+//    override fun findCardGroupInfoAndUserById(id: String): Pair<CardGroup, Long>? {
+//        val result = queryFactory
+//            .select(cardGroup, cardGroupCards.count())
+//            .from(cardGroup)
+//            .leftJoin(cardGroup.cardGroupCards, cardGroupCards)
+//            .join(cardGroup.user, users).fetchJoin()
+//            .where(cardGroup.id.eq(id))
+//            .groupBy(cardGroup.id)
+//            .fetchOne()
+//
+//        return result?.let {
+//            val cg: CardGroup? = it.get(cardGroup)
+//            val count: Long? = it.get(cardGroupCards.count())
+//            if (cg != null && count != null) (cg to count) else null
+//        }
+//    }
 
     override fun findCardGroupsWithCardCount(pageable: Pageable): Page<Pair<CardGroup, Long>> {
         val orderSpecifiers = QueryDslUtil.getOrderSpecifiers(pageable) {

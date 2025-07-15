@@ -68,11 +68,8 @@ class CardGroupService(
     @Transactional
     @LoginUserAccess
     fun delete(cardGroupId: String, userId: String): ResponseData<Boolean> {
-        val cardGroup = cardGroupRepository.findByIdAndUserId(cardGroupId, userId)
-            ?: throw CardGroupNotFoundException(cardGroupId)
-
+        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
         cardGroupRepository.delete(cardGroup)
-
         return ResponseData.to("CardGroup $cardGroupId has been successfully removed.", true)
     }
 

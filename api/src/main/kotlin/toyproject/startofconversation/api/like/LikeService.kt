@@ -9,12 +9,10 @@ import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
-import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.exception.DuplicateLikeException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.like.entity.Likes
-import toyproject.startofconversation.common.domain.like.exception.LikeNotFoundException
 import toyproject.startofconversation.common.domain.like.repository.LikesRepository
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.notification.fcm.service.FCMNotificationService
@@ -36,11 +34,11 @@ class LikeService(
         cardGroupId: String, userId: String
     ): ResponseData<Boolean> = transactionalWithNotification(
         block = { likeTransactionalService.like(cardGroupId, userId) },
-        notify = { (cardGroup, user) ->
+        notify = { (cardGroupOwner, cardGroupName, userName) ->
             fcmNotificationService.sendMessageToUser(
-                user = cardGroup.user,
+                user = cardGroupOwner,
                 title = "좋아요!",
-                body = "${user.nickname}님이 ${cardGroup.cardGroupName}에 좋아요를 눌렀습니다.",
+                body = "${userName}님이 ${cardGroupName}에 좋아요를 눌렀습니다.",
                 data = mapOf(
                     "type" to "cardGroup",
                     "cardGroupId" to cardGroupId,
@@ -54,11 +52,7 @@ class LikeService(
 
     @Transactional
     fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
-        if (!likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
-            throw LikeNotFoundException(cardGroupId, userId)
-        }
         likesRepository.deleteByUserIdAndCardGroupId(userId, cardGroupId)
-
         return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
     }
 
@@ -73,7 +67,7 @@ class LikeTransactionalService(
     private val likesRepository: LikesRepository
 ) {
     @Transactional
-    fun like(cardGroupId: String, userId: String): Pair<CardGroup, Users> {
+    fun like(cardGroupId: String, userId: String): Triple<Users, String, String> {
         if (likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)) {
             throw DuplicateLikeException(cardGroupId, userId)
         }
@@ -83,6 +77,6 @@ class LikeTransactionalService(
         val user = userService.findUserById(userId)
 
         likesRepository.save(Likes(user, cardGroup))
-        return cardGroup to user
+        return Triple(cardGroup.user, cardGroup.cardGroupName, user.nickname)
     }
 }

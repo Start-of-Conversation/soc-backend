@@ -17,7 +17,7 @@ class CardGroupValidator(
 ) {
 
     fun getValidCardGroupOwnedByUser(cardGroupId: String, userId: String): CardGroup {
-        val cardGroup = cardGroupRepository.findWithUserById(cardGroupId)
+        val cardGroup = cardGroupRepository.findByIdOrNull(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
 
@@ -28,7 +28,7 @@ class CardGroupValidator(
     }
 
     fun getValidCardGroupWithCountOwnedByUser(cardGroupId: String, userId: String): Pair<CardGroup, Long> {
-        val cardGroup = cardGroupRepository.findCardGroupInfoAndUserById(cardGroupId)
+        val cardGroup = cardGroupRepository.findCardGroupInfoById(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException(userId)
 

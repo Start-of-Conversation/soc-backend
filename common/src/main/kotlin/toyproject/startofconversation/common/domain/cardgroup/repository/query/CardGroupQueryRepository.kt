@@ -8,7 +8,7 @@ interface CardGroupQueryRepository {
 
     fun findCardGroupInfoById(id: String): Pair<CardGroup, Long>?
 
-    fun findCardGroupInfoAndUserById(id: String): Pair<CardGroup, Long>?
+//    fun findCardGroupInfoAndUserById(id: String): Pair<CardGroup, Long>?
 
     fun findCardGroupsWithCardCount(pageable: Pageable): Page<Pair<CardGroup, Long>>
 
