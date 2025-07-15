@@ -32,9 +32,8 @@ class SystemLog(
     @Column
     val action: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    var user: Users? = null,
+    @Column(nullable = true, length = 50)
+    var userId: String? = null,
 
     logLevel: LogLevel = LogLevel.INFO,
     errorMessage: String? = null

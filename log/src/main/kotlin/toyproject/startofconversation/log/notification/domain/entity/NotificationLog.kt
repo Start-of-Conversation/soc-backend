@@ -38,9 +38,8 @@ class NotificationLog(
     @Column(nullable = false)
     var isSuccess: Boolean,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipient_id", referencedColumnName = "id")
-    var recipient: Users? = null,
+    @Column(nullable = true, length = 50)
+    var recipientId: String? = null,
 
     logLevel: LogLevel = LogLevel.INFO,
     errorMessage: String? = null
