@@ -10,9 +10,13 @@ import java.time.LocalDateTime
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
-open class BaseCreatedEntity(domain: Domain) : BaseEntity(domain) {
+open class BaseCreatedEntity : BaseEntity {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null
+
+    constructor() : super()
+
+    constructor(domain: Domain) : super(domain)
 }
