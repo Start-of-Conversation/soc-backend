@@ -14,6 +14,17 @@ interface CardGroupRepository : JpaRepository<CardGroup, String>, CardGroupQuery
     @Query("select cg from CardGroup cg join fetch cg.user u where cg.id = :id")
     fun findWithUserById(@Param("id") id: String): CardGroup?
 
+    @Query(
+        """
+        select cg from CardGroup cg
+        join fetch cg.user u
+        left join fetch cg.cardGroupCards cgc
+        left join fetch cgc.card card
+        where cg.id = :id
+    """
+    )
+    fun findWithUserAndCardsById(@Param("id") id: String): CardGroup?
+
     @EntityGraph(attributePaths = ["user"])
     fun findByIdAndUserId(id: String, userId: String): CardGroup?
 

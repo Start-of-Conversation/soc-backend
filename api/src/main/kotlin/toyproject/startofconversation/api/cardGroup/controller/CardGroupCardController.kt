@@ -37,7 +37,7 @@ class CardGroupCardController(
     fun addCardsInCardGroup(
         @PathVariable cardGroupId: String,
         @RequestBody request: AddCardToGroupRequest
-    ): ResponseData<CardListResponse> = cardGroupCardService.addCardToGroup(cardGroupId, request, getUserId())
+    ): PageResponseData<CardListResponse> = cardGroupCardService.addCardToGroup(cardGroupId, request, getUserId())
 
     @Operation(summary = "카드그룹에서 카드 삭제")
     @DeleteMapping("/{cardGroupId}/cards")

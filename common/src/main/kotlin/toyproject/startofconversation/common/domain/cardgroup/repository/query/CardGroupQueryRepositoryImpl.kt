@@ -20,6 +20,7 @@ class CardGroupQueryRepositoryImpl(
         val result = queryFactory
             .select(cardGroup, cardGroupCards.count())
             .from(cardGroup)
+            .join(cardGroup.user, users).fetchJoin()
             .leftJoin(cardGroup.cardGroupCards, cardGroupCards)
             .where(cardGroup.id.eq(id))
             .groupBy(cardGroup.id)

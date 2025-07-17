@@ -5,13 +5,12 @@ import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.SomeCardsNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
-import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
+import toyproject.startofconversation.common.domain.cardgroup.exception.SomeCardsNotFoundInGroupException
 import toyproject.startofconversation.common.logger.logger
 
 @Component
 class CardGroupCardValidator(
-    private val cardRepository: CardRepository,
-    private val cardGroupCardRepository: CardGroupCardsRepository
+    private val cardRepository: CardRepository
 ) {
     private val log = logger()
 
@@ -29,13 +28,22 @@ class CardGroupCardValidator(
         logMessage = { skipped -> "Skipping cards not in group: $skipped" }
     )
 
+    fun validateCardIdsInGroup(requestedIds: List<String>, cardGroup: CardGroup) {
+        val existingIds = cardGroup.cardGroupCards.map { it.card.id }.toSet()
+
+        val invalidIds = requestedIds.filterNot { it in existingIds }
+        if (invalidIds.isNotEmpty()) {
+            throw SomeCardsNotFoundInGroupException(invalidIds)
+        }
+    }
+
     private fun filterCardsByGroup(
         requestedIds: List<String>,
         cardGroup: CardGroup,
         filterCondition: (Set<String>, Set<String>) -> Set<String>,
         logMessage: (Set<String>) -> String
     ): List<Card> {
-        val existingIds = cardGroupCardRepository.findAllByCardGroup(cardGroup).map { it.card.id }.toSet()
+        val existingIds = cardGroup.cardGroupCards.map { it.card.id }.toSet()
         val foundCards = cardRepository.findAllByIdIn(requestedIds)
         val foundIds = foundCards.map { it.id }.toSet()
 
