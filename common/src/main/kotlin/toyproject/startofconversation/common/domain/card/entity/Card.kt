@@ -12,6 +12,7 @@ import toyproject.startofconversation.common.base.BaseDateEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCards
 import toyproject.startofconversation.common.domain.user.entity.Users
+import toyproject.startofconversation.common.support.normalize
 
 @Entity
 @Table(name = "card")
@@ -20,31 +21,32 @@ class Card(
     @Column(nullable = false)
     var question: String,
 
-    @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf(),
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     val user: Users,
 
     @Column(nullable = false)
-    val normalizedQuestion: String = normalize(question)
+    var normalizedQuestion: String = normalize(question)
 
 ) : BaseDateEntity(Domain.CARD) {
 
-    fun addCardGroup(cardGroupCards: CardGroupCards) = this.cardGroupCards.add(cardGroupCards)
+    @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf()
 
-    fun updateQuestion(question: String) {
+    fun updateQuestion(question: String, normalizedQuestion: String = normalize(question)) {
         this.question = question
+        this.normalizedQuestion = normalizedQuestion
     }
 
     companion object {
-        fun from(question: String, user: Users): Card {
-            val card = Card(question = question, user = user)
-            return card
-        }
-
-        fun normalize(input: String): String =
-            input.trim().replace(Regex("\\s+"), " ").lowercase()
+        fun from(
+            question: String,
+            user: Users,
+            normalizedQuestion: String = normalize(question)
+        ): Card = Card(
+            question = question,
+            user = user,
+            normalizedQuestion = normalizedQuestion
+        )
     }
 }

@@ -13,8 +13,8 @@ data class SystemLogEvent(
     val logLevel: LogLevel,
     val errorMessage: String?
 ) {
-    fun to(block: () -> Users?): SystemLog = SystemLog(
-        user = block(),
+    fun to(): SystemLog = SystemLog(
+        userId = userId,
         ipAddress = ipAddress,
         module = module,
         action = action,

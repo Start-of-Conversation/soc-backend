@@ -1,7 +1,6 @@
 package toyproject.startofconversation.api.cardGroup.service
 
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -10,8 +9,6 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.card.dto.CardListResponse
 import toyproject.startofconversation.api.cardGroup.dto.AddCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.dto.RemoveCardToGroupRequest
-import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupCardValidator
-import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.card.entity.Card
@@ -20,6 +17,8 @@ import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCa
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
+import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupCardValidator
+import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
 import toyproject.startofconversation.common.lock.strategy.LockService
 
 @Service
@@ -41,17 +40,20 @@ class CardGroupCardService(
     @LoginUserAccess
     fun addCardToGroup(
         cardGroupId: String, request: AddCardToGroupRequest, userId: String
-    ): ResponseData<CardListResponse> = with(request) {
-        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
-        val newCardGroupCards = withGroupCardLock(cardGroupId) {
-            cardGroupCardValidator.filterValidCards(cardIds, cardGroup)
-                .map { CardGroupCards(cardGroup, it) }
-                .also { cardGroup.cardGroupCards.addAll(it) }
-        }
-        cardGroup.cardGroupCards.addAll(newCardGroupCards)
+    ): PageResponseData<CardListResponse> {
+        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUserWithCards(cardGroupId, userId)
 
-        val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
-        PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)
+        val cardsInGroup = withGroupCardLock(cardGroupId) {
+            val cards = cardGroupCardValidator.filterValidCards(request.cardIds, cardGroup)
+            cardGroup.cardGroupCards.addAll(cards.map { CardGroupCards(cardGroup, it) })
+            cardGroup.cardGroupCards.map { it.card }
+        }
+
+        val paged = PageResponseData.paginate(cardsInGroup)
+        return PageResponseData(
+            CardListResponse.from(cardGroupId, paged.content),
+            paged
+        )
     }
 
     @Transactional
@@ -59,11 +61,12 @@ class CardGroupCardService(
     fun deleteCardToGroup(
         cardGroupId: String, request: RemoveCardToGroupRequest, userId: String
     ): ResponseData<CardListResponse> = with(request) {
-        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
-        val cardsInGroup = cardGroupCardValidator.filterRemovalCards(cardIds, cardGroup)
-        cardGroupCardsRepository.deleteAllByCardGroupAndCardIn(cardGroup, cardsInGroup)
+        val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUserWithCards(cardGroupId, userId)
+        cardGroupCardValidator.validateCardIdsInGroup(cardIds, cardGroup)
 
-        val cards = getCardListByCardGroup(cardGroup, PageRequest.of(0, 20))
+        cardGroup.cardGroupCards.removeIf { it.card.id in cardIds }
+
+        val cards = PageResponseData.paginate(cardGroup.cardGroupCards.map { it.card })
         return PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)
     }
 

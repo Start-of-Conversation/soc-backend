@@ -3,4 +3,6 @@ spring:
     name: notification
   profiles:
     default: notification
-    include: common
+    include:
+      - common
+      - log

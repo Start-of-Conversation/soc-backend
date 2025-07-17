@@ -1,6 +1,7 @@
 package toyproject.startofconversation.common.domain.user.entity
 
 import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -25,11 +26,11 @@ class Marketing(
     var emailConsentYn: Boolean = false,
     var emailConsentDate: LocalDateTime? = null,
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    val user: Users
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    val user: Users,
 
-) : BaseEntity(Domain.MARKETING) {
+    ) : BaseEntity(Domain.MARKETING) {
 
     fun updateConsent(marketingYn: Boolean, appPushYn: Boolean, emailYn: Boolean): Marketing {
         if (marketingYn != marketingConsentYn) {

@@ -7,50 +7,63 @@ import toyproject.startofconversation.api.user.dto.MarketingResponse
 import toyproject.startofconversation.api.user.dto.MarketingUpdateRequest
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.user.entity.Marketing
-import toyproject.startofconversation.common.domain.user.exception.UserNotFoundException
 import toyproject.startofconversation.common.domain.user.repository.MarketingRepository
+import toyproject.startofconversation.common.exception.SOCServerException
+import toyproject.startofconversation.common.logger.logger
 import toyproject.startofconversation.notification.fcm.service.FCMSubscriptionService
 
 @Service
 @LoginUserAccess
 class MarketingService(
-    private val marketingRepository: MarketingRepository,
-    private val userService: UserService,
+    private val marketingTransactionalService: MarketingTransactionalService,
     private val fcmSubscriptionService: FCMSubscriptionService
 ) {
 
-    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> =
-        marketingRepository.findByUserId(userId)?.let {
-            ResponseData.to(MarketingResponse.from(it))
-        } ?: throw UserNotFoundException(userId)
-
-    @Transactional
-    fun updateMarketing(userId: String, request: MarketingUpdateRequest): MarketingResponse {
-        val marketing = getOrCreateMarketing(userId).updateConsent(
-            marketingYn = request.marketingConsentYn,
-            appPushYn = request.appPushConsentYn,
-            emailYn = request.emailConsentYn
-        )
-
-        return MarketingResponse.from(marketing)
+    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> {
+        val marketing = marketingTransactionalService.getOrCreateMarketing(userId)
+        return ResponseData.to(MarketingResponse.from(marketing))
     }
 
     fun updateMarketingWithFCM(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
-        val response = updateMarketing(userId, request)
+        val marketing = marketingTransactionalService.updateMarketingTx(userId, request)
 
-        val shouldSubscribe = response.marketing.consentYn && response.availableChannels.appPush.consentYn
+        val shouldSubscribe = marketing.marketingConsentYn && marketing.appPushConsentYn
         if (shouldSubscribe) {
             fcmSubscriptionService.subscribeMarketing(userId)
         } else {
             fcmSubscriptionService.unsubscribeMarketing(userId)
         }
 
-        return ResponseData(response)
+        return ResponseData(MarketingResponse.from(marketing))
+    }
+}
+
+@Service
+class MarketingTransactionalService(
+    private val marketingRepository: MarketingRepository,
+    private val userService: UserService
+) {
+    private val log = logger()
+
+    @Transactional
+    fun updateMarketingTx(userId: String, request: MarketingUpdateRequest): Marketing {
+        val marketing = getOrCreateMarketing(userId).updateConsent(
+            marketingYn = request.marketingConsentYn,
+            appPushYn = request.appPushConsentYn,
+            emailYn = request.emailConsentYn
+        )
+        return marketing
     }
 
-    private fun getOrCreateMarketing(userId: String): Marketing {
-        val user = userService.findUserById(userId)
-        return marketingRepository.findByUser(user)
-            ?: marketingRepository.save(Marketing(user = user))
-    }
+    @Transactional
+    fun getOrCreateMarketing(userId: String): Marketing = marketingRepository.findByUserId(userId)
+        ?: runCatching {
+            val user = userService.findUserById(userId)
+            marketingRepository.save(Marketing(user = user))
+        }.onFailure {
+            log.warn("마케팅 중복 생성 시도 발생: userId=$userId", it)
+        }.getOrElse {
+            marketingRepository.findByUserId(userId)
+                ?: throw SOCServerException("중복 생성 후에도 Marketing 조회 실패")
+        }
 }

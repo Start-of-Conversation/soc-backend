@@ -2,7 +2,6 @@ package toyproject.startofconversation.log.notification.dto
 
 import toyproject.startofconversation.common.base.value.ChannelType
 import toyproject.startofconversation.common.base.value.LogLevel
-import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.log.notification.domain.entity.NotificationLog
 
 data class NotificationLogEvent(
@@ -16,8 +15,8 @@ data class NotificationLogEvent(
     val logLevel: LogLevel
 ) {
 
-    fun to(block: () -> Users?): NotificationLog = NotificationLog(
-        recipient = block(),
+    fun to(): NotificationLog = NotificationLog(
+        recipientId = recipientId,
         title = title,
         body = body,
         channel = channel,

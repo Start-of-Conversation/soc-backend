@@ -41,7 +41,7 @@ class LocalAuthService(
         val nickname = request.nickname ?: RandomNameMaker.generate()
         val encodedPassword = passwordEncoder.encode(request.password)
 
-        val user = Users(nickname = nickname, role = Role.ADMIN).createMarketing()
+        val user = Users(nickname = nickname, role = Role.ADMIN)
 
         authRepository.save(
             Auth(

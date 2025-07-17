@@ -39,7 +39,7 @@ class JwtProvider(
             .subject(userId)
             .issuedAt(now)
             .expiration(expiration)
-            .signWith(key, Jwts.SIG.HS512)
+            .signWith(key, Jwts.SIG.HS256)
             .compact()
     }
 
@@ -70,7 +70,7 @@ class JwtProvider(
             .subject(user.id)
             .issuedAt(now)
             .expiration(expiration)
-            .signWith(secretKey, Jwts.SIG.HS512)
+            .signWith(secretKey, Jwts.SIG.HS256)
             .compact()
     }
 

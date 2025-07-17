@@ -18,4 +18,6 @@ interface CardRepository : JpaRepository<Card, String>, CardQueryRepository {
 
     fun existsByNormalizedQuestion(normalizedQuestion: String): Boolean
 
+    fun deleteByIdAndUserId(id: String, userId: String): Int
+
 }

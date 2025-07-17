@@ -5,6 +5,7 @@ spring:
     default: dev
     include:
       - common
+      - log
       - auth
       - notification
 #logging:

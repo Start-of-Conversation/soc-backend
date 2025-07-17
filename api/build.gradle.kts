@@ -21,6 +21,10 @@ tasks.processResources {
     from(project(":notification").projectDir.resolve("src/main/resources")) {
         include("application-notification.yml")
     }
+    from(project(":notification").projectDir.resolve("src/main/resources/key")) {
+        include("firebase-service-account.json")
+        into("key")
+    }
 }
 
 dependencies {

@@ -47,9 +47,13 @@ class CardQueryRepositoryImpl(
             CardSortField.Companion.fromProperty(it)
         }
 
-        val results = queryFactory
-            .selectFrom(card)
-            .leftJoin(card.cardGroupCards, cardGroupCards)
+        val query = queryFactory.selectFrom(card)
+
+        cardGroupId?.let {
+            query.leftJoin(card.cardGroupCards, cardGroupCards)
+        }
+
+        val results = query
             .where(whereBuilder)
             .orderBy(*orderSpecifiers.toTypedArray())
             .offset(pageable.offset)
