@@ -14,6 +14,7 @@ import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.card.validator.CardValidator
+import toyproject.startofconversation.common.support.normalize
 import java.time.LocalDateTime
 
 @Service
@@ -40,7 +41,11 @@ class CardService(
     @LoginUserAccess
     fun updateCard(cardId: String, cardUpdateRequest: CardUpdateRequest, userId: String): ResponseData<CardDto> {
         val card = cardRepository.findByIdAndUserId(cardId, userId) ?: throw CardNotFoundException(cardId)
-        val normalizedQuestion = validator.validateCardDuplication(cardUpdateRequest.newQuestion)
+        val normalizedQuestion = normalize(cardUpdateRequest.newQuestion)
+
+        if (normalizedQuestion != card.question) {
+            validator.validateCardDuplication(cardUpdateRequest.newQuestion)
+        }
 
         card.updateQuestion(cardUpdateRequest.newQuestion, normalizedQuestion)
         return ResponseData.to(CardDto.from(card))
