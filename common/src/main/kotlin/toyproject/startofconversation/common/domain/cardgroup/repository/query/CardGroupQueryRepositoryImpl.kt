@@ -23,7 +23,7 @@ class CardGroupQueryRepositoryImpl(
             .join(cardGroup.user, users).fetchJoin()
             .leftJoin(cardGroup.cardGroupCards, cardGroupCards)
             .where(cardGroup.id.eq(id))
-            .groupBy(cardGroup.id)
+            .groupBy(cardGroup.id, users.id)
             .fetchOne()
 
         return result?.let {
@@ -31,6 +31,19 @@ class CardGroupQueryRepositoryImpl(
             val count: Long? = it.get(cardGroupCards.count())
             if (cg != null && count != null) (cg to count) else null
         }
+//        val cardGroup = queryFactory
+//            .selectFrom(cardGroup)
+//            .join(cardGroup.user, users).fetchJoin()
+//            .where(cardGroup.id.eq(id))
+//            .fetchOne()
+//
+//        val count = queryFactory
+//            .select(cardGroupCards.count())
+//            .from(cardGroupCards)
+//            .where(cardGroupCards.cardGroup.id.eq(id))
+//            .fetchOne() ?: 0L
+//
+//        return cardGroup?.let { it to count }
     }
 
 //    override fun findCardGroupInfoAndUserById(id: String): Pair<CardGroup, Long>? {

@@ -27,6 +27,7 @@ class SecurityConfig(
                 it.requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name)
                 it.requestMatchers(
                     "/auth/**",
+                    "/api/*/public",
                     "/api/*/public/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
