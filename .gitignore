@@ -48,6 +48,7 @@ out/
 
 ### config ###
 /api/src/main/resources/application-dev.yml
+/api/src/main/resources/application-prod.yml
 /auth/src/main/resources/application-auth.yml
 /common/src/main/resources/application-common.yml
 /notification/src/main/resources/application-notification.yml

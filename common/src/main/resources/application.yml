@@ -3,3 +3,5 @@ spring:
     name: common
   profiles:
     default: common
+  config:
+    import: optional:file:./soc-config/common/application-common.yml

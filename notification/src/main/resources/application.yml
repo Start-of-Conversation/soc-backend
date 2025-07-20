@@ -3,6 +3,8 @@ spring:
     name: notification
   profiles:
     default: notification
-    include:
-      - common
-      - log
+  config:
+    import:
+      - optional:file:./soc-config/common/application-common.yml
+      - optional:file:./soc-config/log/application-log.yml
+      - optional:file:./soc-config/notification/application-notification.yml

@@ -31,6 +31,7 @@ class SecurityConfig(
                     "/api/*/public/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
+                    "/health",
                     "/v3/api-docs/**",
                     "/v3/api-docs.yaml"
                 ).permitAll()

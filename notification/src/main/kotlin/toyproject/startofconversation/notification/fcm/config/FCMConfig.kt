@@ -7,8 +7,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.Resource
 import toyproject.startofconversation.common.exception.SOCException
 import toyproject.startofconversation.notification.fcm.config.properties.FCMProperties
+import java.io.File
 
 @Configuration
 class FCMConfig(
@@ -22,7 +25,7 @@ class FCMConfig(
             return FirebaseApp.getInstance()
         }
 
-        val resource = ClassPathResource(fcmProperties.serviceAccountFile)
+        val resource = getResource(fcmProperties.serviceAccountFile)
         if (!resource.exists()) throw SOCException("FCM 키 파일이 존재하지 않습니다.")
 
         val options = resource.inputStream.use {
@@ -31,5 +34,12 @@ class FCMConfig(
                 .build()
         }
         return FirebaseApp.initializeApp(options)
+    }
+
+    private fun getResource(path: String): Resource {
+        if (File(path).exists()) {
+            return FileSystemResource(path)
+        }
+        return ClassPathResource(path)
     }
 }

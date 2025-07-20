@@ -3,8 +3,9 @@ spring:
     name: auth
   profiles:
     default: auth
-    include:
-      - common
-      - log
-      - notification
-
+  config:
+    import:
+      - optional:file:./soc-config/common/application-common.yml
+      - optional:file:./soc-config/auth/application-auth.yml
+      - optional:file:./soc-config/log/application-log.yml
+      - optional:file:./soc-config/notification/application-notification.yml
