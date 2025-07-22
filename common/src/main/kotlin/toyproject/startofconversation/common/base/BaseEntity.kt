@@ -16,7 +16,7 @@ import java.io.Serializable
 abstract class BaseEntity : Persistable<String>, Serializable {
 
     @Id
-    @Column(name = "id", updatable = false, unique = true, nullable = false, length = 50)
+    @Column(name = "id", updatable = false, unique = true, nullable = false, length = 100)
     private lateinit var id: String
 
     @Transient

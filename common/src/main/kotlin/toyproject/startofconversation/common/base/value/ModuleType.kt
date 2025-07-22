@@ -11,7 +11,7 @@ enum class ModuleType {
             return when {
                 uri.startsWith("/auth") -> AUTH
                 uri.startsWith("/notifications") -> NOTIFICATION
-                uri.startsWith("/api/devices") -> NOTIFICATION
+                uri.startsWith("/devices") -> NOTIFICATION
                 uri.startsWith("/payment") -> PAYMENT
                 uri.startsWith("/api") -> API
                 else -> SYSTEM

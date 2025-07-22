@@ -1,6 +1,7 @@
 package toyproject.startofconversation.api.admin
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort.Direction.DESC
@@ -18,7 +19,8 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 
 @Tag(name = "Admin")
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/admin")
+@SecurityRequirement(name = "bearerAuth")
 class AdminController(
     private val adminService: AdminService
 ) : BaseController() {

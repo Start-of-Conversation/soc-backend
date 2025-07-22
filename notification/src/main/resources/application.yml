@@ -5,6 +5,6 @@ spring:
     default: notification
   config:
     import:
-      - optional:file:./soc-config/common/application-common.yml
-      - optional:file:./soc-config/log/application-log.yml
-      - optional:file:./soc-config/notification/application-notification.yml
+      - optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml
+      - optional:classpath:soc-config/log/application-log.yml
+      - optional:classpath:soc-config/notification/application-notification.yml

@@ -56,3 +56,7 @@ out/
 
 ### key ###
 /notification/src/main/resources/key/firebase-service-account.json
+
+### docker ###
+/docker/*
+!/docker/Dockerfile
