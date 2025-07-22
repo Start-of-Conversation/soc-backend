@@ -1,5 +1,7 @@
 package toyproject.startofconversation.api.user.controller
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -11,8 +13,10 @@ import toyproject.startofconversation.api.user.service.MarketingService
 import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
+@Tag(name = "Marketing")
 @RestController
 @RequestMapping("/api/marketing")
+@SecurityRequirement(name = "bearerAuth")
 class MarketingController(
     private val marketingService: MarketingService
 ) : BaseController() {

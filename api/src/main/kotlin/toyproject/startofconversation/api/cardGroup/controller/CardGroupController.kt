@@ -1,6 +1,7 @@
 package toyproject.startofconversation.api.cardGroup.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -27,27 +28,33 @@ class CardGroupController(
     private val cardGroupService: CardGroupService
 ) : BaseController() {
 
+    @Operation(summary = "카드그룹 리스트 조회")
     @GetMapping("/public")
     fun publicCardGroupAll(
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = Sort.Direction.DESC) pageable: Pageable
     ): ResponseData<List<CardGroupInfoResponse>> = cardGroupService.getCardGroups(pageable)
 
     @Operation(summary = "카드그룹 정보 조회")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/public/{cardGroupId}")
     fun publicCardGroupInfo(@PathVariable cardGroupId: String): ResponseData<CardGroupInfoResponse> =
         cardGroupService.getCardGroupInfo(cardGroupId)
 
     @Operation(summary = "카드그룹 수정")
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/{cardGroupId}")
     fun updateCardGroupInfo(
         @PathVariable cardGroupId: String,
         @RequestBody request: CardGroupUpdateRequest
     ): ResponseData<CardGroupInfoResponse> = cardGroupService.update(cardGroupId, request, getUserId())
 
+    @Operation(summary = "카드그룹 생성")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/add")
     fun createCardGroup(@RequestBody request: CardGroupCreateRequest): ResponseData<CardGroupInfoResponse> =
         cardGroupService.create(request, getUserId())
 
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{cardGroupId}")
     fun deleteCardGroup(@PathVariable("cardGroupId") cardGroupId: String): ResponseData<Boolean> =
         cardGroupService.delete(cardGroupId, getUserId())

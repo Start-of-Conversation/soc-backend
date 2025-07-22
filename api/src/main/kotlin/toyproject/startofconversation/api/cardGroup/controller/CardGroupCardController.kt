@@ -1,6 +1,8 @@
 package toyproject.startofconversation.api.cardGroup.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
@@ -19,6 +21,7 @@ import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
+@Tag(name = "CardGroup")
 @RestController
 @RequestMapping("/api/card-groups")
 class CardGroupCardController(
@@ -33,6 +36,7 @@ class CardGroupCardController(
     ): PageResponseData<CardListResponse> = cardGroupCardService.getCards(cardGroupId, pageable)
 
     @Operation(summary = "카드그룹에 카드 추가")
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/{cardGroupId}/cards")
     fun addCardsInCardGroup(
         @PathVariable cardGroupId: String,
@@ -40,6 +44,7 @@ class CardGroupCardController(
     ): PageResponseData<CardListResponse> = cardGroupCardService.addCardToGroup(cardGroupId, request, getUserId())
 
     @Operation(summary = "카드그룹에서 카드 삭제")
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{cardGroupId}/cards")
     fun deleteCardsInCardGroup(
         @PathVariable cardGroupId: String,

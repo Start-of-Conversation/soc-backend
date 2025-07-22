@@ -26,7 +26,9 @@ import org.springframework.context.annotation.Configuration
         Tag(name = "CardGroup", description = "카드그룹 관련 API"),
         Tag(name = "Card", description = "카드 관련 API"),
         Tag(name = "Device", description = "기기 관련 API"),
-        Tag(name = "Admin", description = "관리자 관련 API")
+        Tag(name = "Admin", description = "관리자 관련 API"),
+        Tag(name = "Likes", description = "좋아요 관련 API"),
+        Tag(name = "Marketing", description = "좋아요 관련 API"),
     ]
 )
 class OpenApiConfig

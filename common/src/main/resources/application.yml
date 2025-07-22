@@ -4,4 +4,4 @@ spring:
   profiles:
     default: common
   config:
-    import: optional:file:./soc-config/common/application-common.yml
+    import: optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml

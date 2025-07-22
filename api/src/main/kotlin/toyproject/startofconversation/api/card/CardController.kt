@@ -1,5 +1,7 @@
 package toyproject.startofconversation.api.card
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.web.PageableDefault
@@ -21,6 +23,7 @@ import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 import java.time.LocalDateTime
 
+@Tag(name = "Card")
 @RestController
 @RequestMapping("/api/cards")
 class CardController(
@@ -38,17 +41,20 @@ class CardController(
         @PageableDefault(size = 20, page = 0, sort = ["createdAt"], direction = DESC) pageable: Pageable
     ): PageResponseData<List<CardDto>> = cardService.findCardsWithFilter(cardGroupId, from, to, userId, pageable)
 
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/add")
     fun addCard(
         @RequestBody request: CardSaveRequest
     ): ResponseData<CardDto> = cardService.addCard(request, getUserId())
 
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/{id}")
     fun updateCard(
         @PathVariable("id") cardId: String,
         @RequestBody request: CardUpdateRequest
     ): ResponseData<CardDto> = cardService.updateCard(cardId, request, getUserId())
 
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     fun deleteCard(
         @PathVariable("id") cardId: String

@@ -31,7 +31,9 @@ class JwtAuthFilter(
         filterChain: FilterChain
     ) {
         val requestURI = request.requestURI
-        log.info("요청 methde: ${request.method} api: $requestURI")
+        if (!requestURI.startsWith("/health")) {
+            log.info("요청 methde: ${request.method} api: $requestURI")
+        }
 
         // 화이트리스트 경로는 인증 없이 통과
         if (isPublicApi(requestURI) || isSwagger(requestURI)) {
@@ -95,7 +97,7 @@ class JwtAuthFilter(
 
     private fun isPublicApi(requestURI: String): Boolean =
         (requestURI.startsWith("/auth") && requestURI != "/auth/logout" && requestURI != "/auth/local/password")
-            || requestURI.matches(Regex("/api/.*/public(/.*)?"))
+            || requestURI.matches(Regex("/.*/public(/.*)?"))
             || requestURI.startsWith("/favicon.ico")
             || requestURI.startsWith("/health")
 

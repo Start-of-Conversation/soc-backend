@@ -1,6 +1,8 @@
 package toyproject.startofconversation.api.like
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
@@ -15,8 +17,10 @@ import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
 
+@Tag(name = "Likes")
 @RestController
 @RequestMapping("/api")
+@SecurityRequirement(name = "bearerAuth")
 class LikeController(
     private val likeService: LikeService
 ) : BaseController() {

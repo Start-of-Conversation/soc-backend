@@ -5,9 +5,9 @@ spring:
     default: dev
   config:
     import:
-      - optional:file:./soc-config/api/application-dev.yml
-      - optional:file:./soc-config/api/application-prod.yml
-      - optional:file:./soc-config/common/application-common.yml
-      - optional:file:./soc-config/auth/application-auth.yml
-      - optional:file:./soc-config/log/application-log.yml
-      - optional:file:./soc-config/notification/application-notification.yml
+      - optional:classpath:soc-config/api/application-dev.yml
+      - optional:classpath:soc-config/api/application-prod.yml
+      - optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml
+      - optional:classpath:soc-config/auth/application-auth.yml
+      - optional:classpath:soc-config/log/application-log.yml
+      - optional:classpath:soc-config/notification/application-notification.yml
