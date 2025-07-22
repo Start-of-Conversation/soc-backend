@@ -1,0 +1,3 @@
+[submodule "soc-config"]
+	path = soc-config
+	url = https://github.com/Start-of-Conversation/soc-config.git
