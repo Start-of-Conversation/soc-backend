@@ -103,6 +103,12 @@ subprojects {
         //swagger
         implementation("io.swagger.core.v3:swagger-annotations:2.2.30")
 
+        //aws
+        implementation(platform("software.amazon.awssdk:bom:2.32.6"))
+        implementation("software.amazon.awssdk:secretsmanager")
+        implementation("software.amazon.awssdk:auth")
+        implementation("software.amazon.awssdk:regions")
+
         // querydsl
         if (name in listOf("common", "auth", "api")) {
             implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
