@@ -11,29 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout 코드
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. JDK 설정
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # 3. Gradle 빌드
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      # 4. Docker Hub 로그인 & 이미지 빌드 & 푸시
+      - name: Build with Gradle
+        run: ./gradlew clean :api:bootJar -Pspring.profiles.active=prod
+
       - name: Docker Build & Push
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:latest .
+          docker buildx build --platform=linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/myapp:latest -f docker/Dockerfile --load .
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
-      # 5. SSH → EC2 배포 스크립트 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
