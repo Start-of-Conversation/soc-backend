@@ -41,19 +41,6 @@ out/
 ### Kotlin ###
 .kotlin
 
-### etc ###
-/common/src/main/resources/db/
-/gradle/wrapper/gradle-wrapper.jar
-/gradle/wrapper/gradle-wrapper.properties
-
-### config ###
-/api/src/main/resources/application-dev.yml
-/api/src/main/resources/application-prod.yml
-/auth/src/main/resources/application-auth.yml
-/common/src/main/resources/application-common.yml
-/notification/src/main/resources/application-notification.yml
-/log/src/main/resources/application-log.yml
-
 ### key ###
 /notification/src/main/resources/key/firebase-service-account.json
 
