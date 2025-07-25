@@ -4,4 +4,5 @@ spring:
   config:
     import:
       - optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml
+      - optional:classpath:soc-config/common/application-aws.yml
       - optional:classpath:soc-config/log/application-log.yml
