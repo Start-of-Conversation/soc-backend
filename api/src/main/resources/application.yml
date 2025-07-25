@@ -2,7 +2,7 @@ spring:
   application:
     name: api
   profiles:
-    default: dev
+    active: dev
   config:
     import:
       - optional:classpath:soc-config/api/application-${spring.profiles.active}.yml
