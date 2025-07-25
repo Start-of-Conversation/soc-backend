@@ -8,6 +8,7 @@ spring:
       - optional:classpath:soc-config/api/application-dev.yml
       - optional:classpath:soc-config/api/application-prod.yml
       - optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml
+      - optional:classpath:soc-config/common/application-aws.yml
       - optional:classpath:soc-config/auth/application-auth.yml
       - optional:classpath:soc-config/log/application-log.yml
       - optional:classpath:soc-config/notification/application-notification.yml
