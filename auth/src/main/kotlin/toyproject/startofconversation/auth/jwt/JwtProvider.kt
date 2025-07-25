@@ -6,8 +6,8 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import toyproject.startofconversation.auth.jwt.config.JwtConfig
 import toyproject.startofconversation.common.domain.user.entity.Users
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.logger.logger
@@ -16,14 +16,12 @@ import javax.crypto.SecretKey
 
 @Component
 class JwtProvider(
-    @Value("\${jwt.secret-key}") private val secret: String,
-    @Value("\${jwt.access-token-expire-time}") private val accessTokenExpireTime: Int,
-    @Value("\${jwt.refresh-token-expire-time}") private val refreshTokenExpireTime: Int
+    private val jwtConfig: JwtConfig
 ) {
 
     private val log = logger()
 
-    fun generateToken(user: Users, expirationTime: Int = accessTokenExpireTime): String {
+    fun generateToken(user: Users, expirationTime: Int = jwtConfig.accessTokenExpireTime): String {
         val claims = mutableMapOf<String, String>()
 
         val userId = user.id
@@ -64,7 +62,7 @@ class JwtProvider(
 
     fun generateRefreshToken(user: Users): String {
         val now = Date()
-        val expiration = Date(now.time + refreshTokenExpireTime) // ex. 14일
+        val expiration = Date(now.time + jwtConfig.refreshTokenExpireTime) // ex. 14일
 
         return Jwts.builder()
             .subject(user.id)
@@ -74,6 +72,6 @@ class JwtProvider(
             .compact()
     }
 
-    private val secretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+    private val secretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtConfig.secretKey))
 
 }
