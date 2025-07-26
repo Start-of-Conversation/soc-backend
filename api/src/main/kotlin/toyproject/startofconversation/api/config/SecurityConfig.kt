@@ -1,5 +1,6 @@
 package toyproject.startofconversation.api.config
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -10,12 +11,13 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import toyproject.startofconversation.auth.jwt.JwtAuthFilter
 import toyproject.startofconversation.auth.jwt.JwtAuthenticationEntryPoint
-import toyproject.startofconversation.auth.jwt.JwtProvider
+import toyproject.startofconversation.auth.jwt.config.JwtConfig
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@EnableConfigurationProperties(JwtConfig::class)
 class SecurityConfig(
     private val jwtAuthFilter: JwtAuthFilter,
     private val entryPoint: JwtAuthenticationEntryPoint

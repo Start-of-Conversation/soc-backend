@@ -10,13 +10,10 @@ import org.springframework.web.servlet.HandlerExceptionResolver
 import toyproject.startofconversation.common.logger.logger
 
 @Component
-class JwtAuthenticationEntryPoint : AuthenticationEntryPoint {
-    private val resolver: HandlerExceptionResolver
+class JwtAuthenticationEntryPoint(
+    @Qualifier("handlerExceptionResolver") private val resolver: HandlerExceptionResolver
+) : AuthenticationEntryPoint {
     private val log = logger()
-
-    constructor(@Qualifier("handlerExceptionResolver") resolver: HandlerExceptionResolver) {
-        this.resolver = resolver;
-    }
 
     override fun commence(
         request: HttpServletRequest?,
