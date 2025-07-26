@@ -96,9 +96,9 @@ subprojects {
         runtimeOnly("org.postgresql:postgresql")
 
         //kotest
-        testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
-        testImplementation("io.kotest:kotest-assertions-core:5.9.1")
-        testImplementation("io.kotest:kotest-property:5.9.1")
+//        testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
+//        testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+//        testImplementation("io.kotest:kotest-property:5.9.1")
 
         //swagger
         implementation("io.swagger.core.v3:swagger-annotations:2.2.30")
