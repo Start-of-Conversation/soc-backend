@@ -94,7 +94,6 @@ subprojects {
 
         //database
         runtimeOnly("org.postgresql:postgresql")
-        implementation("com.amazonaws.secretsmanager:aws-secretsmanager-jdbc:2.0.2")
 
         //kotest
         testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
@@ -106,7 +105,6 @@ subprojects {
 
         //aws
         implementation(platform("software.amazon.awssdk:bom:2.32.6"))
-        implementation("software.amazon.awssdk:secretsmanager")
         implementation("software.amazon.awssdk:auth")
         implementation("software.amazon.awssdk:regions")
 
