@@ -3,6 +3,7 @@ package toyproject.startofconversation.api.image
 import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,7 +20,7 @@ class ImageController(
     private val imageService: ImageService
 ) {
 
-    @PostMapping("/public/{domain}/{filename:.+}")
+    @GetMapping("/public/{domain}/{filename:.+}")
     fun downloadImage(
         @PathVariable domain: String, @PathVariable filename: String
     ): ResponseEntity<ByteArray> = ResponseEntity.ok()

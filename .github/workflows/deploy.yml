@@ -47,4 +47,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             chmod +x /home/ec2-user/bin/deploy.sh
-            /home/ec2-user/bin/deploy.sh "${{ secrets.DOCKER_USERNAME }}/myapp:latest" "${{ secrets.FCM_KEY_BASE64 }}"
+            /home/ec2-user/bin/deploy.sh "${{ secrets.DOCKER_USERNAME }}/myapp:latest" "${{ secrets.FCM_KEY_BASE64 }}" "${{ secrets.DOCKER_USERNAME }}" "${{ secrets.DOCKER_PASSWORD }}"
