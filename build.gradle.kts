@@ -63,7 +63,7 @@ subprojects {
 
     tasks.processResources {
         from(rootProject.file("soc-config")) {
-            into("soc-config")
+            into("config")
         }
     }
 
