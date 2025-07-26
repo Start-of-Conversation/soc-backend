@@ -9,19 +9,23 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import toyproject.startofconversation.auth.jwt.JwtAuthFilter
+import toyproject.startofconversation.auth.jwt.JwtAuthenticationEntryPoint
+import toyproject.startofconversation.auth.jwt.JwtProvider
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig(
-    private val jwtAuthFilter: JwtAuthFilter
+    private val jwtAuthFilter: JwtAuthFilter,
+    private val entryPoint: JwtAuthenticationEntryPoint
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .exceptionHandling { handler -> handler.authenticationEntryPoint(entryPoint) }
             .authorizeHttpRequests {
                 it.requestMatchers("/auth/logout", "/auth/local/password").authenticated()
                 it.requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name)
