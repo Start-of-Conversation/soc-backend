@@ -3,6 +3,6 @@ spring:
     name: log
   config:
     import:
-      - optional:classpath:soc-config/common/application-aws.yml
-      - optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml
-      - optional:classpath:soc-config/log/application-log.yml
+      - optional:classpath:config/common/application-aws.yml
+      - optional:classpath:config/common/application-common-${spring.profiles.active}.yml
+      - optional:classpath:config/log/application-log.yml

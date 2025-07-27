@@ -21,12 +21,17 @@ class JwtProvider(
 
     private val log = logger()
 
-    fun generateToken(user: Users, expirationTime: Int = jwtConfig.accessTokenExpireTime): String {
+    fun generateToken(user: Users, expirationTime: Int = jwtConfig.accessTokenExpireTime): String =
+        generateToken(user.id, "ROLE_${user.role.name}", expirationTime)
+
+    fun generateToken(
+        userId: String, role: String, expirationTime: Int = jwtConfig.accessTokenExpireTime
+    ): String {
         val claims = mutableMapOf<String, String>()
 
-        val userId = user.id
+        val userId = userId
         claims["userId"] = userId
-        claims["role"] = "ROLE_${user.role.name}"
+        claims["role"] = role
 
         val now = Date()
         val expiration = Date(now.time + expirationTime)

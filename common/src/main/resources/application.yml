@@ -5,5 +5,5 @@ spring:
     default: common
   config:
     import:
-      - optional:classpath:soc-config/common/application-common-${spring.profiles.active}.yml
-      - optional:classpath:soc-config/common/application-aws.yml
+      - optional:classpath:config/common/application-common-${spring.profiles.active}.yml
+      - optional:classpath:config/common/application-aws.yml

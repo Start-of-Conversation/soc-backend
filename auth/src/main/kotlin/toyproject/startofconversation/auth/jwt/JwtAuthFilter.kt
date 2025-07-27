@@ -4,23 +4,20 @@ import io.jsonwebtoken.Claims
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.JwtException
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import toyproject.startofconversation.auth.redis.RedisRefreshTokenRepository
-import toyproject.startofconversation.common.domain.user.repository.UsersRepository
-import toyproject.startofconversation.common.exception.SOCNotFoundException
 import toyproject.startofconversation.common.exception.SOCUnauthorizedException
 import toyproject.startofconversation.common.logger.logger
 
 @Component
 class JwtAuthFilter(
     private val jwtProvider: JwtProvider,
-    private val refreshTokenRepository: RedisRefreshTokenRepository,
-    private val usersRepository: UsersRepository
+    private val refreshTokenRepository: RedisRefreshTokenRepository
 ) : OncePerRequestFilter() {
 
     private val log = logger()
@@ -69,10 +66,7 @@ class JwtAuthFilter(
                 if (refreshClaims != null) {
                     val userId = refreshTokenRepository.findUserIdByToken(refreshToken)
                         ?: throw SOCUnauthorizedException("Invalid refresh token")
-                    val user = usersRepository.findByIdOrNull(userId)
-                        ?: throw SOCNotFoundException("User not found")
-
-                    val newAccessToken = jwtProvider.generateToken(user)
+                    val newAccessToken = jwtProvider.generateToken(userId, refreshClaims["role"] as String)
                     response.setHeader("Authorization", "Bearer $newAccessToken")
 
                     setAuthentication(userId, refreshClaims)
@@ -87,6 +81,7 @@ class JwtAuthFilter(
         } catch (e: Exception) {
             // ❗ 응답을 확실히 마무리
             log.warn("인증 실패: {}", e.message)
+            request.setAttribute("exception", JwtException("Signature validation failed"))
             response.status = HttpServletResponse.SC_UNAUTHORIZED
             response.contentType = "application/json;charset=UTF-8"
             response.writer.write("{\"error\": \"Authentication failed: ${e.message}\"}")

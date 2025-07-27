@@ -9,18 +9,6 @@ tasks.bootJar {
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    from(project(":common").projectDir.resolve("src/main/resources")) {
-        include("application-common.yml")
-    }
-    from(project(":log").projectDir.resolve("src/main/resources")) {
-        include("application-log.yml")
-    }
-    from(project(":auth").projectDir.resolve("src/main/resources")) {
-        include("application-auth.yml")
-    }
-    from(project(":notification").projectDir.resolve("src/main/resources")) {
-        include("application-notification.yml")
-    }
     from(project(":notification").projectDir.resolve("src/main/resources/key")) {
         include("firebase-service-account.json")
         into("key")

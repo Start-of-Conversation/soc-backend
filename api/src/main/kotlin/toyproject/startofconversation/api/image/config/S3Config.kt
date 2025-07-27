@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.s3.S3Client
 @Configuration
 class S3Config {
 
-    @Value("\${aws.secrets-manager.region}")
+    @Value("\${cloud.aws.region.static}")
     private lateinit var region: String
 
     @Bean

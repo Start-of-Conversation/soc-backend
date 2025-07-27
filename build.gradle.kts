@@ -63,7 +63,7 @@ subprojects {
 
     tasks.processResources {
         from(rootProject.file("soc-config")) {
-            into("soc-config")
+            into("config")
         }
     }
 
@@ -96,16 +96,15 @@ subprojects {
         runtimeOnly("org.postgresql:postgresql")
 
         //kotest
-        testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
-        testImplementation("io.kotest:kotest-assertions-core:5.9.1")
-        testImplementation("io.kotest:kotest-property:5.9.1")
+//        testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
+//        testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+//        testImplementation("io.kotest:kotest-property:5.9.1")
 
         //swagger
         implementation("io.swagger.core.v3:swagger-annotations:2.2.30")
 
         //aws
         implementation(platform("software.amazon.awssdk:bom:2.32.6"))
-        implementation("software.amazon.awssdk:secretsmanager")
         implementation("software.amazon.awssdk:auth")
         implementation("software.amazon.awssdk:regions")
 
