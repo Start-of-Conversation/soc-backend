@@ -1,8 +1,11 @@
 package toyproject.startofconversation.api.collection.controller
 
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import toyproject.startofconversation.api.collection.dto.CollectionCreateRequest
 import toyproject.startofconversation.api.collection.dto.CollectionListResponse
 import toyproject.startofconversation.api.collection.service.CollectionService
 import toyproject.startofconversation.common.base.controller.BaseController
@@ -17,5 +20,9 @@ class CollectionController(
     @GetMapping
     fun getCollectionList(): ResponseData<List<CollectionListResponse>> =
         collectionService.findCollections(getUserId())
+
+    @PostMapping
+    fun createCollection(@RequestBody request: CollectionCreateRequest): ResponseData<CollectionListResponse> =
+        collectionService.saveCollection(getUserId(), request)
 
 }
