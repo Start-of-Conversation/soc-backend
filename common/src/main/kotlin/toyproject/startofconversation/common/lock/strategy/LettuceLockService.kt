@@ -16,20 +16,31 @@ class LettuceLockService(
 ) : LockService {
 
     override fun <T> executeWithLock(lockKey: String, block: () -> T): T {
-        val value = Thread.currentThread().name + "-" + System.currentTimeMillis()
+        val value = "${Thread.currentThread().name}-${System.currentTimeMillis()}"
         val timeout = lockProperties.timeoutMillis
+        val retryInterval = lockProperties.retryIntervalMillis
+        val maxRetries = lockProperties.maxRetries
 
-        val lockAcquired = redisTemplate.opsForValue()
-            .setIfAbsent(lockKey, value, timeout, TimeUnit.MILLISECONDS)
+        var retries = 0
+        while (retries < maxRetries) {
+            val lockAcquired = redisTemplate.opsForValue()
+                .setIfAbsent(lockKey, value, timeout, TimeUnit.MILLISECONDS)
 
-        if (lockAcquired == true) {
-            try {
-                return block()
-            } finally {
-                redisTemplate.delete(lockKey)
+            if (lockAcquired == true) {
+                try {
+                    return block()
+                } finally {
+                    // 안전한 락 해제 (value 비교 후 삭제)
+                    if (redisTemplate.opsForValue().get(lockKey) == value) {
+                        redisTemplate.delete(lockKey)
+                    }
+                }
             }
-        } else {
-            throw LockAcquisitionException(lockKey, timeout)
+
+            retries++
+            Thread.sleep(retryInterval)
         }
+
+        throw LockAcquisitionException(lockKey, timeout)
     }
 }

@@ -6,4 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 class LockProperties {
     var enabled: Boolean = true
     var timeoutMillis: Long = 3000
+    var maxRetries: Int = 5
+    var retryIntervalMillis: Long = 100
 }

@@ -12,8 +12,8 @@ class CardGroupCapacityValidator(
     private val properties: CardGroupProperties
 ) {
     fun validate(cardGroup: CardGroup) {
-        if (cardGroupCardsRepository.countByCardGroup(cardGroup) >= properties.maxSize) {
-            throw MaxGroupCapacityExceededException(properties.maxSize)
+        if (cardGroupCardsRepository.countByCardGroup(cardGroup) >= properties.maxCount) {
+            throw MaxGroupCapacityExceededException(properties.maxCount)
         }
     }
 }
