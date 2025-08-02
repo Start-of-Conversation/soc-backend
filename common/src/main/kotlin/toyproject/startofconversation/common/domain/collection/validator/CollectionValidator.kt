@@ -5,6 +5,7 @@ import toyproject.startofconversation.common.domain.collection.config.Collection
 import toyproject.startofconversation.common.domain.collection.exception.DuplicateCollectionNameException
 import toyproject.startofconversation.common.domain.collection.exception.MaxCollectionExceededException
 import toyproject.startofconversation.common.domain.collection.repository.CollectionRepository
+import toyproject.startofconversation.common.support.throwIf
 
 @Component
 class CollectionValidator(
@@ -12,14 +13,14 @@ class CollectionValidator(
     private val collectionProperties: CollectionProperties
 ) {
     fun validateMaxCollectionCount(userId: String) =
-        require(collectionRepository.countByUserId(userId) > collectionProperties.maxCount) {
-            throw MaxCollectionExceededException(collectionProperties.maxCount)
+        throwIf(collectionRepository.countByUserId(userId) > collectionProperties.maxCount) {
+            MaxCollectionExceededException(collectionProperties.maxCount)
         }
 
     fun validateCollectionName(
         userId: String, name: String, normalizedName: String
-    ) = require(collectionRepository.existByUserIdAndNormalizedName(userId, normalizedName)) {
-        throw DuplicateCollectionNameException(name)
+    ) = throwIf(collectionRepository.existsByUserIdAndNormalizedName(userId, normalizedName)) {
+        DuplicateCollectionNameException(name)
     }
 
 }

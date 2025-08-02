@@ -6,6 +6,7 @@ import toyproject.startofconversation.common.domain.cardgroup.exception.CardGrou
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.UserMismatchException
+import toyproject.startofconversation.common.support.throwIf
 
 @Component
 class CardGroupValidator(
@@ -36,9 +37,8 @@ class CardGroupValidator(
         return cardGroup to count
     }
 
-    private fun validateOwnership(cardGroup: CardGroup, userId: String) {
-        if (cardGroup.user.role != Role.ADMIN && cardGroup.user.id != userId) {
-            throw UserMismatchException(userId)
+    private fun validateOwnership(cardGroup: CardGroup, userId: String) =
+        throwIf(cardGroup.user.role != Role.ADMIN && cardGroup.user.id != userId) {
+            UserMismatchException(userId)
         }
-    }
 }

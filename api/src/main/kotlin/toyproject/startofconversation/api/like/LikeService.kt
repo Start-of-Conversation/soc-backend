@@ -7,7 +7,6 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
-import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.exception.DuplicateLikeException
@@ -15,6 +14,7 @@ import toyproject.startofconversation.common.domain.cardgroup.repository.CardGro
 import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.like.repository.LikesRepository
 import toyproject.startofconversation.common.domain.user.entity.Users
+import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.notification.fcm.service.FCMNotificationService
 import toyproject.startofconversation.notification.fcm.util.transactionalWithNotification
 
@@ -62,7 +62,7 @@ class LikeService(
 
 @Service
 class LikeTransactionalService(
-    private val userService: UserService,
+    private val userRepository: UsersRepository,
     private val cardGroupRepository: CardGroupRepository,
     private val likesRepository: LikesRepository
 ) {
@@ -74,9 +74,10 @@ class LikeTransactionalService(
 
         val cardGroup = cardGroupRepository.findWithUserById(cardGroupId)
             ?: throw CardGroupNotFoundException(cardGroupId)
-        val user = userService.findUserById(userId)
+        val user = userRepository.getReferenceById(userId)
 
         likesRepository.save(Likes(user, cardGroup))
-        return Triple(cardGroup.user, cardGroup.cardGroupName, user.nickname)
+        val nickname = userRepository.findNicknameById(userId)
+        return Triple(cardGroup.user, cardGroup.cardGroupName, nickname)
     }
 }

@@ -5,11 +5,11 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.collection.dto.CollectionCreateRequest
 import toyproject.startofconversation.api.collection.dto.CollectionListResponse
-import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.collection.entity.Collection
 import toyproject.startofconversation.common.domain.collection.repository.CollectionRepository
 import toyproject.startofconversation.common.domain.collection.validator.CollectionValidator
+import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.support.normalize
 
 @Service
@@ -35,7 +35,7 @@ class CollectionService(
 @Service
 class CollectionTransactionalService(
     private val collectionRepository: CollectionRepository,
-    private val userService: UserService,
+    private val userRepository: UsersRepository,
     private val collectionValidator: CollectionValidator
 ) {
     @Transactional
@@ -46,7 +46,7 @@ class CollectionTransactionalService(
         val normalizedName = normalize(request.name)
         collectionValidator.validateCollectionName(userId, request.name, normalizedName)
 
-        val user = userService.findUserById(userId)
+        val user = userRepository.getReferenceById(userId)
 
         val collection = Collection(name = request.name, user = user, normalizedName = normalizedName)
         collectionRepository.save(collection)

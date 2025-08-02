@@ -9,17 +9,17 @@ import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
-import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
+import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 
 @Service
 class CardGroupService(
     private val cardGroupRepository: CardGroupRepository,
-    private val userService: UserService,
+    private val userRepository: UsersRepository,
     private val cardGroupValidator: CardGroupValidator
 ) {
     fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> =
@@ -35,7 +35,7 @@ class CardGroupService(
     fun create(
         request: CardGroupCreateRequest, userId: String
     ): ResponseData<CardGroupInfoResponse> = with(request) {
-        val user = userService.findUserById(userId)
+        val user = userRepository.getReferenceById(userId)
 
         val cardGroup = CardGroup(
             cardGroupName = name,

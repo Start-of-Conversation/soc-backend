@@ -8,10 +8,10 @@ import toyproject.startofconversation.common.domain.collection.entity.Collection
 @Repository
 interface CollectionRepository : JpaRepository<Collection, String> {
 
-    @EntityGraph(attributePaths = ["collectionCard"])
+    @EntityGraph(attributePaths = ["cards"])
     fun findAllByUserId(userId: String): List<Collection>
 
     fun countByUserId(userId: String): Long
 
-    fun existByUserIdAndNormalizedName(userId: String, normalizedName: String): Boolean
+    fun existsByUserIdAndNormalizedName(userId: String, normalizedName: String): Boolean
 }
