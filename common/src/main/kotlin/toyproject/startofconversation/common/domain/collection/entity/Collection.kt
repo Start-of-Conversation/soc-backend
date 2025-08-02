@@ -10,6 +10,7 @@ import jakarta.persistence.Table
 import toyproject.startofconversation.common.base.BaseCreatedEntity
 import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.user.entity.Users
+import toyproject.startofconversation.common.support.normalize
 
 @Entity
 @Table(name = "collection")
@@ -20,7 +21,10 @@ class Collection(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    var user: Users
+    var user: Users,
+
+    @Column(name = "normalized_name", nullable = false)
+    var normalizedName: String = normalize(name)
 
 ) : BaseCreatedEntity(Domain.COLLECTION) {
 

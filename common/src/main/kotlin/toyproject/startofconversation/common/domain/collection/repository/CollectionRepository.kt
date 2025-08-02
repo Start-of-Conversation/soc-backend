@@ -10,4 +10,8 @@ interface CollectionRepository : JpaRepository<Collection, String> {
 
     @EntityGraph(attributePaths = ["collectionCard"])
     fun findAllByUserId(userId: String): List<Collection>
+
+    fun countByUserId(userId: String): Long
+
+    fun existByUserIdAndNormalizedName(userId: String, normalizedName: String): Boolean
 }

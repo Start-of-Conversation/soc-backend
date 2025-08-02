@@ -15,14 +15,16 @@ import toyproject.startofconversation.common.base.dto.ResponseData
 @RequestMapping("/api/collection")
 class CollectionController(
     private val collectionService: CollectionService
-): BaseController() {
+) : BaseController() {
 
     @GetMapping
     fun getCollectionList(): ResponseData<List<CollectionListResponse>> =
         collectionService.findCollections(getUserId())
 
     @PostMapping
-    fun createCollection(@RequestBody request: CollectionCreateRequest): ResponseData<CollectionListResponse> =
-        collectionService.saveCollection(getUserId(), request)
+    fun createCollection(
+        @RequestBody request: CollectionCreateRequest
+    ): ResponseData<List<CollectionListResponse>> =
+        collectionService.saveAndFindCollections(getUserId(), request)
 
 }
