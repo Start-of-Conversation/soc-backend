@@ -31,4 +31,9 @@ class Collection(
     @OneToMany(mappedBy = "collection")
     var cards: MutableSet<CollectionCard> = mutableSetOf()
 
+    fun updateName(newName: String) : Collection {
+        this.name = newName
+        return this
+    }
+
 }

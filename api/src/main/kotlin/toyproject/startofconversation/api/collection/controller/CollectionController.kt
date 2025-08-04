@@ -1,12 +1,15 @@
 package toyproject.startofconversation.api.collection.controller
 
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.collection.dto.CollectionCreateRequest
 import toyproject.startofconversation.api.collection.dto.CollectionListResponse
+import toyproject.startofconversation.api.collection.dto.CollectionUpdateRequest
 import toyproject.startofconversation.api.collection.service.CollectionService
 import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -26,5 +29,12 @@ class CollectionController(
         @RequestBody request: CollectionCreateRequest
     ): ResponseData<List<CollectionListResponse>> =
         collectionService.saveAndFindCollections(getUserId(), request)
+
+    @PutMapping("/{collectionId}")
+    fun updateCollection(
+        @PathVariable collectionId: String,
+        @RequestBody request: CollectionUpdateRequest
+    ): ResponseData<List<CollectionListResponse>> =
+        collectionService.updateCollection(getUserId(), collectionId, request)
 
 }
