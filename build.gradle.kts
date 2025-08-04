@@ -102,6 +102,7 @@ subprojects {
 
         //swagger
         implementation("io.swagger.core.v3:swagger-annotations:2.2.30")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 
         //aws
         implementation(platform("software.amazon.awssdk:bom:2.32.6"))
