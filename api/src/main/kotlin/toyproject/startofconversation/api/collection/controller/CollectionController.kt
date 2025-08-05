@@ -1,5 +1,6 @@
 package toyproject.startofconversation.api.collection.controller
 
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -36,5 +37,9 @@ class CollectionController(
         @RequestBody request: CollectionUpdateRequest
     ): ResponseData<List<CollectionListResponse>> =
         collectionService.updateCollection(getUserId(), collectionId, request)
+
+    @DeleteMapping("/{collectionId}")
+    fun deleteCollection(@PathVariable collectionId: String): ResponseData<List<CollectionListResponse>> =
+        collectionService.deleteCollection(getUserId(), collectionId)
 
 }

@@ -14,4 +14,6 @@ interface CollectionRepository : JpaRepository<Collection, String> {
     fun countByUserId(userId: String): Long
 
     fun existsByUserIdAndNormalizedName(userId: String, normalizedName: String): Boolean
+
+    fun deleteByIdAndUserId(id: String, userId: String)
 }

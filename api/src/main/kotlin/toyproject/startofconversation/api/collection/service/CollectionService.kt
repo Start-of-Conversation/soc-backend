@@ -41,6 +41,13 @@ class CollectionService(
         collectionTransactionalService.updateCollection(collectionId, request)
         return findCollections(userId)
     }
+
+    fun deleteCollection(
+        userId: String, collectionId: String
+    ): ResponseData<List<CollectionListResponse>> {
+        collectionTransactionalService.deleteCollection(userId, collectionId)
+        return findCollections(userId)
+    }
 }
 
 @Service
@@ -70,6 +77,10 @@ class CollectionTransactionalService(
     ) = collectionRepository.findByIdOrNull(collectionId)
         ?.updateName(request.newName)
         ?: throw CollectionNotFoundException(collectionId)
+
+    @Transactional
+    fun deleteCollection(userId: String, collectionId: String) =
+        collectionRepository.deleteByIdAndUserId(collectionId, userId)
 
     private fun <T> withCollectionLock(userId: String, block: () -> T): T =
         lockService.executeWithLock(lockKey = collectionLockKey(userId), block = block)
