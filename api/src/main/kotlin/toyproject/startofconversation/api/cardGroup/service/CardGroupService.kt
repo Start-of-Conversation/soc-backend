@@ -25,7 +25,7 @@ class CardGroupService(
 ) {
     fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> =
         cardGroupRepository.findCardGroupInfoById(id)?.let {
-            ResponseData.to(CardGroupInfoResponse.from(it))
+            responseOf(CardGroupInfoResponse.from(it))
         } ?: throw CardGroupNotFoundException(id)
 
     fun getCardGroups(pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
@@ -37,6 +37,7 @@ class CardGroupService(
         request: CardGroupCreateRequest, userId: String
     ): ResponseData<CardGroupInfoResponse> = with(request) {
         val user = userRepository.getReferenceById(userId)
+        cardGroupValidator.validateCustom(userId, isCustomized)
 
         val cardGroup = CardGroup(
             cardGroupName = name,
@@ -56,6 +57,8 @@ class CardGroupService(
         cardGroupId: String, request: CardGroupUpdateRequest, userId: String
     ): ResponseData<CardGroupInfoResponse> = with(request) {
         val result = cardGroupValidator.getValidCardGroupWithCountOwnedByUser(cardGroupId, userId)
+        isCustomized?.let { cardGroupValidator.validateCustom(userId, isCustomized) }
+
         result.first
             .setName(name)
             .setSummary(summary)

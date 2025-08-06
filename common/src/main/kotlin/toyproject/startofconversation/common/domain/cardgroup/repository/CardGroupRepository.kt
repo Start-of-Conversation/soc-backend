@@ -25,6 +25,8 @@ interface CardGroupRepository : JpaRepository<CardGroup, String>, CardGroupQuery
     )
     fun findWithUserAndCardsById(@Param("id") id: String): CardGroup?
 
+    fun countByUserIdAndCustomized(userId: String, isCustomized: Boolean): Long
+
     @EntityGraph(attributePaths = ["user"])
     fun findByIdAndUserId(id: String, userId: String): CardGroup?
 

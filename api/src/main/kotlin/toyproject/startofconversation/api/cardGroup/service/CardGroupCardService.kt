@@ -9,6 +9,7 @@ import toyproject.startofconversation.api.cardGroup.dto.AddCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.dto.RemoveCardToGroupRequest
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.domain.card.validator.CardValidator
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCards
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupCardValidator
