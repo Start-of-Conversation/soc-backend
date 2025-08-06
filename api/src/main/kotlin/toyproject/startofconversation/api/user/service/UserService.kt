@@ -12,6 +12,7 @@ import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.dto.UserDataResponse
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.entity.Users
@@ -37,12 +38,12 @@ class UserService(
 
         authService.deleteAuth(id)
 
-        ResponseData.to("Your account has been successfully deleted.", true)
+        responseOf("Your account has been successfully deleted.", true)
     } ?: throw UserNotFoundException(id)
 
     @LoginUserAccess
     fun searchUserById(id: String): ResponseData<UserDataResponse> = usersRepository.findByIdOrNull(id)?.let {
-        ResponseData.to(UserDataResponse.to(it))
+        responseOf(UserDataResponse.to(it))
     } ?: throw UserNotFoundException(id)
 
     fun findUserById(id: String): Users = usersRepository.findByIdOrNull(id)
@@ -50,9 +51,8 @@ class UserService(
 
     fun findCardsByUserId(
         userId: String, pageable: Pageable
-    ): PageResponseData<List<CardDto>> = cardRepository.findByUserId(userId, pageable).run {
-        PageResponseData(map(CardDto::from).toList(), this)
-    }
+    ): PageResponseData<List<CardDto>> = cardRepository.findByUserId(userId, pageable)
+        .toPageResponse(CardDto::from)
 
     fun findCardGroupsByUserId(
         userId: String, pageable: Pageable

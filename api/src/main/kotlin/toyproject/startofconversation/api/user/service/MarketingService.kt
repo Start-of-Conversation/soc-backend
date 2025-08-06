@@ -6,6 +6,7 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.user.dto.MarketingResponse
 import toyproject.startofconversation.api.user.dto.MarketingUpdateRequest
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.user.entity.Marketing
 import toyproject.startofconversation.common.domain.user.repository.MarketingRepository
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
@@ -20,10 +21,9 @@ class MarketingService(
     private val fcmSubscriptionService: FCMSubscriptionService
 ) {
 
-    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> {
-        val marketing = marketingTransactionalService.getOrCreateMarketing(userId)
-        return ResponseData.to(MarketingResponse.from(marketing))
-    }
+    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> = responseOf(
+        marketingTransactionalService.getOrCreateMarketing(userId).toResponse()
+    )
 
     fun updateMarketingWithFCM(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
         val marketing = marketingTransactionalService.updateMarketingTx(userId, request)
@@ -35,8 +35,10 @@ class MarketingService(
             fcmSubscriptionService.unsubscribeMarketing(userId)
         }
 
-        return ResponseData(MarketingResponse.from(marketing))
+        return responseOf(marketing.toResponse())
     }
+
+    private fun Marketing.toResponse() = MarketingResponse.from(this)
 }
 
 @Service

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern
 import toyproject.startofconversation.auth.domain.policy.PasswordPolicy
 
 data class LocalRegisterRequest(
-    @field:Email("이메일 형식이 올바르지 않습니다.")
+    @field:Email(message = "이메일 형식이 올바르지 않습니다.")
     @field:NotBlank(message = "이메일은 필수 값입니다.")
     val email: String,
 

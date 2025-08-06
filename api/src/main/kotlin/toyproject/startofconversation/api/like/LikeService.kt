@@ -8,6 +8,7 @@ import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.exception.DuplicateLikeException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
@@ -47,17 +48,19 @@ class LikeService(
             )
         }
     ).let {
-        ResponseData.Companion.to("Successfully liked ${cardGroupId}!", true)
+        responseOf("Successfully liked ${cardGroupId}!", true)
     }
 
     @Transactional
     fun unlike(cardGroupId: String, userId: String): ResponseData<Boolean> {
         likesRepository.deleteByUserIdAndCardGroupId(userId, cardGroupId)
-        return ResponseData.Companion.to("Successfully unliked ${cardGroupId}!", true)
+        return responseOf("Successfully unliked ${cardGroupId}!", true)
     }
 
-    fun findCardGroupsByUser(userId: String, pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
-        likesRepository.findLikedCardGroupsByUserId(userId, pageable).toPageResponse(CardGroupInfoResponse::from)
+    fun findCardGroupsByUser(
+        userId: String, pageable: Pageable
+    ): PageResponseData<List<CardGroupInfoResponse>> = likesRepository.findLikedCardGroupsByUserId(userId, pageable)
+        .toPageResponse(CardGroupInfoResponse::from)
 }
 
 @Service

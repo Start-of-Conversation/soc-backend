@@ -11,6 +11,9 @@ interface CollectionRepository : JpaRepository<Collection, String> {
     @EntityGraph(attributePaths = ["cards"])
     fun findAllByUserId(userId: String): List<Collection>
 
+    @EntityGraph(attributePaths = ["cards"])
+    fun findCollectionById(id: String): Collection?
+
     fun countByUserId(userId: String): Long
 
     fun existsByUserIdAndNormalizedName(userId: String, normalizedName: String): Boolean

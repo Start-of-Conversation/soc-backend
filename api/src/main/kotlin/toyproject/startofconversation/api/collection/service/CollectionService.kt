@@ -1,6 +1,5 @@
 package toyproject.startofconversation.api.collection.service
 
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
@@ -8,13 +7,16 @@ import toyproject.startofconversation.api.collection.dto.CollectionCreateRequest
 import toyproject.startofconversation.api.collection.dto.CollectionListResponse
 import toyproject.startofconversation.api.collection.dto.CollectionUpdateRequest
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.collection.entity.Collection
 import toyproject.startofconversation.common.domain.collection.exception.CollectionNotFoundException
 import toyproject.startofconversation.common.domain.collection.repository.CollectionRepository
 import toyproject.startofconversation.common.domain.collection.validator.CollectionValidator
+import toyproject.startofconversation.common.domain.user.exception.UserMismatchException
 import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.lock.strategy.LockService
 import toyproject.startofconversation.common.support.normalize
+import toyproject.startofconversation.common.support.throwIf
 
 @Service
 @LoginUserAccess
@@ -22,10 +24,8 @@ class CollectionService(
     private val collectionRepository: CollectionRepository,
     private val collectionTransactionalService: CollectionTransactionalService
 ) {
-    fun findCollections(userId: String): ResponseData<List<CollectionListResponse>> = ResponseData.to(
-        collectionRepository.findAllByUserId(userId).map {
-            CollectionListResponse(it.id, it.name, it.cards.size)
-        }
+    fun findCollections(userId: String): ResponseData<List<CollectionListResponse>> = responseOf(
+        collectionRepository.findAllByUserId(userId).map { it.toListResponse() }
     )
 
     fun saveAndFindCollections(
@@ -37,10 +37,9 @@ class CollectionService(
 
     fun updateCollection(
         userId: String, collectionId: String, request: CollectionUpdateRequest
-    ): ResponseData<List<CollectionListResponse>> {
-        collectionTransactionalService.updateCollection(collectionId, request)
-        return findCollections(userId)
-    }
+    ): ResponseData<CollectionListResponse> = responseOf(
+        collectionTransactionalService.updateCollection(collectionId, request, userId).toListResponse()
+    )
 
     fun deleteCollection(
         userId: String, collectionId: String
@@ -48,6 +47,8 @@ class CollectionService(
         collectionTransactionalService.deleteCollection(userId, collectionId)
         return findCollections(userId)
     }
+
+    private fun Collection.toListResponse() = CollectionListResponse(id, name, cards.size)
 }
 
 @Service
@@ -73,10 +74,17 @@ class CollectionTransactionalService(
 
     @Transactional
     fun updateCollection(
-        collectionId: String, request: CollectionUpdateRequest
-    ) = collectionRepository.findByIdOrNull(collectionId)
-        ?.updateName(request.newName)
-        ?: throw CollectionNotFoundException(collectionId)
+        collectionId: String, request: CollectionUpdateRequest, userId: String
+    ): Collection {
+        val collection = collectionRepository.findCollectionById(collectionId)
+            ?: throw CollectionNotFoundException(collectionId)
+
+        throwIf(collection.user.id != userId) {
+            UserMismatchException(userId)
+        }
+
+        return collection.updateName(request.newName)
+    }
 
     @Transactional
     fun deleteCollection(userId: String, collectionId: String) =

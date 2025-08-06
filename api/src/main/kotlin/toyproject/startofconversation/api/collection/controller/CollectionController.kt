@@ -35,7 +35,7 @@ class CollectionController(
     fun updateCollection(
         @PathVariable collectionId: String,
         @RequestBody request: CollectionUpdateRequest
-    ): ResponseData<List<CollectionListResponse>> =
+    ): ResponseData<CollectionListResponse> =
         collectionService.updateCollection(getUserId(), collectionId, request)
 
     @DeleteMapping("/{collectionId}")

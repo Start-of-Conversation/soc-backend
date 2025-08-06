@@ -10,6 +10,7 @@ import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
@@ -46,7 +47,7 @@ class CardGroupService(
         ).setThumbs(thumbnail)
         cardGroupRepository.save(cardGroup)
 
-        ResponseData.to(CardGroupInfoResponse.from(cardGroup to 0))
+        responseOf(CardGroupInfoResponse.from(cardGroup to 0))
     }
 
     @Transactional
@@ -62,7 +63,7 @@ class CardGroupService(
             .setThumbs(thumbnail)
             .setCustomized(isCustomized)
 
-        ResponseData.to(CardGroupInfoResponse.from(result))
+        responseOf(CardGroupInfoResponse.from(result))
     }
 
     @Transactional
@@ -70,7 +71,7 @@ class CardGroupService(
     fun delete(cardGroupId: String, userId: String): ResponseData<Boolean> {
         val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
         cardGroupRepository.delete(cardGroup)
-        return ResponseData.to("CardGroup $cardGroupId has been successfully removed.", true)
+        return responseOf("CardGroup $cardGroupId has been successfully removed.", true)
     }
 
 }

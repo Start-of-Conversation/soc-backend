@@ -8,7 +8,9 @@ import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.card.dto.CardUpdateRequest
 import toyproject.startofconversation.api.paging.PageResponseData
+import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
@@ -33,9 +35,7 @@ class CardService(
         pageable: Pageable
     ): PageResponseData<List<CardDto>> = cardRepository.findFilteredCards(
         cardGroupId, from, to, userId, pageable
-    ).run {
-        PageResponseData(map(CardDto::from).toList(), this)
-    }
+    ).toPageResponse(CardDto::from)
 
     @Transactional
     @LoginUserAccess
@@ -48,7 +48,7 @@ class CardService(
         }
 
         card.updateQuestion(cardUpdateRequest.newQuestion, normalizedQuestion)
-        return ResponseData.to(CardDto.from(card))
+        return responseOf(CardDto.from(card))
     }
 
     @Transactional
@@ -59,7 +59,7 @@ class CardService(
         val card = Card.from(question, user, normalizedQuestion)
 
         cardRepository.save(card)
-        return ResponseData.to(CardDto.from(card))
+        return responseOf(CardDto.from(card))
     }
 
     @Transactional
@@ -68,7 +68,7 @@ class CardService(
         val deleted = cardRepository.deleteByIdAndUserId(cardId, userId)
         if (deleted == 0) throw CardNotFoundException(cardId)
 
-        return ResponseData.to(true)
+        return responseOf(true)
     }
 
 }
