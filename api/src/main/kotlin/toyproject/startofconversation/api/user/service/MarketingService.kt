@@ -6,8 +6,10 @@ import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.user.dto.MarketingResponse
 import toyproject.startofconversation.api.user.dto.MarketingUpdateRequest
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.user.entity.Marketing
 import toyproject.startofconversation.common.domain.user.repository.MarketingRepository
+import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.exception.SOCServerException
 import toyproject.startofconversation.common.logger.logger
 import toyproject.startofconversation.notification.fcm.service.FCMSubscriptionService
@@ -19,10 +21,8 @@ class MarketingService(
     private val fcmSubscriptionService: FCMSubscriptionService
 ) {
 
-    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> {
-        val marketing = marketingTransactionalService.getOrCreateMarketing(userId)
-        return ResponseData.to(MarketingResponse.from(marketing))
-    }
+    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> =
+        marketingTransactionalService.getOrCreateMarketing(userId).toResponse()
 
     fun updateMarketingWithFCM(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
         val marketing = marketingTransactionalService.updateMarketingTx(userId, request)
@@ -34,14 +34,16 @@ class MarketingService(
             fcmSubscriptionService.unsubscribeMarketing(userId)
         }
 
-        return ResponseData(MarketingResponse.from(marketing))
+        return marketing.toResponse()
     }
+
+    private fun Marketing.toResponse() = responseOf(MarketingResponse.from(this))
 }
 
 @Service
 class MarketingTransactionalService(
     private val marketingRepository: MarketingRepository,
-    private val userService: UserService
+    private val userRepository: UsersRepository
 ) {
     private val log = logger()
 
@@ -58,7 +60,7 @@ class MarketingTransactionalService(
     @Transactional
     fun getOrCreateMarketing(userId: String): Marketing = marketingRepository.findByUserId(userId)
         ?: runCatching {
-            val user = userService.findUserById(userId)
+            val user = userRepository.getReferenceById(userId)
             marketingRepository.save(Marketing(user = user))
         }.onFailure {
             log.warn("마케팅 중복 생성 시도 발생: userId=$userId", it)

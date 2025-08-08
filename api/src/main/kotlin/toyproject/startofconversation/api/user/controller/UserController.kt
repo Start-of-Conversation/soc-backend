@@ -9,12 +9,15 @@ import org.springframework.data.domain.Sort.Direction.DESC
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.dto.UserDataResponse
+import toyproject.startofconversation.api.user.dto.UserUpdateRequest
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.controller.BaseController
 import toyproject.startofconversation.common.base.dto.ResponseData
@@ -37,6 +40,12 @@ class UserController(
     )
     @GetMapping("/mypage")
     fun getUserInfo(): ResponseData<UserDataResponse> = usersService.searchUserById(getUserId())
+
+    @Operation(summary = "회원 정보 수정")
+    @PatchMapping("/mypage")
+    fun updateMyPage(
+        @RequestBody request: UserUpdateRequest
+    ): ResponseData<UserDataResponse> = usersService.updateUser(getUserId(), request)
 
     @Operation(
         summary = "회원 탈퇴",

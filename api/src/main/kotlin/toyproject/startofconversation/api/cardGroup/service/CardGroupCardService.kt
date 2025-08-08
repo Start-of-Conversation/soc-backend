@@ -1,5 +1,6 @@
 package toyproject.startofconversation.api.cardGroup.service
 
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -9,6 +10,7 @@ import toyproject.startofconversation.api.cardGroup.dto.AddCardToGroupRequest
 import toyproject.startofconversation.api.cardGroup.dto.RemoveCardToGroupRequest
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroupCards
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupCardsRepository
 import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupCardValidator
@@ -23,10 +25,8 @@ class CardGroupCardService(
     private val lockService: LockService
 ) {
 
-    fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> {
-        val cards = cardGroupCardsRepository.findCardsByCardGroupId(cardGroupId, pageable)
-        return PageResponseData(CardListResponse.from(cardGroupId, cards.content), cards)
-    }
+    fun getCards(cardGroupId: String, pageable: Pageable): PageResponseData<CardListResponse> =
+        cardGroupCardsRepository.findCardsByCardGroupId(cardGroupId, pageable).toPageResponse(cardGroupId)
 
     @Transactional
     @LoginUserAccess
@@ -41,11 +41,7 @@ class CardGroupCardService(
             cardGroup.cardGroupCards.map { it.card }
         }
 
-        val paged = PageResponseData.paginate(cardsInGroup)
-        return PageResponseData(
-            CardListResponse.from(cardGroupId, paged.content),
-            paged
-        )
+        return PageResponseData.paginate(cardsInGroup).toPageResponse(cardGroupId)
     }
 
     @Transactional
@@ -58,9 +54,11 @@ class CardGroupCardService(
 
         cardGroup.cardGroupCards.removeIf { it.card.id in cardIds }
 
-        val cards = PageResponseData.paginate(cardGroup.cardGroupCards.map { it.card })
-        return PageResponseData(CardListResponse.Companion.from(cardGroupId, cards.content), cards)
+        return PageResponseData.paginate(cardGroup.cardGroupCards.map { it.card }).toPageResponse(cardGroupId)
     }
+
+    private fun Page<Card>.toPageResponse(cardGroupId: String): PageResponseData<CardListResponse> =
+        PageResponseData(CardListResponse.from(cardGroupId, this.content), this)
 
     private fun <T> withGroupCardLock(groupId: String, block: () -> T): T =
         lockService.executeWithLock(lockKey = groupCardLockKey(groupId), block = block)

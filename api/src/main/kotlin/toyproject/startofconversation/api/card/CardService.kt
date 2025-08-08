@@ -8,19 +8,21 @@ import toyproject.startofconversation.api.card.dto.CardDto
 import toyproject.startofconversation.api.card.dto.CardSaveRequest
 import toyproject.startofconversation.api.card.dto.CardUpdateRequest
 import toyproject.startofconversation.api.paging.PageResponseData
-import toyproject.startofconversation.api.user.service.UserService
+import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.card.entity.Card
 import toyproject.startofconversation.common.domain.card.exception.CardNotFoundException
 import toyproject.startofconversation.common.domain.card.repository.CardRepository
 import toyproject.startofconversation.common.domain.card.validator.CardValidator
+import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 import toyproject.startofconversation.common.support.normalize
 import java.time.LocalDateTime
 
 @Service
 class CardService(
     private val cardRepository: CardRepository,
-    private val userService: UserService,
+    private val userRepository: UsersRepository,
     private val validator: CardValidator
 ) {
 
@@ -33,9 +35,7 @@ class CardService(
         pageable: Pageable
     ): PageResponseData<List<CardDto>> = cardRepository.findFilteredCards(
         cardGroupId, from, to, userId, pageable
-    ).run {
-        PageResponseData(map(CardDto::from).toList(), this)
-    }
+    ).toPageResponse(CardDto::from)
 
     @Transactional
     @LoginUserAccess
@@ -47,19 +47,21 @@ class CardService(
             validator.validateCardDuplication(cardUpdateRequest.newQuestion)
         }
 
-        card.updateQuestion(cardUpdateRequest.newQuestion, normalizedQuestion)
-        return ResponseData.to(CardDto.from(card))
+        return card
+            .updateQuestion(cardUpdateRequest.newQuestion, normalizedQuestion)
+            .toResponse()
     }
 
     @Transactional
     @LoginUserAccess
     fun addCard(request: CardSaveRequest, userId: String): ResponseData<CardDto> = with(request) {
         val normalizedQuestion = validator.validateCardDuplication(question)
-        val user = userService.findUserById(userId)
+        val user = userRepository.getReferenceById(userId)
         val card = Card.from(question, user, normalizedQuestion)
 
         cardRepository.save(card)
-        return ResponseData.to(CardDto.from(card))
+
+        return card.toResponse()
     }
 
     @Transactional
@@ -68,7 +70,9 @@ class CardService(
         val deleted = cardRepository.deleteByIdAndUserId(cardId, userId)
         if (deleted == 0) throw CardNotFoundException(cardId)
 
-        return ResponseData.to(true)
+        return responseOf(true)
     }
+
+    private fun Card.toResponse(): ResponseData<CardDto> = responseOf(CardDto.from(this))
 
 }

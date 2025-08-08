@@ -1,3 +1,5 @@
 package toyproject.startofconversation.api.card.dto
 
-data class CardSaveRequest(val question: String)
+import jakarta.validation.constraints.NotBlank
+
+data class CardSaveRequest(@field:NotBlank val question: String)
