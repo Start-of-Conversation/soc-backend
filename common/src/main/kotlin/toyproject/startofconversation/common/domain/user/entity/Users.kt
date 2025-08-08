@@ -11,6 +11,7 @@ import toyproject.startofconversation.common.base.value.Domain
 import toyproject.startofconversation.common.domain.like.entity.Likes
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.DeletedUserException
+import toyproject.startofconversation.common.support.throwIf
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -46,11 +47,19 @@ class Users(
         return this
     }
 
-    fun ensureNotDeleted(): Users {
-        if (isDeleted) {
-            throw DeletedUserException(this.id)
-        }
+    fun ensureNotDeleted(): Users = throwIf(isDeleted, {
+        DeletedUserException(this.id)
+    }) {
+        return@throwIf this
+    }
 
+    fun updateNickname(nickname: String?): Users {
+        nickname?.let { this.nickname = it }
+        return this
+    }
+
+    fun updateProfile(profile: String?): Users {
+        profile?.let { this.profile = it }
         return this
     }
 

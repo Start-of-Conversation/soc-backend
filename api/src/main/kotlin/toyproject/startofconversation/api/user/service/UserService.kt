@@ -10,6 +10,7 @@ import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
 import toyproject.startofconversation.api.user.dto.UserDataResponse
+import toyproject.startofconversation.api.user.dto.UserUpdateRequest
 import toyproject.startofconversation.auth.service.AuthService
 import toyproject.startofconversation.common.base.dto.ResponseData
 import toyproject.startofconversation.common.base.dto.responseOf
@@ -30,32 +31,44 @@ class UserService(
 
     @Transactional
     @LoginUserAccess
-    fun deleteUser(id: String): ResponseData<Boolean> = usersRepository.findByIdOrNull(id)?.let {
-        if (!it.isDeleted) {
-            it.isDeleted = true
-            it.deletedAt = LocalDateTime.now()
+    fun deleteUser(id: String): ResponseData<Boolean> {
+        val user = findUserById(id)
+        if (!user.isDeleted) {
+            user.isDeleted = true
+            user.deletedAt = LocalDateTime.now()
         }
 
         authService.deleteAuth(id)
 
-        responseOf("Your account has been successfully deleted.", true)
-    } ?: throw UserNotFoundException(id)
+        return responseOf("Your account has been successfully deleted.", true)
+    }
 
     @LoginUserAccess
-    fun searchUserById(id: String): ResponseData<UserDataResponse> = usersRepository.findByIdOrNull(id)?.let {
-        responseOf(UserDataResponse.to(it))
-    } ?: throw UserNotFoundException(id)
+    fun searchUserById(id: String): ResponseData<UserDataResponse> = findUserById(id).toResponse()
+
+    @LoginUserAccess
+    @Transactional
+    fun updateUser(id: String, request: UserUpdateRequest): ResponseData<UserDataResponse> = findUserById(id)
+        .updateNickname(request.nickname)
+        .updateProfile(request.profile)
+        .toResponse()
+
 
     fun findUserById(id: String): Users = usersRepository.findByIdOrNull(id)
         ?: throw UserNotFoundException(id)
 
+    @LoginUserAccess
     fun findCardsByUserId(
         userId: String, pageable: Pageable
     ): PageResponseData<List<CardDto>> = cardRepository.findByUserId(userId, pageable)
         .toPageResponse(CardDto::from)
 
+    @LoginUserAccess
     fun findCardGroupsByUserId(
         userId: String, pageable: Pageable
     ): PageResponseData<List<CardGroupInfoResponse>> = cardGroupRepository.findAllByUserId(userId, pageable)
         .toPageResponse(CardGroupInfoResponse::from)
+
+    private fun Users.toResponse(): ResponseData<UserDataResponse> =
+        responseOf(UserDataResponse.to(this))
 }
