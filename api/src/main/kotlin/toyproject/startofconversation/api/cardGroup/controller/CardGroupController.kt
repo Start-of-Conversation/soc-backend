@@ -38,7 +38,7 @@ class CardGroupController(
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/public/{cardGroupId}")
     fun publicCardGroupInfo(@PathVariable cardGroupId: String): ResponseData<CardGroupInfoResponse> =
-        cardGroupService.getCardGroupInfo(cardGroupId)
+        cardGroupService.getCardGroupInfo(cardGroupId, getUserIdOrNull())
 
     @Operation(summary = "카드그룹 수정")
     @SecurityRequirement(name = "bearerAuth")

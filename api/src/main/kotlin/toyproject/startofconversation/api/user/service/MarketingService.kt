@@ -21,9 +21,8 @@ class MarketingService(
     private val fcmSubscriptionService: FCMSubscriptionService
 ) {
 
-    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> = responseOf(
+    fun getMarketingInfo(userId: String): ResponseData<MarketingResponse> =
         marketingTransactionalService.getOrCreateMarketing(userId).toResponse()
-    )
 
     fun updateMarketingWithFCM(userId: String, request: MarketingUpdateRequest): ResponseData<MarketingResponse> {
         val marketing = marketingTransactionalService.updateMarketingTx(userId, request)
@@ -35,10 +34,10 @@ class MarketingService(
             fcmSubscriptionService.unsubscribeMarketing(userId)
         }
 
-        return responseOf(marketing.toResponse())
+        return marketing.toResponse()
     }
 
-    private fun Marketing.toResponse() = MarketingResponse.from(this)
+    private fun Marketing.toResponse() = responseOf(MarketingResponse.from(this))
 }
 
 @Service

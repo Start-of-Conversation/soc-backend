@@ -18,6 +18,21 @@ inline fun throwIf(boolean: Boolean, exceptionSupplier: () -> SOCException) {
 
 /**
  * ### How to use
+ * Throws the given exception if `condition` is true.
+ *
+ * ```
+ * throwIf(isTrue, { IllegalStateException() }) {
+ *     return@throwIf this
+ * }
+ * ```
+ */
+inline fun <T> throwIf(boolean: Boolean, exceptionSupplier: () -> SOCException, block: () -> T): T {
+    throwIf(boolean, exceptionSupplier)
+    return block()
+}
+
+/**
+ * ### How to use
  * Throws the given exception if `condition` is false.
  *
  * ```

@@ -6,4 +6,6 @@ abstract class BaseController {
 
     protected fun getUserId(): String = SecurityUtil.getCurrentUserId()
 
+    protected fun getUserIdOrNull(): String? = SecurityUtil.getCurrentUserIdOrNull()
+
 }

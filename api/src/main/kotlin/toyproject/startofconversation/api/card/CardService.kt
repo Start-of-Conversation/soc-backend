@@ -47,8 +47,9 @@ class CardService(
             validator.validateCardDuplication(cardUpdateRequest.newQuestion)
         }
 
-        card.updateQuestion(cardUpdateRequest.newQuestion, normalizedQuestion)
-        return responseOf(CardDto.from(card))
+        return card
+            .updateQuestion(cardUpdateRequest.newQuestion, normalizedQuestion)
+            .toResponse()
     }
 
     @Transactional
@@ -59,7 +60,8 @@ class CardService(
         val card = Card.from(question, user, normalizedQuestion)
 
         cardRepository.save(card)
-        return responseOf(CardDto.from(card))
+
+        return card.toResponse()
     }
 
     @Transactional
@@ -70,5 +72,7 @@ class CardService(
 
         return responseOf(true)
     }
+
+    private fun Card.toResponse(): ResponseData<CardDto> = responseOf(CardDto.from(this))
 
 }

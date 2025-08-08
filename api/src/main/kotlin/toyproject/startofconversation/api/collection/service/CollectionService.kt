@@ -24,9 +24,8 @@ class CollectionService(
     private val collectionRepository: CollectionRepository,
     private val collectionTransactionalService: CollectionTransactionalService
 ) {
-    fun findCollections(userId: String): ResponseData<List<CollectionListResponse>> = responseOf(
-        collectionRepository.findAllByUserId(userId).map { it.toListResponse() }
-    )
+    fun findCollections(userId: String): ResponseData<List<CollectionListResponse>> =
+        collectionRepository.findAllByUserId(userId).toResponse()
 
     fun saveAndFindCollections(
         userId: String, request: CollectionCreateRequest
@@ -37,9 +36,9 @@ class CollectionService(
 
     fun updateCollection(
         userId: String, collectionId: String, request: CollectionUpdateRequest
-    ): ResponseData<CollectionListResponse> = responseOf(
-        collectionTransactionalService.updateCollection(collectionId, request, userId).toListResponse()
-    )
+    ): ResponseData<CollectionListResponse> = collectionTransactionalService
+        .updateCollection(collectionId, request, userId)
+        .toResponse()
 
     fun deleteCollection(
         userId: String, collectionId: String
@@ -48,7 +47,11 @@ class CollectionService(
         return findCollections(userId)
     }
 
-    private fun Collection.toListResponse() = CollectionListResponse(id, name, cards.size)
+    private fun Collection.toResponse(): ResponseData<CollectionListResponse> =
+        responseOf(CollectionListResponse(id, name, cards.size))
+
+    private fun List<Collection>.toResponse(): ResponseData<List<CollectionListResponse>> =
+        responseOf(this.mapNotNull { it.toResponse().data })
 }
 
 @Service

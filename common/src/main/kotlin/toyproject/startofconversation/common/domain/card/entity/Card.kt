@@ -33,9 +33,10 @@ class Card(
     @OneToMany(mappedBy = "card", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     val cardGroupCards: MutableSet<CardGroupCards> = mutableSetOf()
 
-    fun updateQuestion(question: String, normalizedQuestion: String = normalize(question)) {
+    fun updateQuestion(question: String, normalizedQuestion: String = normalize(question)): Card {
         this.question = question
         this.normalizedQuestion = normalizedQuestion
+        return this
     }
 
     companion object {
