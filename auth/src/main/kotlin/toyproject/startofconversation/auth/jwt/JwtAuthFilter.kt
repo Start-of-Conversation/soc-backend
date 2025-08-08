@@ -95,7 +95,7 @@ class JwtAuthFilter(
             || requestURI.matches(Regex("/.*/public(/.*)?"))
             || requestURI.startsWith("/favicon.ico")
             || requestURI.startsWith("/health")
-            || requestURI.startsWith("/.*/actuator(/.*)?")
+            || requestURI.matches(Regex("/actuator(/.*)?"))
 
     private fun isSwagger(requestURI: String): Boolean =
         requestURI.startsWith("/swagger-ui")
