@@ -27,7 +27,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew clean :api:bootJar -Pspring.profiles.active=prod
+        run: ./gradlew clean build -Pspring.profiles.active=prod
 
       - name: Docker Build & Push
         run: |
