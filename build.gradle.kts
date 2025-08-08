@@ -83,6 +83,7 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
         implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.springframework.boot:spring-boot-starter-security")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.security:spring-security-test")
@@ -94,6 +95,9 @@ subprojects {
 
         //database
         runtimeOnly("org.postgresql:postgresql")
+
+        //prometheus
+        implementation("io.micrometer:micrometer-registry-prometheus")
 
         //kotest
 //        testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
