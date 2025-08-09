@@ -94,7 +94,7 @@ subprojects {
         implementation("io.lettuce:lettuce-core")
 
         //database
-        runtimeOnly("org.postgresql:postgresql")
+        implementation("org.postgresql:postgresql:42.7.7")
 
         //prometheus
         implementation("io.micrometer:micrometer-registry-prometheus")
@@ -112,6 +112,7 @@ subprojects {
         implementation(platform("software.amazon.awssdk:bom:2.32.6"))
         implementation("software.amazon.awssdk:auth")
         implementation("software.amazon.awssdk:regions")
+        implementation("software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.6.1")
 
         // querydsl
         if (name in listOf("common", "auth", "api")) {
