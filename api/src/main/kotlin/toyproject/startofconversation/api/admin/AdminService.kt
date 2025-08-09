@@ -2,7 +2,6 @@ package toyproject.startofconversation.api.admin
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.admin.dto.AdminUserListResponse
 import toyproject.startofconversation.api.admin.repository.AdminUserRepository
 import toyproject.startofconversation.api.annotation.AdminUserAccess
@@ -10,6 +9,7 @@ import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.auth.support.AuthValidator
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.transaction.helper.Tx
 
 @Service
 @AdminUserAccess
@@ -19,23 +19,19 @@ class AdminService(
     private val authValidator: AuthValidator
 ) {
 
-    @Transactional(readOnly = true)
     fun getAllUser(
-        pageable: Pageable,
-        status: Boolean?,
-        userId: String
-    ): PageResponseData<List<AdminUserListResponse>> {
+        pageable: Pageable, status: Boolean?, userId: String
+    ): PageResponseData<List<AdminUserListResponse>> = Tx.readTx {
         authValidator.validateApprovedAdmin(userId)
 
         val findAllUsers = adminUserRepository.findAllUsers(pageable, status)
-        return PageResponseData(findAllUsers.toList(), findAllUsers)
+        PageResponseData(findAllUsers.toList(), findAllUsers)
     }
 
-    @Transactional
-    fun approveUser(approvalUserId: String, userId: String): ResponseData<Boolean> {
+    fun approveUser(approvalUserId: String, userId: String): ResponseData<Boolean> = Tx.writeTx {
         authValidator.validateApprovedAdmin(userId)
 
-        return ResponseData(
+        ResponseData(
             "User $approvalUserId approved successfully",
             userService.findUserById(approvalUserId).approve().isApproved
         )
