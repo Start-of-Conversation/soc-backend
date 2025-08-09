@@ -9,7 +9,8 @@ import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.auth.support.AuthValidator
 import toyproject.startofconversation.common.base.dto.ResponseData
-import toyproject.startofconversation.common.transaction.helper.Tx
+import toyproject.startofconversation.common.transaction.helper.Tx.readTx
+import toyproject.startofconversation.common.transaction.helper.Tx.writeTx
 
 @Service
 @AdminUserAccess
@@ -21,14 +22,14 @@ class AdminService(
 
     fun getAllUser(
         pageable: Pageable, status: Boolean?, userId: String
-    ): PageResponseData<List<AdminUserListResponse>> = Tx.readTx {
+    ): PageResponseData<List<AdminUserListResponse>> = readTx {
         authValidator.validateApprovedAdmin(userId)
 
         val findAllUsers = adminUserRepository.findAllUsers(pageable, status)
         PageResponseData(findAllUsers.toList(), findAllUsers)
     }
 
-    fun approveUser(approvalUserId: String, userId: String): ResponseData<Boolean> = Tx.writeTx {
+    fun approveUser(approvalUserId: String, userId: String): ResponseData<Boolean> = writeTx {
         authValidator.validateApprovedAdmin(userId)
 
         ResponseData(
