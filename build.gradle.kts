@@ -112,7 +112,6 @@ subprojects {
         implementation(platform("software.amazon.awssdk:bom:2.32.6"))
         implementation("software.amazon.awssdk:auth")
         implementation("software.amazon.awssdk:regions")
-        implementation("software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.6.1")
 
         // querydsl
         if (name in listOf("common", "auth", "api")) {
