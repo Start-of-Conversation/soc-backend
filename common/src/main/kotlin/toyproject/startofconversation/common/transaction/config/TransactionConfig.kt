@@ -9,7 +9,7 @@ import toyproject.startofconversation.common.transaction.runner.TransactionRunne
 @Configuration
 class TransactionConfig {
 
-    @Bean
+    @Bean("txInitBean")
     fun txInitialize(txRunner: TransactionRunner): InitializingBean =
         InitializingBean { Tx.initialize(txRunner) }
 }

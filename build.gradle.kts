@@ -83,6 +83,7 @@ subprojects {
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
         implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.springframework.boot:spring-boot-starter-security")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.security:spring-security-test")
@@ -93,7 +94,10 @@ subprojects {
         implementation("io.lettuce:lettuce-core")
 
         //database
-        runtimeOnly("org.postgresql:postgresql")
+        implementation("org.postgresql:postgresql:42.7.7")
+
+        //prometheus
+        implementation("io.micrometer:micrometer-registry-prometheus")
 
         //kotest
 //        testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
@@ -108,6 +112,7 @@ subprojects {
         implementation(platform("software.amazon.awssdk:bom:2.32.6"))
         implementation("software.amazon.awssdk:auth")
         implementation("software.amazon.awssdk:regions")
+        implementation("software.amazon.jdbc:aws-advanced-jdbc-wrapper:2.6.1")
 
         // querydsl
         if (name in listOf("common", "auth", "api")) {
