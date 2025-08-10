@@ -28,7 +28,7 @@ class JwtAuthFilter(
         filterChain: FilterChain
     ) {
         val requestURI = request.requestURI
-        if (!requestURI.startsWith("/health")) {
+        if (!requestURI.startsWith("/health") && !requestURI.startsWith("/actuator")) {
             log.info("요청 methde: ${request.method} api: $requestURI")
         }
 
