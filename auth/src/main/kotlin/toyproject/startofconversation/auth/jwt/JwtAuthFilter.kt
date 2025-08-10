@@ -28,7 +28,7 @@ class JwtAuthFilter(
         filterChain: FilterChain
     ) {
         val requestURI = request.requestURI
-        if (!requestURI.startsWith("/health")) {
+        if (!requestURI.startsWith("/health") && !requestURI.startsWith("/actuator")) {
             log.info("요청 methde: ${request.method} api: $requestURI")
         }
 
@@ -95,6 +95,7 @@ class JwtAuthFilter(
             || requestURI.matches(Regex("/.*/public(/.*)?"))
             || requestURI.startsWith("/favicon.ico")
             || requestURI.startsWith("/health")
+            || requestURI.matches(Regex("/actuator(/.*)?"))
 
     private fun isSwagger(requestURI: String): Boolean =
         requestURI.startsWith("/swagger-ui")
