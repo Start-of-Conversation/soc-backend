@@ -1,15 +1,18 @@
 package toyproject.startofconversation.common.domain.cardgroup.validator
 
 import org.springframework.stereotype.Component
+import toyproject.startofconversation.common.domain.card.validator.CardGroupCapacityValidator
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.user.entity.value.Role
 import toyproject.startofconversation.common.domain.user.exception.UserMismatchException
+import toyproject.startofconversation.common.support.throwIf
 
 @Component
 class CardGroupValidator(
-    private val cardGroupRepository: CardGroupRepository
+    private val cardGroupRepository: CardGroupRepository,
+    private val cardGroupCapacityValidator: CardGroupCapacityValidator
 ) {
 
     fun getValidCardGroupOwnedByUser(cardGroupId: String, userId: String): CardGroup {
@@ -36,9 +39,11 @@ class CardGroupValidator(
         return cardGroup to count
     }
 
-    private fun validateOwnership(cardGroup: CardGroup, userId: String) {
-        if (cardGroup.user.role != Role.ADMIN && cardGroup.user.id != userId) {
-            throw UserMismatchException(userId)
+    fun validateCustom(userId: String, isCustomized: Boolean) =
+        cardGroupCapacityValidator.validateCustom(userId, isCustomized)
+
+    private fun validateOwnership(cardGroup: CardGroup, userId: String) =
+        throwIf(cardGroup.user.role != Role.ADMIN && cardGroup.user.id != userId) {
+            UserMismatchException(userId)
         }
-    }
 }

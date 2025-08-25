@@ -6,26 +6,30 @@ import org.springframework.transaction.annotation.Transactional
 import toyproject.startofconversation.api.annotation.LoginUserAccess
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupCreateRequest
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse
+import toyproject.startofconversation.api.cardGroup.dto.CardGroupInfoResponse.UserInfo
 import toyproject.startofconversation.api.cardGroup.dto.CardGroupUpdateRequest
 import toyproject.startofconversation.api.paging.PageResponseData
 import toyproject.startofconversation.api.paging.toPageResponse
-import toyproject.startofconversation.api.user.service.UserService
 import toyproject.startofconversation.common.base.dto.ResponseData
+import toyproject.startofconversation.common.base.dto.responseOf
 import toyproject.startofconversation.common.domain.cardgroup.entity.CardGroup
 import toyproject.startofconversation.common.domain.cardgroup.exception.CardGroupNotFoundException
 import toyproject.startofconversation.common.domain.cardgroup.repository.CardGroupRepository
 import toyproject.startofconversation.common.domain.cardgroup.validator.CardGroupValidator
+import toyproject.startofconversation.common.domain.like.repository.LikesRepository
+import toyproject.startofconversation.common.domain.user.repository.UsersRepository
 
 @Service
 class CardGroupService(
     private val cardGroupRepository: CardGroupRepository,
-    private val userService: UserService,
-    private val cardGroupValidator: CardGroupValidator
+    private val userRepository: UsersRepository,
+    private val cardGroupValidator: CardGroupValidator,
+    private val likesRepository: LikesRepository
 ) {
-    fun getCardGroupInfo(id: String): ResponseData<CardGroupInfoResponse> =
-        cardGroupRepository.findCardGroupInfoById(id)?.let {
-            ResponseData.to(CardGroupInfoResponse.from(it))
-        } ?: throw CardGroupNotFoundException(id)
+    fun getCardGroupInfo(id: String, userId: String?): ResponseData<CardGroupInfoResponse> =
+        cardGroupRepository.findCardGroupInfoById(id)?.toResponse(
+            UserInfo(userId, didUserLiked(userId, id))
+        ) ?: throw CardGroupNotFoundException(id)
 
     fun getCardGroups(pageable: Pageable): PageResponseData<List<CardGroupInfoResponse>> =
         cardGroupRepository.findCardGroupsWithCardCount(pageable).toPageResponse(CardGroupInfoResponse::from)
@@ -35,7 +39,8 @@ class CardGroupService(
     fun create(
         request: CardGroupCreateRequest, userId: String
     ): ResponseData<CardGroupInfoResponse> = with(request) {
-        val user = userService.findUserById(userId)
+        val user = userRepository.getReferenceById(userId)
+        cardGroupValidator.validateCustom(userId, isCustomized)
 
         val cardGroup = CardGroup(
             cardGroupName = name,
@@ -46,7 +51,7 @@ class CardGroupService(
         ).setThumbs(thumbnail)
         cardGroupRepository.save(cardGroup)
 
-        ResponseData.to(CardGroupInfoResponse.from(cardGroup to 0))
+        (cardGroup to 0L).toResponse()
     }
 
     @Transactional
@@ -55,6 +60,8 @@ class CardGroupService(
         cardGroupId: String, request: CardGroupUpdateRequest, userId: String
     ): ResponseData<CardGroupInfoResponse> = with(request) {
         val result = cardGroupValidator.getValidCardGroupWithCountOwnedByUser(cardGroupId, userId)
+        isCustomized?.let { cardGroupValidator.validateCustom(userId, isCustomized) }
+
         result.first
             .setName(name)
             .setSummary(summary)
@@ -62,7 +69,7 @@ class CardGroupService(
             .setThumbs(thumbnail)
             .setCustomized(isCustomized)
 
-        ResponseData.to(CardGroupInfoResponse.from(result))
+        result.toResponse()
     }
 
     @Transactional
@@ -70,7 +77,18 @@ class CardGroupService(
     fun delete(cardGroupId: String, userId: String): ResponseData<Boolean> {
         val cardGroup = cardGroupValidator.getValidCardGroupOwnedByUser(cardGroupId, userId)
         cardGroupRepository.delete(cardGroup)
-        return ResponseData.to("CardGroup $cardGroupId has been successfully removed.", true)
+        return responseOf("CardGroup $cardGroupId has been successfully removed.", true)
     }
+
+    private fun didUserLiked(userId: String?, cardGroupId: String): Boolean {
+        if (userId != null) {
+            return likesRepository.existsByUserIdAndCardGroupId(userId, cardGroupId)
+        }
+        return false
+    }
+
+    private fun Pair<CardGroup, Long>.toResponse(
+        userInfo: UserInfo = UserInfo.empty()
+    ): ResponseData<CardGroupInfoResponse> = responseOf(CardGroupInfoResponse.from(this, userInfo))
 
 }

@@ -1,3 +1,5 @@
 package toyproject.startofconversation.api.card.dto
 
-class CardUpdateRequest(val newQuestion: String)
+import jakarta.validation.constraints.NotBlank
+
+class CardUpdateRequest(@field:NotBlank val newQuestion: String)

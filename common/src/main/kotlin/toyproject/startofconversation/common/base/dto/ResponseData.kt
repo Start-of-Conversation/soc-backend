@@ -20,14 +20,13 @@ open class ResponseData<T> : ResponseInfo {
             return ResponseData(message.orEmpty(), wrapper)
         }
 
-        fun <T> to(message: String?): ResponseData<T?> {
-            return ResponseData(message.orEmpty(), null)
-        }
-
         fun <T> to(data: T): ResponseData<T> {
             return ResponseData(data)
         }
     }
 
-
 }
+
+inline fun <T> responseOf(message: String?, data: T) = ResponseData.to(message, data)
+inline fun <T> responseOf(data: T) = ResponseData.to(data)
+inline fun <T> responseMessageOf(message: String?) = ResponseData.to(message, null)

@@ -4,7 +4,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConfigurationProperties(prefix = "group.card")
+@ConfigurationProperties(prefix = "limits.group.card")
 class CardGroupProperties {
-    var maxSize: Int = 20
+    var card: CardPropertySet = CardPropertySet()
+    var custom: CustomPropertySet = CustomPropertySet()
+}
+
+class CardPropertySet {
+    var maxCount: Int = 20
+}
+
+class CustomPropertySet {
+    var maxCount: Int = 3
 }
